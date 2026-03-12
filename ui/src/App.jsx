@@ -777,20 +777,23 @@ function MemoryInjectionInput({
 
 // ============== PROJECT VAULT ==============
 
+const PROJECT_ROOT = (import.meta.env.VITE_PROJECT_ROOT || "/workspace").replace(/\/$/, "");
+const GAME_PATH = `${PROJECT_ROOT}/federation-game/index.html`;
+
 const VAULT_PATHS = [
   {
     id: "federation-game",
     label: "🎮 Quantum-Ahead Universe Game",
-    path: "C:\\workspace\\federation-game\\index.html",
+    path: GAME_PATH,
     description: "Kid-friendly agent/universe game built for my son. Teaches AI concepts through play.",
     category: "game",
     tags: ["game", "workspace", "path-registry"],
-    openUrl: "file:///C:/workspace/federation-game/index.html",
+    openUrl: `file://${GAME_PATH}`,
   },
   {
     id: "ensemble-storage",
     label: "🧠 Memory Bank / Ensemble Storage",
-    path: "C:\\workspace\\ensemble_storage",
+    path: `${PROJECT_ROOT}/ensemble_storage`,
     description: "Primary memory bank. Ensemble storage for long-term knowledge across sessions.",
     category: "memory-bank",
     tags: ["memory-bank", "workspace", "path-registry"],
@@ -799,7 +802,7 @@ const VAULT_PATHS = [
   {
     id: "session-records",
     label: "📋 Session Records",
-    path: "C:\\workspace\\SESSION_RECORDS",
+    path: `${PROJECT_ROOT}/SESSION_RECORDS`,
     description: "Historical session records including DESKTOP_CLAUDE_SESSION_FEB15_2026 and others.",
     category: "records",
     tags: ["records", "workspace", "path-registry"],
@@ -808,7 +811,7 @@ const VAULT_PATHS = [
   {
     id: "src",
     label: "💾 Source / Game Remnants",
-    path: "C:\\workspace\\src",
+    path: `${PROJECT_ROOT}/src`,
     description: "Source code remnants, possibly early game versions and experimental code.",
     category: "source",
     tags: ["source", "workspace", "path-registry"],
@@ -817,7 +820,7 @@ const VAULT_PATHS = [
   {
     id: "swarm-tools",
     label: "🐝 Swarm Tools",
-    path: "C:\\workspace\\swarm_tools",
+    path: `${PROJECT_ROOT}/swarm_tools`,
     description: "Swarm coordination tools and agent orchestration utilities.",
     category: "swarm",
     tags: ["swarm", "workspace", "path-registry"],
@@ -826,7 +829,7 @@ const VAULT_PATHS = [
   {
     id: "root-workspace",
     label: "📁 Root Workspace (100+ docs)",
-    path: "C:\\workspace",
+    path: PROJECT_ROOT,
     description: "Root workspace directory. Contains 100+ scattered documents, notes, and project artifacts to be preserved in memory.",
     category: "workspace",
     tags: ["workspace", "path-registry", "documents"],

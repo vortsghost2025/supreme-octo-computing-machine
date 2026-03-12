@@ -1626,8 +1626,6 @@ def _safe_eval_ast(node: ast.AST) -> float:
             return left / right
         if isinstance(node.op, ast.Mod):
             return left % right
-        if isinstance(node.op, ast.Pow):
-            return left ** right
         raise ValueError("Unsupported operator")
     if isinstance(node, ast.UnaryOp):
         value = _safe_eval_ast(node.operand)

@@ -7,7 +7,7 @@ services:
     image: postgres:15
     container_name: snac_db
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-agent_secure_password}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       POSTGRES_USER: snac
       POSTGRES_DB: snac
     volumes:
@@ -17,6 +17,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
     networks:
       - snac_network
 
@@ -31,6 +32,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    restart: unless-stopped
     networks:
       - snac_network
 
@@ -48,6 +50,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    restart: unless-stopped
     networks:
       - snac_network
 
@@ -59,7 +62,7 @@ services:
       - "8000:8000"
     env_file: .env
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-agent_secure_password}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333
       - REDIS_HOST=redis
