@@ -11,6 +11,7 @@ import asyncio
 import ast
 import math
 import hashlib
+import uuid
 from datetime import datetime
 from typing import Optional, List, Dict, Any, Annotated
 from contextlib import asynccontextmanager
@@ -45,7 +46,10 @@ swarm_state: Dict[str, Any] = {
     "last_scale_down_at": 0.0,
 }
 worker_runtime_tasks: Dict[str, asyncio.Task] = {}
+worker_runtime_locks: Dict[str, asyncio.Lock] = {}
 swarm_task_results: List[Dict[str, Any]] = []
+swarm_intelligence_stats: Dict[str, Dict[str, Any]] = {}
+swarm_token_events: List[Dict[str, Any]] = []
 
 # Configuration
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -77,6 +81,8 @@ _RUNTIME_POLICY_PARALLEL_TEST_MIN_REPLICAS = int(os.getenv("RUNTIME_POLICY_PARAL
 _RUNTIME_POLICY_PARALLEL_TEST_MAX_REPLICAS = int(os.getenv("RUNTIME_POLICY_PARALLEL_TEST_MAX_REPLICAS", "5"))
 _SWARM_RESULT_MAX_ITEMS = int(os.getenv("SWARM_RESULT_MAX_ITEMS", "2000"))
 _SWARM_WORKER_IDLE_SLEEP_SECONDS = float(os.getenv("SWARM_WORKER_IDLE_SLEEP_SECONDS", "1.0"))
+_USE_REDIS_STREAMS = os.getenv("USE_REDIS_STREAMS", "true").lower() in {"1", "true", "yes"}
+_SWARM_INTELLIGENCE_MAX_ITEMS = int(os.getenv("SWARM_INTELLIGENCE_MAX_ITEMS", "2000"))
 
 _SWARM_QUEUE_KEY_PREFIX = "swarm:queue"
 _SWARM_EVENTS_KEY = "swarm:events"
@@ -84,6 +90,13 @@ _SWARM_CONFIG_KEY = "swarm:config"
 _SWARM_WORKERS_ACTIVE_KEY = "swarm:workers:active"
 _MEMORY_SHARED_KNOWLEDGE_KEY = "memory:shared_knowledge"
 _SWARM_RESULTS_KEY = "swarm:results"
+_SWARM_EVENTS_STREAM_KEY = "swarm:events:stream"
+_SWARM_RESULTS_STREAM_KEY = "swarm:results:stream"
+_SWARM_INTELLIGENCE_KEY = "swarm:intelligence:stats"
+_SWARM_TOKEN_EVENTS_KEY = "swarm:token_events"
+_SWARM_CHECKPOINTS_KEY_PREFIX = "swarm:checkpoint"
+_SWARM_STREAM_CONSUMER_GROUP = "swarm-workers"
+_SWARM_STREAM_MAX_LEN = 50000
 
 _RUNTIME_MODES = {"shared", "sandbox", "parallel_test"}
 _ROUTING_PREFERENCES = {"auto", "local_preferred", "cloud_preferred"}
@@ -116,6 +129,44 @@ _RUNTIME_RISKY_TASK_PATTERN = re.compile(
 def _redact_secrets(value: str) -> str:
     """Replace apparent secrets/keys before writing to logs."""
     return _SECRET_PATTERN.sub("[REDACTED]", value)
+
+
+def _stream_pack(data: Dict[str, Any]) -> Dict[str, str]:
+    """Serialize event payload for Redis Streams field map."""
+    packed: Dict[str, str] = {}
+    for key, value in data.items():
+        if isinstance(value, (dict, list)):
+            packed[key] = json.dumps(value)
+        elif value is None:
+            packed[key] = ""
+        else:
+            packed[key] = str(value)
+    return packed
+
+
+def _stream_unpack(fields: Dict[str, str]) -> Dict[str, Any]:
+    """Deserialize Redis Streams field map into API event shape."""
+    payload_raw = fields.get("payload", "{}") or "{}"
+    try:
+        payload = json.loads(payload_raw)
+    except json.JSONDecodeError:
+        payload = {"raw": payload_raw}
+
+    return {
+        "event_id": fields.get("event_id", ""),
+        "event_type": fields.get("event_type", fields.get("type", "")),
+        "event_version": fields.get("event_version", "v1"),
+        "type": fields.get("type", fields.get("event_type", "")),
+        "timestamp": fields.get("timestamp", ""),
+        "source": fields.get("source", "system"),
+        "workflow_id": fields.get("workflow_id") or None,
+        "task_id": fields.get("task_id") or None,
+        "agent_type": fields.get("agent_type") or None,
+        "priority": fields.get("priority") or None,
+        "runtime": fields.get("runtime") or None,
+        "payload": payload,
+        "trace_id": fields.get("trace_id", ""),
+    }
 
 
 async def _require_control_plane_token(
@@ -330,13 +381,28 @@ async def lifespan(app: FastAPI):
         print(f"Qdrant: unavailable ({_redact_secrets(str(e))}) - RAG disabled")
         _qdrant = None
 
+    if _redis:
+        for stream_key in (_SWARM_EVENTS_STREAM_KEY, _SWARM_RESULTS_STREAM_KEY):
+            try:
+                await _redis.xgroup_create(stream_key, _SWARM_STREAM_CONSUMER_GROUP, id="0", mkstream=True)
+            except Exception:
+                pass  # group already exists or stream creation no-op
+        await _swarm_recover_pending_checkpoints()
+        print("Swarm: consumer groups ready, checkpoint recovery complete")
+
     yield
 
     for worker_id, task in list(worker_runtime_tasks.items()):
         task.cancel()
     if worker_runtime_tasks:
-        await asyncio.gather(*worker_runtime_tasks.values(), return_exceptions=True)
+        pending_workers = list(worker_runtime_tasks.keys())
+        pending_tasks = [worker_runtime_tasks[w] for w in pending_workers if w in worker_runtime_tasks]
+        shutdown_results = await asyncio.gather(*pending_tasks, return_exceptions=True)
+        for worker_id, result in zip(pending_workers, shutdown_results):
+            if isinstance(result, Exception) and not isinstance(result, asyncio.CancelledError):
+                print(f"Worker task '{worker_id}' shutdown error: {_redact_secrets(str(result))}")
         worker_runtime_tasks.clear()
+        worker_runtime_locks.clear()
 
     if _redis:
         await _redis.aclose()
@@ -606,6 +672,64 @@ class SwarmTaskResultItem(BaseModel):
 
 class SwarmTaskResultsResponse(BaseModel):
     results: List[SwarmTaskResultItem]
+
+
+class SwarmGraphNode(BaseModel):
+    id: str
+    type: str  # worker | queue | result
+    label: str
+    status: str
+    runtime: Optional[str] = None
+    worker_type: Optional[str] = None
+    count: Optional[int] = None
+
+
+class SwarmGraphEdge(BaseModel):
+    source: str
+    target: str
+    label: str
+
+
+class SwarmGraphSnapshotResponse(BaseModel):
+    nodes: List[SwarmGraphNode]
+    edges: List[SwarmGraphEdge]
+    active_workers: int
+    tasks_running: int
+    queue_depth: int
+    recent_event_types: List[str]
+    snapshot_at: str
+
+
+class SwarmIntelligenceSummaryResponse(BaseModel):
+    total_tasks: int
+    succeeded: int
+    failed: int
+    task_success_rate: float
+    avg_duration_ms: float
+    best_worker_id: Optional[str]
+    best_worker_type: Optional[str]
+    slowest_task_preview: Optional[str]
+    busiest_runtime: Optional[str]
+    recommended_strategy: str
+    summary_window: str
+
+
+class SwarmCheckpointWriteRequest(BaseModel):
+    task_id: Annotated[str, Field(min_length=1, max_length=128)]
+    worker_id: Annotated[str, Field(min_length=1, max_length=128)]
+    progress: Annotated[int, Field(ge=0)]
+    total: Annotated[int, Field(ge=1)]
+    state: Optional[Dict[str, Any]] = None
+
+
+class SwarmCheckpointResponse(BaseModel):
+    task_id: str
+    worker_id: str
+    progress: int
+    total: int
+    percent: float
+    state: Dict[str, Any]
+    updated_at: str
 
 
 class MemoryLearnRequest(BaseModel):
@@ -1195,6 +1319,148 @@ async def swarm_results_recent(limit: int = 50, _: None = Depends(_require_contr
     return SwarmTaskResultsResponse(results=[SwarmTaskResultItem(**r) for r in results])
 
 
+@app.get("/swarm/graph/snapshot", response_model=SwarmGraphSnapshotResponse)
+async def swarm_graph_snapshot():
+    workers = await _swarm_workers_list()
+    queue_depth = await _swarm_queue_depth()
+    recent_events = await _swarm_recent_events(limit=30)
+
+    nodes: List[SwarmGraphNode] = []
+    edges: List[SwarmGraphEdge] = []
+
+    queue_total = queue_depth["high"] + queue_depth["normal"] + queue_depth["low"]
+    nodes.append(SwarmGraphNode(id="queue", type="queue", label="Task Queue", status="active", count=queue_total))
+
+    running_count = 0
+    for worker in workers:
+        wid = worker["worker_id"]
+        wtype = worker.get("worker_type", "worker")
+        wstatus = worker.get("status", "idle")
+        runtime = worker.get("runtime", "shared")
+        nodes.append(SwarmGraphNode(id=wid, type="worker", label=f"{wtype}\n{wid[:8]}", status=wstatus, runtime=runtime, worker_type=wtype))
+        edges.append(SwarmGraphEdge(source="queue", target=wid, label="claims"))
+        if wstatus == "running":
+            running_count += 1
+
+    recent_event_types = list(dict.fromkeys(
+        e.get("event_type") or e.get("type", "") for e in reversed(recent_events) if e.get("event_type") or e.get("type")
+    ))[:10]
+
+    return SwarmGraphSnapshotResponse(
+        nodes=nodes,
+        edges=edges,
+        active_workers=len(workers),
+        tasks_running=running_count,
+        queue_depth=queue_total,
+        recent_event_types=recent_event_types,
+        snapshot_at=datetime.utcnow().isoformat(),
+    )
+
+
+@app.get("/swarm/intelligence/summary", response_model=SwarmIntelligenceSummaryResponse)
+async def swarm_intelligence_summary():
+    stats: Dict[str, Any] = {}
+    if _redis:
+        try:
+            raw = await _redis.hgetall(_SWARM_INTELLIGENCE_KEY)
+            for wid, val in raw.items():
+                try:
+                    stats[wid] = json.loads(val)
+                except json.JSONDecodeError:
+                    pass
+        except Exception:
+            pass
+    if not stats:
+        stats = {k: v for k, v in swarm_intelligence_stats.items() if isinstance(v, dict) and "total" in v}
+
+    total = sum(s.get("total", 0) for s in stats.values())
+    succeeded = sum(s.get("succeeded", 0) for s in stats.values())
+    failed = sum(s.get("failed", 0) for s in stats.values())
+    success_rate = round(succeeded / total, 4) if total > 0 else 0.0
+
+    total_duration = sum(s.get("total_duration_ms", 0) for s in stats.values())
+    avg_duration = round(total_duration / total, 1) if total > 0 else 0.0
+
+    best_worker = max(
+        stats.values(),
+        key=lambda s: s.get("succeeded", 0) / max(s.get("total", 1), 1),
+        default=None,
+    )
+
+    slowest_worker = max(stats.values(), key=lambda s: s.get("max_duration_ms", 0), default=None)
+    slowest_task = slowest_worker.get("slowest_task", "") if slowest_worker else ""
+
+    runtime_counts: Dict[str, int] = {}
+    for s in stats.values():
+        rt = str(s.get("runtime") or "shared")
+        runtime_counts[rt] = runtime_counts.get(rt, 0) + s.get("total", 0)
+    busiest_runtime = max(runtime_counts, key=runtime_counts.get) if runtime_counts else None
+
+    if total == 0:
+        strategy = "no_data"
+    elif success_rate < 0.5:
+        strategy = "reduce_parallelism"
+    elif avg_duration > 5000:
+        strategy = "parallelize"
+    elif total > 100 and success_rate > 0.9:
+        strategy = "scale_out"
+    else:
+        strategy = "maintain"
+
+    return SwarmIntelligenceSummaryResponse(
+        total_tasks=total,
+        succeeded=succeeded,
+        failed=failed,
+        task_success_rate=success_rate,
+        avg_duration_ms=avg_duration,
+        best_worker_id=best_worker.get("worker_id") if best_worker else None,
+        best_worker_type=best_worker.get("worker_type") if best_worker else None,
+        slowest_task_preview=slowest_task or None,
+        busiest_runtime=busiest_runtime,
+        recommended_strategy=strategy,
+        summary_window="all_time",
+    )
+
+
+@app.post("/swarm/task/checkpoint", response_model=SwarmCheckpointResponse)
+async def swarm_task_checkpoint_write(request: SwarmCheckpointWriteRequest, _: None = Depends(_require_control_plane_token)):
+    await _swarm_checkpoint_write(
+        task_id=request.task_id,
+        worker_id=request.worker_id,
+        progress=request.progress,
+        total=request.total,
+        state=request.state,
+    )
+    percent = round(request.progress / request.total * 100, 1)
+    return SwarmCheckpointResponse(
+        task_id=request.task_id,
+        worker_id=request.worker_id,
+        progress=request.progress,
+        total=request.total,
+        percent=percent,
+        state=request.state or {},
+        updated_at=datetime.utcnow().isoformat(),
+    )
+
+
+@app.get("/swarm/task/checkpoint/{task_id}", response_model=SwarmCheckpointResponse)
+async def swarm_task_checkpoint_read(task_id: str, _: None = Depends(_require_control_plane_token)):
+    cp = await _swarm_checkpoint_read(task_id)
+    if not cp:
+        raise HTTPException(status_code=404, detail="checkpoint not found")
+    total = max(cp.get("total", 1), 1)
+    progress = cp.get("progress", 0)
+    return SwarmCheckpointResponse(
+        task_id=cp["task_id"],
+        worker_id=cp["worker_id"],
+        progress=progress,
+        total=total,
+        percent=round(progress / total * 100, 1),
+        state=cp.get("state") or {},
+        updated_at=cp.get("updated_at", ""),
+    )
+
+
 @app.post("/memory/learn", response_model=MemoryLearnResponse)
 async def memory_learn(request: MemoryLearnRequest):
     import uuid
@@ -1466,7 +1732,9 @@ async def _session_delete(session_id: str) -> None:
 async def _timeline_append(event: Dict) -> None:
     if _redis:
         await _redis.rpush("timeline", json.dumps(event))
-        await _redis.ltrim("timeline", -10000, -1)
+        size = await _redis.llen("timeline")
+        if size > _MEMORY_FALLBACK_MAX_TIMELINE:
+            await _redis.ltrim("timeline", size - _MEMORY_FALLBACK_MAX_TIMELINE, -1)
     else:
         memory_timeline.append(event)
         _prune_memory_fallback_state()
@@ -1496,6 +1764,58 @@ async def _token_incr(session_id: str, cost: float) -> None:
         token_usage["total"] += cost
         token_usage["by_session"][session_id] = token_usage["by_session"].get(session_id, 0.0) + cost
         _prune_memory_fallback_state()
+
+
+async def _swarm_record_token_usage(tokens: int) -> None:
+    if tokens <= 0:
+        return
+
+    now = time.time()
+    item = {"ts": now, "tokens": int(tokens), "nonce": str(uuid.uuid4())}
+
+    if _redis:
+        await _redis.zadd(_SWARM_TOKEN_EVENTS_KEY, {json.dumps(item): now})
+        await _redis.zremrangebyscore(_SWARM_TOKEN_EVENTS_KEY, 0, now - 3600)
+    else:
+        swarm_token_events.append(item)
+        cutoff = now - 3600
+        if len(swarm_token_events) > 1:
+            swarm_token_events[:] = [e for e in swarm_token_events if float(e.get("ts", 0.0)) >= cutoff]
+
+
+async def _swarm_tokens_last_minute() -> int:
+    now = time.time()
+    window_start = now - 60
+
+    if _redis:
+        items = await _redis.zrangebyscore(_SWARM_TOKEN_EVENTS_KEY, window_start, now)
+        total = 0
+        for raw in items:
+            try:
+                payload = json.loads(raw)
+                total += int(payload.get("tokens", 0))
+            except (json.JSONDecodeError, TypeError, ValueError):
+                continue
+        return total
+
+    return sum(int(e.get("tokens", 0)) for e in swarm_token_events if float(e.get("ts", 0.0)) >= window_start)
+
+
+def _swarm_cpu_percent_estimate() -> float:
+    """Estimate host CPU load percentage from 1m load average when available."""
+    try:
+        import psutil  # type: ignore
+
+        return float(psutil.cpu_percent(interval=0.0))
+    except Exception:
+        pass
+
+    try:
+        load_1m = os.getloadavg()[0]
+        cpu_count = max(os.cpu_count() or 1, 1)
+        return round(min(100.0, (load_1m / cpu_count) * 100.0), 2)
+    except (AttributeError, OSError):
+        return 0.0
 
 
 async def _token_get() -> Dict[str, Any]:
@@ -1786,6 +2106,16 @@ async def _swarm_emit_event(
     if _redis:
         await _redis.rpush(_SWARM_EVENTS_KEY, json.dumps(event))
         await _redis.ltrim(_SWARM_EVENTS_KEY, -_MEMORY_FALLBACK_MAX_SWARM_EVENTS, -1)
+        if _USE_REDIS_STREAMS:
+            try:
+                await _redis.xadd(
+                    _SWARM_EVENTS_STREAM_KEY,
+                    _stream_pack(event),
+                    maxlen=_SWARM_STREAM_MAX_LEN,
+                    approximate=True,
+                )
+            except Exception:
+                pass  # stream write is best-effort; list write above is source-of-truth
     else:
         swarm_events.append(event)
         _prune_memory_fallback_state()
@@ -1846,29 +2176,40 @@ async def _swarm_worker_update(worker_id: str, updates: Dict[str, Any]) -> Optio
 
 async def _swarm_start_worker_runtime(worker: Dict[str, Any]) -> None:
     worker_id = worker["worker_id"]
-    existing = worker_runtime_tasks.get(worker_id)
-    if existing and not existing.done():
-        return
+    lock = worker_runtime_locks.setdefault(worker_id, asyncio.Lock())
+    async with lock:
+        existing = worker_runtime_tasks.get(worker_id)
+        if existing and not existing.done():
+            return
 
-    await _swarm_worker_update(
-        worker_id,
-        {
-            "status": "running",
-            "lease_only": False,
-            "started_at": datetime.utcnow().isoformat(),
-        },
-    )
+        await _swarm_worker_update(
+            worker_id,
+            {
+                "status": "running",
+                "lease_only": False,
+                "started_at": datetime.utcnow().isoformat(),
+            },
+        )
 
-    await _swarm_emit_event(
-        "swarm.worker.started",
-        runtime=worker.get("runtime"),
-        source="operator",
-        payload={"worker_id": worker_id, "worker_type": worker.get("worker_type")},
-    )
-    worker_runtime_tasks[worker_id] = asyncio.create_task(_swarm_worker_loop(worker_id))
+        await _swarm_emit_event(
+            "swarm.worker.started",
+            runtime=worker.get("runtime"),
+            source="operator",
+            payload={"worker_id": worker_id, "worker_type": worker.get("worker_type")},
+        )
+
+        task = asyncio.create_task(_swarm_worker_loop(worker_id))
+
+        def _cleanup_worker_task(done_task: asyncio.Task) -> None:
+            if worker_runtime_tasks.get(worker_id) is done_task:
+                worker_runtime_tasks.pop(worker_id, None)
+
+        task.add_done_callback(_cleanup_worker_task)
+        worker_runtime_tasks[worker_id] = task
 
 
 async def _swarm_worker_retire(worker_id: str) -> Optional[Dict[str, Any]]:
+    worker_runtime_locks.pop(worker_id, None)
     if _redis:
         raw = await _redis.hget(_SWARM_WORKERS_ACTIVE_KEY, worker_id)
         if not raw:
@@ -1917,6 +2258,16 @@ async def _swarm_store_result(result: Dict[str, Any]) -> None:
     if _redis:
         await _redis.rpush(_SWARM_RESULTS_KEY, json.dumps(result))
         await _redis.ltrim(_SWARM_RESULTS_KEY, -_SWARM_RESULT_MAX_ITEMS, -1)
+        if _USE_REDIS_STREAMS:
+            try:
+                await _redis.xadd(
+                    _SWARM_RESULTS_STREAM_KEY,
+                    _stream_pack(result),
+                    maxlen=_SWARM_STREAM_MAX_LEN,
+                    approximate=True,
+                )
+            except Exception:
+                pass
     else:
         swarm_task_results.append(result)
         if len(swarm_task_results) > _SWARM_RESULT_MAX_ITEMS:
@@ -1928,6 +2279,127 @@ async def _swarm_recent_results(limit: int = 50) -> List[Dict[str, Any]]:
         items = await _redis.lrange(_SWARM_RESULTS_KEY, -limit, -1)
         return [json.loads(i) for i in items]
     return swarm_task_results[-limit:]
+
+
+async def _swarm_checkpoint_write(task_id: str, worker_id: str, progress: int, total: int, state: Optional[Dict[str, Any]] = None) -> None:
+    key = f"{_SWARM_CHECKPOINTS_KEY_PREFIX}:{task_id}"
+    payload = {
+        "task_id": task_id,
+        "worker_id": worker_id,
+        "progress": progress,
+        "total": total,
+        "state": json.dumps(state or {}),
+        "updated_at": datetime.utcnow().isoformat(),
+    }
+    if _redis:
+        await _redis.hset(key, mapping={k: str(v) for k, v in payload.items()})
+        await _redis.expire(key, 86400 * 3)  # 3-day TTL
+    else:
+        swarm_intelligence_stats.setdefault("checkpoints", {})[task_id] = payload
+
+
+async def _swarm_checkpoint_read(task_id: str) -> Optional[Dict[str, Any]]:
+    key = f"{_SWARM_CHECKPOINTS_KEY_PREFIX}:{task_id}"
+    if _redis:
+        raw = await _redis.hgetall(key)
+        if not raw:
+            return None
+        state_raw = raw.get("state", "{}")
+        try:
+            state = json.loads(state_raw)
+        except json.JSONDecodeError:
+            state = {}
+        return {
+            "task_id": raw.get("task_id", task_id),
+            "worker_id": raw.get("worker_id", ""),
+            "progress": int(raw.get("progress", 0)),
+            "total": int(raw.get("total", 1)),
+            "state": state,
+            "updated_at": raw.get("updated_at", ""),
+        }
+    checkpoints = swarm_intelligence_stats.get("checkpoints", {})
+    return checkpoints.get(task_id)
+
+
+async def _swarm_recover_pending_checkpoints() -> None:
+    """Re-enqueue any tasks with incomplete checkpoints not yet completed."""
+    if not _redis:
+        return
+    try:
+        keys = await _redis.keys(f"{_SWARM_CHECKPOINTS_KEY_PREFIX}:*")
+        for key in keys:
+            raw = await _redis.hgetall(key)
+            if not raw:
+                continue
+            progress = int(raw.get("progress", 0))
+            total = int(raw.get("total", 1))
+            if progress >= total:
+                continue  # already complete
+            task_id = raw.get("task_id")
+            worker_id = raw.get("worker_id", "")
+            if not task_id:
+                continue
+            state_raw = raw.get("state", "{}")
+            try:
+                state = json.loads(state_raw)
+            except json.JSONDecodeError:
+                state = {}
+            recovery_entry = {
+                "task_id": task_id,
+                "task": state.get("task", f"recovered:{task_id}"),
+                "agent_type": state.get("agent_type", "research_worker"),
+                "priority": "high",
+                "workflow_id": state.get("workflow_id", ""),
+                "trace_id": state.get("trace_id"),
+                "complexity": state.get("complexity", "medium"),
+                "routing": state.get("routing", "auto"),
+                "runtime": state.get("runtime", "shared"),
+                "recovered": True,
+                "recovered_from_worker": worker_id,
+                "recovered_progress": progress,
+                "recovered_total": total,
+            }
+            await _swarm_enqueue_task(recovery_entry, "high")
+            print(f"Crash recovery: re-enqueued task {task_id} from checkpoint ({progress}/{total})")
+    except Exception as e:
+        print(f"Crash recovery scan failed: {_redact_secrets(str(e))}")
+
+
+async def _swarm_intelligence_record(result: Dict[str, Any]) -> None:
+    """Update rolling intelligence stats from a completed or failed task result."""
+    worker_id = str(result.get("worker_id") or "")
+    worker_type = str(result.get("worker_type") or "worker")
+    runtime = str(result.get("runtime") or "shared")
+    status = str(result.get("status") or "success")
+    duration_ms = int(result.get("duration_ms") or 0)
+    task_preview = str(result.get("task_preview") or "")[:120]
+
+    entry = swarm_intelligence_stats.setdefault(worker_id, {
+        "worker_id": worker_id,
+        "worker_type": worker_type,
+        "runtime": runtime,
+        "total": 0,
+        "succeeded": 0,
+        "failed": 0,
+        "total_duration_ms": 0,
+        "max_duration_ms": 0,
+        "slowest_task": "",
+    })
+    entry["total"] += 1
+    entry["total_duration_ms"] += duration_ms
+    if status == "success":
+        entry["succeeded"] += 1
+    else:
+        entry["failed"] += 1
+    if duration_ms > entry["max_duration_ms"]:
+        entry["max_duration_ms"] = duration_ms
+        entry["slowest_task"] = task_preview
+
+    if _redis:
+        try:
+            await _redis.hset(_SWARM_INTELLIGENCE_KEY, worker_id, json.dumps(entry))
+        except Exception:
+            pass
 
 
 async def _swarm_execute_worker_task(worker: Dict[str, Any], task_entry: Dict[str, Any]) -> Dict[str, Any]:
@@ -1985,6 +2457,7 @@ async def _swarm_worker_loop(worker_id: str) -> None:
         try:
             result = await _swarm_execute_worker_task(worker, task_entry)
             await _swarm_store_result(result)
+            await _swarm_intelligence_record(result)
             await _swarm_emit_event(
                 "swarm.task.completed",
                 workflow_id=workflow_id,
@@ -2001,6 +2474,20 @@ async def _swarm_worker_loop(worker_id: str) -> None:
                 },
             )
         except Exception as ex:
+            _fail_result = {
+                "worker_id": worker_id,
+                "worker_type": worker.get("worker_type", "worker"),
+                "runtime": worker.get("runtime", "shared"),
+                "task_id": task_id,
+                "workflow_id": workflow_id,
+                "priority": str(task_entry.get("priority") or "normal"),
+                "status": "failed",
+                "task_preview": str(task_entry.get("task") or "")[:120],
+                "result_preview": f"error: {_redact_secrets(str(ex))[:200]}",
+                "duration_ms": 0,
+                "completed_at": datetime.utcnow().isoformat(),
+            }
+            await _swarm_intelligence_record(_fail_result)
             await _swarm_emit_event(
                 "swarm.task.failed",
                 workflow_id=workflow_id,
@@ -2025,8 +2512,8 @@ async def _swarm_calculate_desired_workers() -> Dict[str, Any]:
 
     frozen = False
     reason = None
-    cpu_percent = 0.0
-    tokens_per_min = 0
+    cpu_percent = _swarm_cpu_percent_estimate()
+    tokens_per_min = await _swarm_tokens_last_minute()
 
     if cpu_percent > config["max_cpu_percent"]:
         frozen = True
@@ -2116,6 +2603,7 @@ async def run_agent(request: AgentRunRequest):
 
     tokens_used = sum(s.get("tokens", 0) for s in steps)
     cost = tokens_used * _OPENAI_COST_PER_TOKEN
+    await _swarm_record_token_usage(tokens_used)
     await _token_incr(session_id, cost)
 
     await _timeline_append({

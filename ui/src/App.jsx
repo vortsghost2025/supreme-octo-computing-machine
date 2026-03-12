@@ -227,6 +227,114 @@ function SwarmMonitor({ status, onScalerTick, isTicking }) {
   );
 }
 
+function SwarmGraphPanel({ snapshot }) {
+  if (!snapshot) {
+    return (
+      <div className="panel">
+        <div className="panel-header">
+          <h2>🕸️ Swarm Topology</h2>
+          <span className="badge">Loading...</span>
+        </div>
+        <div className="panel-content"><div className="empty">Waiting for graph snapshot...</div></div>
+      </div>
+    );
+  }
+
+  const { nodes = [], edges = [], active_workers, tasks_running, queue_depth, recent_event_types = [], snapshot_at } = snapshot;
+  const workers = nodes.filter((n) => n.type === "worker");
+  const queueNode = nodes.find((n) => n.type === "queue");
+
+  return (
+    <div className="panel">
+      <div className="panel-header">
+        <h2>🕸️ Swarm Topology</h2>
+        <span className="badge success">{active_workers} workers</span>
+      </div>
+      <div className="panel-content">
+        <div className="swarm-grid">
+          <div className="swarm-metric"><span className="swarm-label">Workers</span><strong>{active_workers}</strong></div>
+          <div className="swarm-metric"><span className="swarm-label">Running</span><strong>{tasks_running}</strong></div>
+          <div className="swarm-metric"><span className="swarm-label">Queued</span><strong>{queue_depth}</strong></div>
+        </div>
+        {workers.length > 0 && (
+          <div className="graph-worker-list">
+            {workers.map((w) => (
+              <div key={w.id} className={`graph-worker-node status-${w.status}`}>
+                <span className="graph-worker-type">{w.worker_type || "worker"}</span>
+                <span className="graph-worker-id">{w.id.substring(0, 8)}</span>
+                <span className={`graph-worker-status badge ${w.status === "running" ? "success" : ""}`}>{w.status}</span>
+                {w.runtime && <span className="graph-worker-runtime">{w.runtime}</span>}
+              </div>
+            ))}
+          </div>
+        )}
+        {recent_event_types.length > 0 && (
+          <div className="graph-events">
+            <span className="graph-events-label">Recent events:</span>
+            {recent_event_types.slice(0, 5).map((et, i) => (
+              <span key={i} className="graph-event-chip">{et}</span>
+            ))}
+          </div>
+        )}
+        <div className="graph-snap-time">Snapshot: {snapshot_at ? new Date(snapshot_at).toLocaleTimeString() : "—"}</div>
+      </div>
+    </div>
+  );
+}
+
+function SwarmIntelligencePanel({ summary }) {
+  if (!summary || summary.total_tasks === 0) {
+    return (
+      <div className="panel">
+        <div className="panel-header">
+          <h2>🧬 Swarm Intelligence</h2>
+          <span className="badge">No data</span>
+        </div>
+        <div className="panel-content"><div className="empty">No task history yet. Queue some swarm tasks to see intelligence metrics.</div></div>
+      </div>
+    );
+  }
+
+  const successPct = ((summary.task_success_rate || 0) * 100).toFixed(1);
+  const strategyColors = { scale_out: "success", parallelize: "success", maintain: "", reduce_parallelism: "warning", no_data: "" };
+  const strategyColor = strategyColors[summary.recommended_strategy] || "";
+
+  return (
+    <div className="panel">
+      <div className="panel-header">
+        <h2>🧬 Swarm Intelligence</h2>
+        <span className={`badge ${strategyColor}`}>{summary.recommended_strategy}</span>
+      </div>
+      <div className="panel-content">
+        <div className="swarm-grid">
+          <div className="swarm-metric"><span className="swarm-label">Total Tasks</span><strong>{summary.total_tasks}</strong></div>
+          <div className="swarm-metric"><span className="swarm-label">Succeeded</span><strong>{summary.succeeded}</strong></div>
+          <div className="swarm-metric"><span className="swarm-label">Failed</span><strong>{summary.failed}</strong></div>
+          <div className="swarm-metric"><span className="swarm-label">Success Rate</span><strong>{successPct}%</strong></div>
+          <div className="swarm-metric"><span className="swarm-label">Avg Duration</span><strong>{summary.avg_duration_ms}ms</strong></div>
+          <div className="swarm-metric"><span className="swarm-label">Busiest Runtime</span><strong>{summary.busiest_runtime || "—"}</strong></div>
+        </div>
+        {summary.best_worker_id && (
+          <div className="intel-best-worker">
+            <span className="intel-label">Best Worker:</span>
+            <span className="intel-value">{summary.best_worker_type} ({summary.best_worker_id.substring(0, 8)})</span>
+          </div>
+        )}
+        {summary.slowest_task_preview && (
+          <div className="intel-slowest">
+            <span className="intel-label">Slowest task:</span>
+            <span className="intel-value">{summary.slowest_task_preview}</span>
+          </div>
+        )}
+        <div className="intel-strategy">
+          <span className="intel-label">Recommended strategy:</span>
+          <span className={`intel-value ${strategyColor}`}>{summary.recommended_strategy}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SharedKnowledgePanel({ items }) {
   return (
     <div className="panel">
@@ -914,6 +1022,8 @@ function App() {
     desired_workers: 0,
     guardrails: {},
   });
+  const [swarmGraphSnapshot, setSwarmGraphSnapshot] = useState(null);
+  const [swarmIntelligenceSummary, setSwarmIntelligenceSummary] = useState(null);
   const [maximizedInputType, setMaximizedInputType] = useState(null); // "task" | "ingest"
 
   // Check backend status
@@ -998,6 +1108,28 @@ function App() {
     }
   }, []);
 
+  const fetchSwarmGraph = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/swarm/graph/snapshot`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setSwarmGraphSnapshot(data || null);
+    } catch (e) {
+      console.error("Failed to fetch swarm graph:", e);
+    }
+  }, []);
+
+  const fetchSwarmIntelligence = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/swarm/intelligence/summary`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setSwarmIntelligenceSummary(data || null);
+    } catch (e) {
+      console.error("Failed to fetch swarm intelligence:", e);
+    }
+  }, []);
+
   const fetchCapabilities = useCallback(async () => {
     try {
       const res = await fetch(`${API_BASE}/openapi.json`);
@@ -1023,16 +1155,20 @@ function App() {
     fetchSwarmStatus();
     fetchSharedKnowledge();
     fetchCapabilities();
+    fetchSwarmGraph();
+    fetchSwarmIntelligence();
 
     const interval = setInterval(() => {
       fetchTimeline();
       fetchTokenUsage();
       fetchSwarmStatus();
       fetchSharedKnowledge();
+      fetchSwarmGraph();
+      fetchSwarmIntelligence();
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [fetchTimeline, fetchTokenUsage, fetchSwarmStatus, fetchSharedKnowledge, fetchCapabilities]);
+  }, [fetchTimeline, fetchTokenUsage, fetchSwarmStatus, fetchSharedKnowledge, fetchCapabilities, fetchSwarmGraph, fetchSwarmIntelligence]);
 
   const runAgentTask = useCallback(async (task, sessionId = "") => {
     const payload = { task };
@@ -1409,6 +1545,8 @@ function App() {
             <NodeVisualizer currentTask={currentTask} steps={currentSteps} />
             <TokenMonitor usage={tokenUsage} currentCost={currentCost} />
             <SwarmMonitor status={swarmStatus} onScalerTick={handleSwarmTick} isTicking={isTickingSwarm} />
+            <SwarmGraphPanel snapshot={swarmGraphSnapshot} />
+            <SwarmIntelligencePanel summary={swarmIntelligenceSummary} />
           </div>
         </main>
       </div>

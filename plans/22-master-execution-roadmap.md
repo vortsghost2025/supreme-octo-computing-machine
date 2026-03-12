@@ -478,3 +478,56 @@ Core edges:
 
 Execution outcome: thoughts become executable project/task queues instead of unstructured backlog.
 
+---
+
+## 14) Crash-Proofing Intake (2026-03-12)
+
+### Problem Statement (Captured)
+- IDE/editor process resets must not cause task, worker, or context loss.
+- Agent progress must be recoverable from durable state, not in-memory runtime state.
+
+### Architecture Rule Added
+- Runtime truth for task execution is now: `agent -> event bus -> persistent state`.
+- VS Code is treated as an operator surface only, not a state store.
+
+### Event Backbone Expansion (Required)
+- Core streams:
+	1. `swarm.tasks`
+	2. `swarm.events`
+	3. `swarm.results`
+	4. `swarm.memory`
+- Add `swarm.checkpoints` for long-running task resume metadata.
+
+### Recovery Protocol (Required)
+1. Worker boot sequence:
+	- join consumer group
+	- claim pending tasks
+	- resume any task not marked completed
+2. Task-level checkpoints:
+	- periodic progress writes for long jobs
+	- resume from last checkpoint index after restart
+3. Backend restart flow:
+	- replay recent streams
+	- rebuild active queue + worker state
+	- restart worker loops with pending claim/retry policy
+
+### Cockpit Telemetry Endpoints (Required)
+- `/swarm/graph/snapshot`
+	- returns workers, running tasks, queue depth, active models, and graph edges for topology rendering
+- `/swarm/intelligence/summary`
+	- returns success rate, best worker, slowest task, and strategy recommendation
+
+### Infrastructure Rule Added
+- Core runtime components (backend, worker pool, Redis, vector db) must run outside the IDE process.
+- Docker Compose is the default dev/prod orchestration boundary to survive editor restarts.
+
+### Accessibility and Control Direction
+- Favor low-navigation cockpit automation: voice command hooks, task templates, script shortcuts, high-signal telemetry rails.
+- Automation must remain human-controllable through explicit policy/approval gates.
+
+### Scale Pattern Captured
+- Adopt recursive task decomposition for exponential swarm growth:
+	- planner splits parent goal into task DAG
+	- workers execute subtasks in parallel
+	- merge and reviewer validation close the loop
+

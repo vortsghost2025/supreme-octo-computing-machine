@@ -1323,6 +1323,120 @@ body {
   cursor: not-allowed;
 }
 
+/* Swarm Graph Panel */
+.graph-worker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.graph-worker-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.graph-worker-node.status-running {
+  border-left-color: var(--accent-green);
+}
+
+.graph-worker-node.status-idle {
+  border-left-color: var(--text-secondary);
+}
+
+.graph-worker-type {
+  font-weight: 600;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.graph-worker-id {
+  font-family: monospace;
+  color: var(--text-secondary);
+  font-size: 12px;
+  flex: 1;
+}
+
+.graph-worker-runtime {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-left: auto;
+}
+
+.graph-events {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.graph-event-chip {
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.graph-snap-time {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  text-align: right;
+}
+
+/* Swarm Intelligence Panel */
+.intel-best-worker,
+.intel-slowest,
+.intel-strategy {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  gap: 8px;
+}
+
+.intel-best-worker:last-child,
+.intel-slowest:last-child,
+.intel-strategy:last-child {
+  border-bottom: none;
+}
+
+.intel-label {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.intel-value {
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: right;
+  word-break: break-all;
+}
+
+.intel-strategy .intel-value.strategy-scale_up {
+  color: var(--accent-green);
+}
+
+.intel-strategy .intel-value.strategy-scale_down {
+  color: var(--accent-yellow);
+}
+
+.intel-strategy .intel-value.strategy-maintain {
+  color: var(--text-secondary);
+}
+
 /* Shared knowledge feed panel */
 .knowledge-feed {
   display: flex;

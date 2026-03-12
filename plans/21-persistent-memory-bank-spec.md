@@ -15,6 +15,19 @@ A Persistent AI Environment Dashboard where multiple agents/models can:
 - tag impact and confidence
 - route specific memory layers into specific agent runs
 
+## Memory Taxonomy (Stabilization Addendum)
+
+Primary memory classes to preserve across crashes and resets:
+- event_memory: swarm lifecycle events and control-plane decisions
+- execution_memory: task outputs, durations, and status history
+- thought_memory: idea ingestion, clustering metadata, and project mapping
+- strategy_memory: optimization decisions, guardrail outcomes, and policy evolution
+
+Storage tiers:
+- Redis Streams for hot event and execution continuity
+- Qdrant for semantic retrieval and clustering
+- Postgres for durable canonical records and audit history
+
 ## Core Feature Set
 
 1. Shared Knowledge Feed
@@ -109,6 +122,15 @@ Table: memory_injection_policies
 5. POST /memory/inject/apply
 - Apply memory set to current workflow context.
 
+6. GET /swarm/graph/snapshot
+- Return live topology payload for cockpit graph view.
+
+7. GET /swarm/intelligence/summary
+- Return aggregate swarm learning metrics and recommended strategy.
+
+8. Stream-backed checkpoint channel (`swarm.checkpoints`)
+- Store resumable progress for long-running tasks.
+
 ## Cockpit UI Modules
 
 1. Shared Knowledge Panel
@@ -128,6 +150,8 @@ Table: memory_injection_policies
 - Enforce confidence threshold for automatic injection.
 - Keep policy_constraints layer immutable except admin actions.
 - Write full audit entries when memory is shared or injected.
+- Ensure each long-running task emits checkpoints so restarts resume instead of restarting from zero.
+- Treat IDE/editor state as non-durable; persistence must live in runtime services.
 
 ## Build Sequence
 
@@ -167,3 +191,12 @@ Still to implement for this spec:
 - durable Postgres-backed memory entries and links
 - explicit 6x8 memory layer matrix policy controls in cockpit
 - full audit entries for memory share/injection operations
+
+## Stabilization Priority Updates (2026-03-12)
+
+Next highest-priority implementation tasks:
+1. Upgrade swarm events/results/memory traffic to Redis Streams as source of truth.
+2. Add checkpoint persistence for resumable long tasks (`swarm.checkpoints`).
+3. Implement `/swarm/graph/snapshot` for live cockpit topology.
+4. Implement `/swarm/intelligence/summary` for adaptive strategy feedback.
+5. Add idea clustering + project assignment pipeline after `/thoughts/ingest`.
