@@ -44,6 +44,8 @@ swarm_state: Dict[str, Any] = {
     "active_workers": {},
     "last_scale_down_at": 0.0,
 }
+worker_runtime_tasks: Dict[str, asyncio.Task] = {}
+swarm_task_results: List[Dict[str, Any]] = []
 
 # Configuration
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -73,12 +75,15 @@ _RUNTIME_POLICY_SANDBOX_ALLOW_EXTERNAL_HTTP = os.getenv("RUNTIME_POLICY_SANDBOX_
 _RUNTIME_POLICY_SANDBOX_ALLOW_CLOUD_ROUTING = os.getenv("RUNTIME_POLICY_SANDBOX_ALLOW_CLOUD_ROUTING", "false").lower() in {"1", "true", "yes"}
 _RUNTIME_POLICY_PARALLEL_TEST_MIN_REPLICAS = int(os.getenv("RUNTIME_POLICY_PARALLEL_TEST_MIN_REPLICAS", "2"))
 _RUNTIME_POLICY_PARALLEL_TEST_MAX_REPLICAS = int(os.getenv("RUNTIME_POLICY_PARALLEL_TEST_MAX_REPLICAS", "5"))
+_SWARM_RESULT_MAX_ITEMS = int(os.getenv("SWARM_RESULT_MAX_ITEMS", "2000"))
+_SWARM_WORKER_IDLE_SLEEP_SECONDS = float(os.getenv("SWARM_WORKER_IDLE_SLEEP_SECONDS", "1.0"))
 
 _SWARM_QUEUE_KEY_PREFIX = "swarm:queue"
 _SWARM_EVENTS_KEY = "swarm:events"
 _SWARM_CONFIG_KEY = "swarm:config"
 _SWARM_WORKERS_ACTIVE_KEY = "swarm:workers:active"
 _MEMORY_SHARED_KNOWLEDGE_KEY = "memory:shared_knowledge"
+_SWARM_RESULTS_KEY = "swarm:results"
 
 _RUNTIME_MODES = {"shared", "sandbox", "parallel_test"}
 _ROUTING_PREFERENCES = {"auto", "local_preferred", "cloud_preferred"}
@@ -326,6 +331,12 @@ async def lifespan(app: FastAPI):
         _qdrant = None
 
     yield
+
+    for worker_id, task in list(worker_runtime_tasks.items()):
+        task.cancel()
+    if worker_runtime_tasks:
+        await asyncio.gather(*worker_runtime_tasks.values(), return_exceptions=True)
+        worker_runtime_tasks.clear()
 
     if _redis:
         await _redis.aclose()
@@ -577,6 +588,24 @@ class SwarmWorkerInfo(BaseModel):
 
 class SwarmWorkersResponse(BaseModel):
     workers: List[SwarmWorkerInfo]
+
+
+class SwarmTaskResultItem(BaseModel):
+    worker_id: str
+    worker_type: str
+    runtime: str
+    task_id: str
+    workflow_id: str
+    priority: str
+    status: str
+    task_preview: str
+    result_preview: str
+    duration_ms: int
+    completed_at: str
+
+
+class SwarmTaskResultsResponse(BaseModel):
+    results: List[SwarmTaskResultItem]
 
 
 class MemoryLearnRequest(BaseModel):
@@ -1110,11 +1139,12 @@ async def swarm_spawn_workers(request: SwarmWorkerSpawnRequest, _: None = Depend
             "worker_id": str(uuid.uuid4()),
             "worker_type": request.worker_type,
             "runtime": request.runtime,
-            "status": "lease_registered",
+            "status": "running",
             "started_at": datetime.utcnow().isoformat(),
-            "lease_only": True,
+            "lease_only": False,
         }
         await _swarm_worker_register(worker)
+        await _swarm_start_worker_runtime(worker)
         workers.append(worker)
         await _swarm_emit_event(
             "swarm.worker.spawned",
@@ -1128,10 +1158,20 @@ async def swarm_spawn_workers(request: SwarmWorkerSpawnRequest, _: None = Depend
 
 @app.post("/swarm/workers/retire", response_model=SwarmWorkersResponse)
 async def swarm_retire_worker(request: SwarmWorkerRetireRequest, _: None = Depends(_require_control_plane_token)):
+    runtime_task = worker_runtime_tasks.pop(request.worker_id, None)
+    if runtime_task:
+        runtime_task.cancel()
     retired = await _swarm_worker_retire(request.worker_id)
     if not retired:
         raise HTTPException(status_code=404, detail="worker not found")
     retired["status"] = "retired"
+
+    await _swarm_emit_event(
+        "swarm.worker.stopped",
+        payload={"worker_id": retired["worker_id"], "worker_type": retired["worker_type"]},
+        runtime=retired.get("runtime"),
+        source="operator",
+    )
 
     await _swarm_emit_event(
         "swarm.worker.retired",
@@ -1146,6 +1186,13 @@ async def swarm_retire_worker(request: SwarmWorkerRetireRequest, _: None = Depen
 async def swarm_workers_list(_: None = Depends(_require_control_plane_token)):
     workers = await _swarm_workers_list()
     return SwarmWorkersResponse(workers=[SwarmWorkerInfo(**w) for w in workers])
+
+
+@app.get("/swarm/results/recent", response_model=SwarmTaskResultsResponse)
+async def swarm_results_recent(limit: int = 50, _: None = Depends(_require_control_plane_token)):
+    limit = max(1, min(limit, 500))
+    results = await _swarm_recent_results(limit=limit)
+    return SwarmTaskResultsResponse(results=[SwarmTaskResultItem(**r) for r in results])
 
 
 @app.post("/memory/learn", response_model=MemoryLearnResponse)
@@ -1781,6 +1828,46 @@ async def _swarm_worker_register(worker: Dict[str, Any]) -> None:
         swarm_state.setdefault("active_workers", {})[worker["worker_id"]] = worker
 
 
+async def _swarm_worker_get(worker_id: str) -> Optional[Dict[str, Any]]:
+    if _redis:
+        raw = await _redis.hget(_SWARM_WORKERS_ACTIVE_KEY, worker_id)
+        return json.loads(raw) if raw else None
+    return swarm_state.setdefault("active_workers", {}).get(worker_id)
+
+
+async def _swarm_worker_update(worker_id: str, updates: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    worker = await _swarm_worker_get(worker_id)
+    if not worker:
+        return None
+    worker.update(updates)
+    await _swarm_worker_register(worker)
+    return worker
+
+
+async def _swarm_start_worker_runtime(worker: Dict[str, Any]) -> None:
+    worker_id = worker["worker_id"]
+    existing = worker_runtime_tasks.get(worker_id)
+    if existing and not existing.done():
+        return
+
+    await _swarm_worker_update(
+        worker_id,
+        {
+            "status": "running",
+            "lease_only": False,
+            "started_at": datetime.utcnow().isoformat(),
+        },
+    )
+
+    await _swarm_emit_event(
+        "swarm.worker.started",
+        runtime=worker.get("runtime"),
+        source="operator",
+        payload={"worker_id": worker_id, "worker_type": worker.get("worker_type")},
+    )
+    worker_runtime_tasks[worker_id] = asyncio.create_task(_swarm_worker_loop(worker_id))
+
+
 async def _swarm_worker_retire(worker_id: str) -> Optional[Dict[str, Any]]:
     if _redis:
         raw = await _redis.hget(_SWARM_WORKERS_ACTIVE_KEY, worker_id)
@@ -1799,6 +1886,23 @@ async def _swarm_workers_list() -> List[Dict[str, Any]]:
     return list(swarm_state.setdefault("active_workers", {}).values())
 
 
+async def _swarm_claim_next_task() -> Optional[Dict[str, Any]]:
+    priorities = ["high", "normal", "low"]
+    if _redis:
+        for priority in priorities:
+            item = await _redis.lpop(_swarm_queue_key(priority))
+            if item:
+                return json.loads(item)
+        return None
+
+    for priority in priorities:
+        key = f"queue_{priority}"
+        queue = swarm_state.get(key, [])
+        if queue:
+            return queue.pop(0)
+    return None
+
+
 async def _swarm_enqueue_task(task_entry: Dict[str, Any], priority: str) -> None:
     if _redis:
         await _redis.rpush(_swarm_queue_key(priority), json.dumps(task_entry))
@@ -1807,6 +1911,107 @@ async def _swarm_enqueue_task(task_entry: Dict[str, Any], priority: str) -> None
         if key not in swarm_state:
             swarm_state[key] = []
         swarm_state[key].append(task_entry)
+
+
+async def _swarm_store_result(result: Dict[str, Any]) -> None:
+    if _redis:
+        await _redis.rpush(_SWARM_RESULTS_KEY, json.dumps(result))
+        await _redis.ltrim(_SWARM_RESULTS_KEY, -_SWARM_RESULT_MAX_ITEMS, -1)
+    else:
+        swarm_task_results.append(result)
+        if len(swarm_task_results) > _SWARM_RESULT_MAX_ITEMS:
+            del swarm_task_results[: len(swarm_task_results) - _SWARM_RESULT_MAX_ITEMS]
+
+
+async def _swarm_recent_results(limit: int = 50) -> List[Dict[str, Any]]:
+    if _redis:
+        items = await _redis.lrange(_SWARM_RESULTS_KEY, -limit, -1)
+        return [json.loads(i) for i in items]
+    return swarm_task_results[-limit:]
+
+
+async def _swarm_execute_worker_task(worker: Dict[str, Any], task_entry: Dict[str, Any]) -> Dict[str, Any]:
+    started = time.time()
+    complexity = str(task_entry.get("complexity") or "medium").lower()
+    delay = {"low": 0.1, "medium": 0.25, "high": 0.4}.get(complexity, 0.2)
+    await asyncio.sleep(delay)
+
+    task_preview = str(task_entry.get("task") or "")[:120]
+    worker_type = worker.get("worker_type", "worker")
+    result_preview = f"[{worker_type}] processed: {task_preview}"
+    duration_ms = int((time.time() - started) * 1000)
+
+    return {
+        "worker_id": worker["worker_id"],
+        "worker_type": worker_type,
+        "runtime": worker.get("runtime", "shared"),
+        "task_id": str(task_entry.get("task_id") or ""),
+        "workflow_id": str(task_entry.get("workflow_id") or ""),
+        "priority": str(task_entry.get("priority") or "normal"),
+        "status": "success",
+        "task_preview": task_preview,
+        "result_preview": result_preview,
+        "duration_ms": duration_ms,
+        "completed_at": datetime.utcnow().isoformat(),
+    }
+
+
+async def _swarm_worker_loop(worker_id: str) -> None:
+    while True:
+        worker = await _swarm_worker_get(worker_id)
+        if not worker:
+            return
+
+        task_entry = await _swarm_claim_next_task()
+        if not task_entry:
+            await asyncio.sleep(_SWARM_WORKER_IDLE_SLEEP_SECONDS)
+            continue
+
+        task_id = str(task_entry.get("task_id") or "")
+        workflow_id = str(task_entry.get("workflow_id") or "")
+        trace_id = str(task_entry.get("trace_id") or "") or None
+        await _swarm_emit_event(
+            "swarm.task.started",
+            workflow_id=workflow_id,
+            task_id=task_id,
+            agent_type=worker.get("worker_type"),
+            priority=task_entry.get("priority"),
+            runtime=worker.get("runtime"),
+            trace_id=trace_id,
+            source=worker.get("worker_type", "worker"),
+            payload={"worker_id": worker_id},
+        )
+
+        try:
+            result = await _swarm_execute_worker_task(worker, task_entry)
+            await _swarm_store_result(result)
+            await _swarm_emit_event(
+                "swarm.task.completed",
+                workflow_id=workflow_id,
+                task_id=task_id,
+                agent_type=worker.get("worker_type"),
+                priority=task_entry.get("priority"),
+                runtime=worker.get("runtime"),
+                trace_id=trace_id,
+                source=worker.get("worker_type", "worker"),
+                payload={
+                    "worker_id": worker_id,
+                    "status": result["status"],
+                    "duration_ms": result["duration_ms"],
+                },
+            )
+        except Exception as ex:
+            await _swarm_emit_event(
+                "swarm.task.failed",
+                workflow_id=workflow_id,
+                task_id=task_id,
+                agent_type=worker.get("worker_type"),
+                priority=task_entry.get("priority"),
+                runtime=worker.get("runtime"),
+                trace_id=trace_id,
+                source=worker.get("worker_type", "worker"),
+                payload={"worker_id": worker_id, "error": _redact_secrets(str(ex))},
+            )
 
 
 async def _swarm_calculate_desired_workers() -> Dict[str, Any]:
