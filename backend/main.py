@@ -68,6 +68,11 @@ _MAX_TASK_STEPS = int(os.getenv("MAX_TASK_STEPS", "20"))
 _MEMORY_SHARE_MAX_TARGET_MODELS = int(os.getenv("MEMORY_SHARE_MAX_TARGET_MODELS", "5"))
 _CONTROL_PLANE_TOKEN = os.getenv("SNAC_OPERATOR_TOKEN", "")
 _ENFORCE_CONTROL_PLANE_TOKEN = os.getenv("ENFORCE_OPERATOR_TOKEN", "false").lower() in {"1", "true", "yes"}
+_RUNTIME_POLICY_SANDBOX_ALLOW_COMMAND_TASKS = os.getenv("RUNTIME_POLICY_SANDBOX_ALLOW_COMMAND_TASKS", "false").lower() in {"1", "true", "yes"}
+_RUNTIME_POLICY_SANDBOX_ALLOW_EXTERNAL_HTTP = os.getenv("RUNTIME_POLICY_SANDBOX_ALLOW_EXTERNAL_HTTP", "false").lower() in {"1", "true", "yes"}
+_RUNTIME_POLICY_SANDBOX_ALLOW_CLOUD_ROUTING = os.getenv("RUNTIME_POLICY_SANDBOX_ALLOW_CLOUD_ROUTING", "false").lower() in {"1", "true", "yes"}
+_RUNTIME_POLICY_PARALLEL_TEST_MIN_REPLICAS = int(os.getenv("RUNTIME_POLICY_PARALLEL_TEST_MIN_REPLICAS", "2"))
+_RUNTIME_POLICY_PARALLEL_TEST_MAX_REPLICAS = int(os.getenv("RUNTIME_POLICY_PARALLEL_TEST_MAX_REPLICAS", "5"))
 
 _SWARM_QUEUE_KEY_PREFIX = "swarm:queue"
 _SWARM_EVENTS_KEY = "swarm:events"
@@ -97,6 +102,11 @@ _SECRET_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
+_RUNTIME_RISKY_TASK_PATTERN = re.compile(
+    r'(?:\brm\s+-rf\b|\bdel\s+/f\b|\bpowershell\b|\bbash\b|\bcmd\.exe\b|\bssh\b|\bdocker\s+exec\b)',
+    re.IGNORECASE,
+)
+
 
 def _redact_secrets(value: str) -> str:
     """Replace apparent secrets/keys before writing to logs."""
@@ -122,6 +132,122 @@ async def _require_control_plane_token(
 
     if token != _CONTROL_PLANE_TOKEN:
         raise HTTPException(status_code=401, detail="invalid operator token")
+
+
+async def _runtime_policy_guardrail(
+    *,
+    workflow_id: str,
+    task_id: str,
+    trace_id: str,
+    runtime: str,
+    reason: str,
+    details: Dict[str, Any],
+) -> None:
+    await _swarm_emit_event(
+        "swarm.guardrail.triggered",
+        workflow_id=workflow_id,
+        task_id=task_id,
+        trace_id=trace_id,
+        runtime=runtime,
+        source="policy",
+        payload={
+            "reason": reason,
+            **details,
+        },
+    )
+
+
+async def _enforce_runtime_policy(
+    *,
+    request: "SwarmTaskRequest",
+    workflow_id: str,
+    task_id: str,
+    trace_id: str,
+) -> Dict[str, Any]:
+    payload = dict(request.payload or {})
+    task_text = request.task
+
+    if request.runtime == "sandbox":
+        if request.routing == "cloud_preferred" and not _RUNTIME_POLICY_SANDBOX_ALLOW_CLOUD_ROUTING:
+            await _runtime_policy_guardrail(
+                workflow_id=workflow_id,
+                task_id=task_id,
+                trace_id=trace_id,
+                runtime=request.runtime,
+                reason="sandbox_cloud_routing_blocked",
+                details={"routing": request.routing},
+            )
+            raise HTTPException(status_code=403, detail="sandbox runtime blocks cloud_preferred routing by policy")
+
+        command_like = bool(_RUNTIME_RISKY_TASK_PATTERN.search(task_text)) or any(
+            key in payload for key in ["command", "shell", "powershell", "bash", "ssh", "docker"]
+        )
+        if command_like and not _RUNTIME_POLICY_SANDBOX_ALLOW_COMMAND_TASKS:
+            await _runtime_policy_guardrail(
+                workflow_id=workflow_id,
+                task_id=task_id,
+                trace_id=trace_id,
+                runtime=request.runtime,
+                reason="sandbox_command_blocked",
+                details={"task_preview": task_text[:120]},
+            )
+            raise HTTPException(status_code=403, detail="sandbox runtime blocks command-like tasks by policy")
+
+        has_external_http = (
+            "http://" in task_text.lower()
+            or "https://" in task_text.lower()
+            or any(key in payload for key in ["url", "endpoint", "webhook"])
+        )
+        if has_external_http and not _RUNTIME_POLICY_SANDBOX_ALLOW_EXTERNAL_HTTP:
+            await _runtime_policy_guardrail(
+                workflow_id=workflow_id,
+                task_id=task_id,
+                trace_id=trace_id,
+                runtime=request.runtime,
+                reason="sandbox_external_http_blocked",
+                details={"task_preview": task_text[:120]},
+            )
+            raise HTTPException(status_code=403, detail="sandbox runtime blocks external HTTP by policy")
+
+    if request.runtime == "parallel_test":
+        replicas = payload.get("replicas", 3)
+        try:
+            replicas = int(replicas)
+        except (TypeError, ValueError):
+            await _runtime_policy_guardrail(
+                workflow_id=workflow_id,
+                task_id=task_id,
+                trace_id=trace_id,
+                runtime=request.runtime,
+                reason="parallel_test_invalid_replicas",
+                details={"replicas": str(payload.get("replicas"))},
+            )
+            raise HTTPException(status_code=400, detail="parallel_test replicas must be an integer")
+
+        if replicas < _RUNTIME_POLICY_PARALLEL_TEST_MIN_REPLICAS or replicas > _RUNTIME_POLICY_PARALLEL_TEST_MAX_REPLICAS:
+            await _runtime_policy_guardrail(
+                workflow_id=workflow_id,
+                task_id=task_id,
+                trace_id=trace_id,
+                runtime=request.runtime,
+                reason="parallel_test_replicas_out_of_range",
+                details={
+                    "replicas": replicas,
+                    "min": _RUNTIME_POLICY_PARALLEL_TEST_MIN_REPLICAS,
+                    "max": _RUNTIME_POLICY_PARALLEL_TEST_MAX_REPLICAS,
+                },
+            )
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    "parallel_test replicas must be between "
+                    f"{_RUNTIME_POLICY_PARALLEL_TEST_MIN_REPLICAS} and {_RUNTIME_POLICY_PARALLEL_TEST_MAX_REPLICAS}"
+                ),
+            )
+
+        payload["replicas"] = replicas
+
+    return payload
 
 
 def _prune_memory_fallback_state() -> None:
@@ -832,6 +958,12 @@ async def swarm_enqueue_task(request: SwarmTaskRequest):
     task_id = str(uuid.uuid4())
     workflow_id = request.workflow_id or str(uuid.uuid4())
     trace_id = str(uuid.uuid4())
+    payload = await _enforce_runtime_policy(
+        request=request,
+        workflow_id=workflow_id,
+        task_id=task_id,
+        trace_id=trace_id,
+    )
 
     task_entry = {
         "task_id": task_id,
@@ -839,7 +971,7 @@ async def swarm_enqueue_task(request: SwarmTaskRequest):
         "task": request.task,
         "agent_type": request.agent_type,
         "priority": request.priority,
-        "payload": request.payload or {},
+        "payload": payload,
         "complexity": request.complexity,
         "runtime": request.runtime,
         "routing": request.routing,
@@ -857,6 +989,7 @@ async def swarm_enqueue_task(request: SwarmTaskRequest):
         payload={
             "complexity": request.complexity,
             "routing": request.routing,
+            "replicas": payload.get("replicas"),
             "task_preview": request.task[:120],
         },
         runtime=request.runtime,
