@@ -19,3 +19,11 @@ chrome-win/
 # Node deps
 node_modules/
 ui/node_modules/
+
+# Python cache/artifacts
+__pycache__/
+*.pyc
+
+# Local preflight/temp artifacts
+.preflight.json
+.snac_*.txt
