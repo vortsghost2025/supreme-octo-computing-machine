@@ -1,0 +1,15 @@
+# Local secrets and runtime configs
+.env
+.env.rotation
+
+# Local env overrides
+ui/.env.local
+ui/.env.production
+
+# Logs and build outputs
+logs/
+ui/dist/
+
+# Node deps
+node_modules/
+ui/node_modules/
