@@ -10,6 +10,9 @@
 - This is NOT a greenfield scaffold.
 - Do NOT suggest "let's start by building the backend."
 - The services are live on a Hostinger VPS.
+- Production runtime truth is the Docker stack on the Hostinger VPS, not this Windows machine.
+- Local Docker is only for development, reproducing issues, or preparing changes that will be redeployed to the VPS.
+- Do NOT treat local rebuilds as the default recovery path when SSH or VPS edits fail.
 
 ### 2. VPS DEPLOYMENT STATE (LIVE AS OF 2026-03-11)
 | Service        | Container         | Port  | Status   |
@@ -33,8 +36,9 @@
 
 ### 4. LOCAL REPO PATH (THIS MACHINE)
 - Working code: S:\snac-v2\snac-v2
-- Git boundary problem: git root is currently S:\ (too broad)
-- Do NOT treat S:\ as project root — only work inside S:\snac-v2\snac-v2
+- Git root: S:\snac-v2\snac-v2
+- Do NOT treat S:\ as project root.
+- Make code changes locally, commit locally, and redeploy to the VPS when runtime changes are needed.
 
 ---
 
@@ -99,6 +103,9 @@ All architecture decisions are documented in `plans/`:
 5. The frontend folder in this repo is `ui/`, not `frontend/`.
 6. The backend folder is `backend/`.
 7. Check plans/ARCHITECTURE-EVALUATION.md before proposing new architecture.
+8. Treat the Hostinger VPS Docker deployment as the source of runtime truth.
+9. Only use local Docker to test or package changes before pushing and redeploying to the VPS.
+10. If SSH-based edits fail, troubleshoot the VPS containers and redeploy from this repo instead of rebuilding the system from scratch locally.
 
 ---
 
@@ -120,6 +127,15 @@ Before proposing any rebuild, every agent MUST run this sequence:
    - `ssh root@187.77.3.56 "docker ps -a --format '{{.Names}}|{{.Status}}'"`
 
 If these checks are not run, do NOT suggest rebuilding stack components.
+
+If SSH changes are failing, the fallback is:
+
+1. Diagnose the live VPS containers first.
+2. Make required code or config changes in S:\snac-v2\snac-v2.
+3. Commit and push from this standalone repo.
+4. Redeploy the Docker stack on the VPS from the updated repo.
+
+It is not acceptable to treat local-only rebuilds as production recovery.
 
 ---
 
