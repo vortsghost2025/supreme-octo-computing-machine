@@ -151,3 +151,19 @@ Phase D
 - Feed shows recent learnings with source attribution.
 - Injection preview works per agent type.
 - At least one live workflow can run with selected memory layers.
+
+## Current Implementation Alignment (2026-03-12)
+
+Implemented now:
+- `POST /memory/learn`
+- `GET /memory/feed`
+- `POST /memory/share`
+- `POST /memory/inject/preview`
+- `POST /memory/inject/apply`
+- `POST /ingest-thought` (thought ingestion entrypoint that should feed this memory system)
+
+Still to implement for this spec:
+- cockpit UI flow for cross-model share actions
+- durable Postgres-backed memory entries and links
+- explicit 6x8 memory layer matrix policy controls in cockpit
+- full audit entries for memory share/injection operations

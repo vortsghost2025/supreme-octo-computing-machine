@@ -72,6 +72,17 @@ _SWARM_CONFIG_KEY = "swarm:config"
 _SWARM_WORKERS_ACTIVE_KEY = "swarm:workers:active"
 _MEMORY_SHARED_KNOWLEDGE_KEY = "memory:shared_knowledge"
 
+_RUNTIME_MODES = {"shared", "sandbox", "parallel_test"}
+_ROUTING_PREFERENCES = {"auto", "local_preferred", "cloud_preferred"}
+_SWARM_WORKER_TYPES = {
+    "research_worker",
+    "analysis_worker",
+    "builder_worker",
+    "review_worker",
+    "idea_worker",
+    "automation_worker",
+}
+
 # OpenAI async client (None when key is absent)
 _openai_client: Optional[AsyncOpenAI] = AsyncOpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
 # Redis and Qdrant clients are initialized in lifespan
@@ -275,6 +286,8 @@ class SwarmTaskRequest(BaseModel):
     payload: Optional[Dict[str, Any]] = None
     workflow_id: Optional[str] = None
     complexity: str = "medium"
+    runtime: str = "shared"
+    routing: str = "auto"
 
     @field_validator("priority")
     @classmethod
@@ -292,12 +305,29 @@ class SwarmTaskRequest(BaseModel):
             raise ValueError("complexity must be one of: low, medium, high")
         return v2
 
+    @field_validator("runtime")
+    @classmethod
+    def validate_runtime(cls, v: str) -> str:
+        v2 = v.lower().strip()
+        if v2 not in _RUNTIME_MODES:
+            raise ValueError("runtime must be one of: shared, sandbox, parallel_test")
+        return v2
+
+    @field_validator("routing")
+    @classmethod
+    def validate_routing(cls, v: str) -> str:
+        v2 = v.lower().strip()
+        if v2 not in _ROUTING_PREFERENCES:
+            raise ValueError("routing must be one of: auto, local_preferred, cloud_preferred")
+        return v2
+
 
 class SwarmTaskResponse(BaseModel):
     success: bool
     task_id: str
     queue: str
     event_id: str
+    runtime: str
 
 
 class SwarmConfigResponse(BaseModel):
@@ -327,12 +357,16 @@ class SwarmStatusResponse(BaseModel):
 
 class SwarmEventItem(BaseModel):
     event_id: str
+    event_type: Optional[str] = None
+    event_version: str = "v1"
     type: str
     timestamp: str
+    source: str = "system"
     workflow_id: Optional[str] = None
     task_id: Optional[str] = None
     agent_type: Optional[str] = None
     priority: Optional[str] = None
+    runtime: Optional[str] = None
     payload: Dict[str, Any]
     trace_id: str
 
@@ -347,6 +381,51 @@ class SwarmScalerTickResponse(BaseModel):
     queue_depth_total: int
     frozen_scale_up: bool
     reason: Optional[str] = None
+
+
+class SwarmWorkerSpawnRequest(BaseModel):
+    worker_type: str
+    runtime: str = "shared"
+    count: int = 1
+
+    @field_validator("worker_type")
+    @classmethod
+    def validate_worker_type(cls, v: str) -> str:
+        v2 = v.lower().strip()
+        if v2 not in _SWARM_WORKER_TYPES:
+            raise ValueError("unsupported worker_type")
+        return v2
+
+    @field_validator("runtime")
+    @classmethod
+    def validate_worker_runtime(cls, v: str) -> str:
+        v2 = v.lower().strip()
+        if v2 not in _RUNTIME_MODES:
+            raise ValueError("runtime must be one of: shared, sandbox, parallel_test")
+        return v2
+
+    @field_validator("count")
+    @classmethod
+    def validate_worker_count(cls, v: int) -> int:
+        if v < 1 or v > 20:
+            raise ValueError("count must be between 1 and 20")
+        return v
+
+
+class SwarmWorkerRetireRequest(BaseModel):
+    worker_id: str
+
+
+class SwarmWorkerInfo(BaseModel):
+    worker_id: str
+    worker_type: str
+    runtime: str
+    status: str
+    started_at: str
+
+
+class SwarmWorkersResponse(BaseModel):
+    workers: List[SwarmWorkerInfo]
 
 
 class MemoryLearnRequest(BaseModel):
@@ -391,6 +470,19 @@ class MemoryLearnResponse(BaseModel):
 
 class MemoryFeedResponse(BaseModel):
     items: List[MemoryFeedItem]
+
+
+class MemoryShareRequest(BaseModel):
+    entry_id: Annotated[str, Field(min_length=1, max_length=128)]
+    source_model: Annotated[str, Field(min_length=1, max_length=80)]
+    target_models: List[Annotated[str, Field(min_length=1, max_length=80)]]
+    note: Optional[Annotated[str, Field(min_length=1, max_length=500)]] = None
+
+
+class MemoryShareResponse(BaseModel):
+    success: bool
+    shared_from_id: str
+    created_item_ids: List[str]
 
 
 class WorkflowHpoTerm(BaseModel):
@@ -679,6 +771,12 @@ async def ingest_thought(request: ThoughtIngestRequest):
     )
 
 
+@app.post("/thoughts/ingest", response_model=ThoughtIngestResponse)
+async def ingest_thought_alias(request: ThoughtIngestRequest):
+    """Alias endpoint for thought ingestion used by roadmap and cockpit modules."""
+    return await ingest_thought(request)
+
+
 # ============== SWARM ENDPOINTS ==============
 
 @app.post("/swarm/task", response_model=SwarmTaskResponse)
@@ -697,6 +795,8 @@ async def swarm_enqueue_task(request: SwarmTaskRequest):
         "priority": request.priority,
         "payload": request.payload or {},
         "complexity": request.complexity,
+        "runtime": request.runtime,
+        "routing": request.routing,
         "status": "queued",
         "created_at": datetime.utcnow().isoformat(),
     }
@@ -710,9 +810,12 @@ async def swarm_enqueue_task(request: SwarmTaskRequest):
         priority=request.priority,
         payload={
             "complexity": request.complexity,
+            "routing": request.routing,
             "task_preview": request.task[:120],
         },
+        runtime=request.runtime,
         trace_id=trace_id,
+        source="planner",
     )
 
     await _timeline_append({
@@ -723,7 +826,13 @@ async def swarm_enqueue_task(request: SwarmTaskRequest):
         "timestamp": datetime.utcnow().isoformat(),
     })
 
-    return SwarmTaskResponse(success=True, task_id=task_id, queue=request.priority, event_id=event["event_id"])
+    return SwarmTaskResponse(
+        success=True,
+        task_id=task_id,
+        queue=request.priority,
+        event_id=event["event_id"],
+        runtime=request.runtime,
+    )
 
 
 @app.get("/swarm/status", response_model=SwarmStatusResponse)
@@ -752,6 +861,7 @@ async def swarm_scaler_tick():
             "frozen_scale_up": data["frozen_scale_up"],
             "reason": data["reason"],
         },
+        source="operator",
     )
 
     await _timeline_append({
@@ -796,8 +906,54 @@ async def swarm_update_config(request: SwarmConfigUpdateRequest):
         raise HTTPException(status_code=400, detail="idle_timeout_seconds must be >= 1")
 
     await _swarm_set_config(merged)
-    await _swarm_emit_event("swarm.config.updated", payload=merged)
+    await _swarm_emit_event("swarm.config.updated", payload=merged, source="operator")
     return SwarmConfigResponse(**merged)
+
+
+@app.post("/swarm/workers/spawn", response_model=SwarmWorkersResponse)
+async def swarm_spawn_workers(request: SwarmWorkerSpawnRequest):
+    import uuid
+
+    workers: List[Dict[str, Any]] = []
+    for _ in range(request.count):
+        worker = {
+            "worker_id": str(uuid.uuid4()),
+            "worker_type": request.worker_type,
+            "runtime": request.runtime,
+            "status": "active",
+            "started_at": datetime.utcnow().isoformat(),
+        }
+        await _swarm_worker_register(worker)
+        workers.append(worker)
+        await _swarm_emit_event(
+            "swarm.worker.spawned",
+            payload={"worker_id": worker["worker_id"], "worker_type": request.worker_type},
+            runtime=request.runtime,
+            source="operator",
+        )
+
+    return SwarmWorkersResponse(workers=[SwarmWorkerInfo(**w) for w in workers])
+
+
+@app.post("/swarm/workers/retire", response_model=SwarmWorkersResponse)
+async def swarm_retire_worker(request: SwarmWorkerRetireRequest):
+    retired = await _swarm_worker_retire(request.worker_id)
+    if not retired:
+        raise HTTPException(status_code=404, detail="worker not found")
+
+    await _swarm_emit_event(
+        "swarm.worker.retired",
+        payload={"worker_id": retired["worker_id"], "worker_type": retired["worker_type"]},
+        runtime=retired.get("runtime"),
+        source="operator",
+    )
+    return SwarmWorkersResponse(workers=[SwarmWorkerInfo(**retired)])
+
+
+@app.get("/swarm/workers", response_model=SwarmWorkersResponse)
+async def swarm_workers_list():
+    workers = await _swarm_workers_list()
+    return SwarmWorkersResponse(workers=[SwarmWorkerInfo(**w) for w in workers])
 
 
 @app.post("/memory/learn", response_model=MemoryLearnResponse)
@@ -833,6 +989,51 @@ async def memory_feed(limit: int = 50):
     limit = max(1, min(limit, 500))
     items = await _memory_knowledge_recent(limit=limit)
     return MemoryFeedResponse(items=[MemoryFeedItem(**i) for i in items])
+
+
+@app.post("/memory/share", response_model=MemoryShareResponse)
+async def memory_share(request: MemoryShareRequest):
+    import uuid
+
+    if not request.target_models:
+        raise HTTPException(status_code=400, detail="target_models must not be empty")
+
+    source = await _memory_find_entry(request.entry_id)
+    if not source:
+        raise HTTPException(status_code=404, detail="memory entry not found")
+
+    created_ids: List[str] = []
+    for target_model in request.target_models:
+        item = {
+            "id": str(uuid.uuid4()),
+            "source_model": target_model.strip(),
+            "topic": str(source.get("topic") or "shared-memory").strip(),
+            "details": str(source.get("details") or "").strip(),
+            "impact_level": str(source.get("impact_level") or "low").strip().lower(),
+            "confidence": float(source.get("confidence") or 0.5),
+            "tags": list(source.get("tags") or []) + [
+                f"shared_from:{request.source_model.strip().lower()}",
+                f"shared_entry:{request.entry_id}",
+                "cross_model_shared",
+            ],
+            "created_at": datetime.utcnow().isoformat(),
+        }
+        if request.note:
+            item["details"] = (item["details"] + "\n\nShare note: " + request.note.strip()).strip()
+
+        await _memory_knowledge_add(item)
+        created_ids.append(item["id"])
+
+    await _timeline_append({
+        "type": "memory_share",
+        "shared_from_id": request.entry_id,
+        "source_model": request.source_model,
+        "target_models": request.target_models,
+        "created_count": len(created_ids),
+        "timestamp": datetime.utcnow().isoformat(),
+    })
+
+    return MemoryShareResponse(success=True, shared_from_id=request.entry_id, created_item_ids=created_ids)
 
 
 @app.post("/memory/workflow/learn", response_model=MedicalWorkflowLearnResponse)
@@ -1103,6 +1304,14 @@ async def _memory_knowledge_recent(limit: int = 50) -> List[Dict[str, Any]]:
     return shared_knowledge_memory[-limit:]
 
 
+async def _memory_find_entry(entry_id: str) -> Optional[Dict[str, Any]]:
+    items = await _memory_knowledge_recent(limit=max(_MEMORY_FALLBACK_MAX_SHARED_KNOWLEDGE, 500))
+    for item in reversed(items):
+        if str(item.get("id")) == entry_id:
+            return item
+    return None
+
+
 def _memory_item_tags(item: Dict[str, Any]) -> List[str]:
     return [str(tag).strip().lower() for tag in (item.get("tags") or []) if str(tag).strip()]
 
@@ -1312,18 +1521,24 @@ async def _swarm_emit_event(
     task_id: Optional[str] = None,
     agent_type: Optional[str] = None,
     priority: Optional[str] = None,
+    runtime: Optional[str] = None,
     trace_id: Optional[str] = None,
+    source: str = "system",
 ) -> Dict[str, Any]:
     import uuid
 
     event = {
         "event_id": str(uuid.uuid4()),
+        "event_type": event_type,
+        "event_version": "v1",
         "type": event_type,
         "timestamp": datetime.utcnow().isoformat(),
+        "source": source,
         "workflow_id": workflow_id,
         "task_id": task_id,
         "agent_type": agent_type,
         "priority": priority,
+        "runtime": runtime,
         "payload": payload or {},
         "trace_id": trace_id or str(uuid.uuid4()),
     }
@@ -1361,6 +1576,31 @@ async def _swarm_active_workers_count() -> int:
     if _redis:
         return int(await _redis.hlen(_SWARM_WORKERS_ACTIVE_KEY))
     return len(swarm_state.get("active_workers", {}))
+
+
+async def _swarm_worker_register(worker: Dict[str, Any]) -> None:
+    if _redis:
+        await _redis.hset(_SWARM_WORKERS_ACTIVE_KEY, worker["worker_id"], json.dumps(worker))
+    else:
+        swarm_state.setdefault("active_workers", {})[worker["worker_id"]] = worker
+
+
+async def _swarm_worker_retire(worker_id: str) -> Optional[Dict[str, Any]]:
+    if _redis:
+        raw = await _redis.hget(_SWARM_WORKERS_ACTIVE_KEY, worker_id)
+        if not raw:
+            return None
+        await _redis.hdel(_SWARM_WORKERS_ACTIVE_KEY, worker_id)
+        return json.loads(raw)
+    workers = swarm_state.setdefault("active_workers", {})
+    return workers.pop(worker_id, None)
+
+
+async def _swarm_workers_list() -> List[Dict[str, Any]]:
+    if _redis:
+        raw = await _redis.hgetall(_SWARM_WORKERS_ACTIVE_KEY)
+        return [json.loads(v) for v in raw.values()]
+    return list(swarm_state.setdefault("active_workers", {}).values())
 
 
 async def _swarm_enqueue_task(task_entry: Dict[str, Any], priority: str) -> None:
