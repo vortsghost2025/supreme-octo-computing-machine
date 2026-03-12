@@ -15,7 +15,7 @@ from datetime import datetime
 from typing import Optional, List, Dict, Any, Annotated
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, field_validator
 import httpx
@@ -65,6 +65,9 @@ _MEMORY_FALLBACK_MAX_SHARED_KNOWLEDGE = int(os.getenv("MEMORY_FALLBACK_MAX_SHARE
 _MEMORY_FALLBACK_MAX_SWARM_EVENTS = int(os.getenv("MEMORY_FALLBACK_MAX_SWARM_EVENTS", "5000"))
 _MEMORY_INJECTION_MAX_ITEMS = int(os.getenv("MEMORY_INJECTION_MAX_ITEMS", "100"))
 _MAX_TASK_STEPS = int(os.getenv("MAX_TASK_STEPS", "20"))
+_MEMORY_SHARE_MAX_TARGET_MODELS = int(os.getenv("MEMORY_SHARE_MAX_TARGET_MODELS", "5"))
+_CONTROL_PLANE_TOKEN = os.getenv("SNAC_OPERATOR_TOKEN", "")
+_ENFORCE_CONTROL_PLANE_TOKEN = os.getenv("ENFORCE_OPERATOR_TOKEN", "false").lower() in {"1", "true", "yes"}
 
 _SWARM_QUEUE_KEY_PREFIX = "swarm:queue"
 _SWARM_EVENTS_KEY = "swarm:events"
@@ -98,6 +101,27 @@ _SECRET_PATTERN = re.compile(
 def _redact_secrets(value: str) -> str:
     """Replace apparent secrets/keys before writing to logs."""
     return _SECRET_PATTERN.sub("[REDACTED]", value)
+
+
+async def _require_control_plane_token(
+    x_operator_token: Optional[str] = Header(default=None, alias="X-Operator-Token"),
+    authorization: Optional[str] = Header(default=None, alias="Authorization"),
+) -> None:
+    """Guard mutating control-plane APIs when operator token enforcement is enabled."""
+    if not _ENFORCE_CONTROL_PLANE_TOKEN:
+        return
+
+    if not _CONTROL_PLANE_TOKEN:
+        raise HTTPException(status_code=503, detail="operator token enforcement enabled but SNAC_OPERATOR_TOKEN missing")
+
+    token = (x_operator_token or "").strip()
+    if not token and authorization:
+        auth = authorization.strip()
+        if auth.lower().startswith("bearer "):
+            token = auth[7:].strip()
+
+    if token != _CONTROL_PLANE_TOKEN:
+        raise HTTPException(status_code=401, detail="invalid operator token")
 
 
 def _prune_memory_fallback_state() -> None:
@@ -422,6 +446,7 @@ class SwarmWorkerInfo(BaseModel):
     runtime: str
     status: str
     started_at: str
+    lease_only: bool = True
 
 
 class SwarmWorkersResponse(BaseModel):
@@ -477,6 +502,27 @@ class MemoryShareRequest(BaseModel):
     source_model: Annotated[str, Field(min_length=1, max_length=80)]
     target_models: List[Annotated[str, Field(min_length=1, max_length=80)]]
     note: Optional[Annotated[str, Field(min_length=1, max_length=500)]] = None
+
+    @field_validator("target_models")
+    @classmethod
+    def validate_target_models(cls, v: List[str]) -> List[str]:
+        deduped: List[str] = []
+        seen = set()
+        for item in v:
+            value = item.strip()
+            if not value:
+                continue
+            lowered = value.lower()
+            if lowered in seen:
+                continue
+            seen.add(lowered)
+            deduped.append(value)
+
+        if not deduped:
+            raise ValueError("target_models must not be empty")
+        if len(deduped) > _MEMORY_SHARE_MAX_TARGET_MODELS:
+            raise ValueError(f"target_models max is {_MEMORY_SHARE_MAX_TARGET_MODELS}")
+        return deduped
 
 
 class MemoryShareResponse(BaseModel):
@@ -889,7 +935,7 @@ async def swarm_events_recent(limit: int = 50):
 
 
 @app.post("/swarm/config", response_model=SwarmConfigResponse)
-async def swarm_update_config(request: SwarmConfigUpdateRequest):
+async def swarm_update_config(request: SwarmConfigUpdateRequest, _: None = Depends(_require_control_plane_token)):
     current = await _swarm_get_config()
     update_data = request.model_dump(exclude_none=True)
     merged = {**current, **update_data}
@@ -911,8 +957,19 @@ async def swarm_update_config(request: SwarmConfigUpdateRequest):
 
 
 @app.post("/swarm/workers/spawn", response_model=SwarmWorkersResponse)
-async def swarm_spawn_workers(request: SwarmWorkerSpawnRequest):
+async def swarm_spawn_workers(request: SwarmWorkerSpawnRequest, _: None = Depends(_require_control_plane_token)):
     import uuid
+
+    config = await _swarm_get_config()
+    active = await _swarm_active_workers_count()
+    available = max(config["max_workers"] - active, 0)
+    if available <= 0:
+        raise HTTPException(status_code=409, detail="max_workers limit reached")
+    if request.count > available:
+        raise HTTPException(
+            status_code=400,
+            detail=f"requested count exceeds available worker slots ({available})",
+        )
 
     workers: List[Dict[str, Any]] = []
     for _ in range(request.count):
@@ -920,8 +977,9 @@ async def swarm_spawn_workers(request: SwarmWorkerSpawnRequest):
             "worker_id": str(uuid.uuid4()),
             "worker_type": request.worker_type,
             "runtime": request.runtime,
-            "status": "active",
+            "status": "lease_registered",
             "started_at": datetime.utcnow().isoformat(),
+            "lease_only": True,
         }
         await _swarm_worker_register(worker)
         workers.append(worker)
@@ -936,10 +994,11 @@ async def swarm_spawn_workers(request: SwarmWorkerSpawnRequest):
 
 
 @app.post("/swarm/workers/retire", response_model=SwarmWorkersResponse)
-async def swarm_retire_worker(request: SwarmWorkerRetireRequest):
+async def swarm_retire_worker(request: SwarmWorkerRetireRequest, _: None = Depends(_require_control_plane_token)):
     retired = await _swarm_worker_retire(request.worker_id)
     if not retired:
         raise HTTPException(status_code=404, detail="worker not found")
+    retired["status"] = "retired"
 
     await _swarm_emit_event(
         "swarm.worker.retired",
@@ -951,7 +1010,7 @@ async def swarm_retire_worker(request: SwarmWorkerRetireRequest):
 
 
 @app.get("/swarm/workers", response_model=SwarmWorkersResponse)
-async def swarm_workers_list():
+async def swarm_workers_list(_: None = Depends(_require_control_plane_token)):
     workers = await _swarm_workers_list()
     return SwarmWorkersResponse(workers=[SwarmWorkerInfo(**w) for w in workers])
 
@@ -992,15 +1051,16 @@ async def memory_feed(limit: int = 50):
 
 
 @app.post("/memory/share", response_model=MemoryShareResponse)
-async def memory_share(request: MemoryShareRequest):
+async def memory_share(request: MemoryShareRequest, _: None = Depends(_require_control_plane_token)):
     import uuid
-
-    if not request.target_models:
-        raise HTTPException(status_code=400, detail="target_models must not be empty")
 
     source = await _memory_find_entry(request.entry_id)
     if not source:
         raise HTTPException(status_code=404, detail="memory entry not found")
+
+    source_model = str(source.get("source_model") or "unknown").strip()
+    if request.source_model.strip().lower() != source_model.lower():
+        raise HTTPException(status_code=400, detail="source_model does not match entry source")
 
     created_ids: List[str] = []
     for target_model in request.target_models:
@@ -1012,7 +1072,7 @@ async def memory_share(request: MemoryShareRequest):
             "impact_level": str(source.get("impact_level") or "low").strip().lower(),
             "confidence": float(source.get("confidence") or 0.5),
             "tags": list(source.get("tags") or []) + [
-                f"shared_from:{request.source_model.strip().lower()}",
+                f"shared_from:{source_model.lower()}",
                 f"shared_entry:{request.entry_id}",
                 "cross_model_shared",
             ],
@@ -1027,7 +1087,7 @@ async def memory_share(request: MemoryShareRequest):
     await _timeline_append({
         "type": "memory_share",
         "shared_from_id": request.entry_id,
-        "source_model": request.source_model,
+        "source_model": source_model,
         "target_models": request.target_models,
         "created_count": len(created_ids),
         "timestamp": datetime.utcnow().isoformat(),
@@ -1574,8 +1634,11 @@ async def _swarm_queue_depth() -> Dict[str, int]:
 
 async def _swarm_active_workers_count() -> int:
     if _redis:
-        return int(await _redis.hlen(_SWARM_WORKERS_ACTIVE_KEY))
-    return len(swarm_state.get("active_workers", {}))
+        raw = await _redis.hgetall(_SWARM_WORKERS_ACTIVE_KEY)
+        workers = [json.loads(v) for v in raw.values()]
+        return sum(1 for worker in workers if worker.get("status") == "running")
+    workers = swarm_state.get("active_workers", {})
+    return sum(1 for worker in workers.values() if worker.get("status") == "running")
 
 
 async def _swarm_worker_register(worker: Dict[str, Any]) -> None:
