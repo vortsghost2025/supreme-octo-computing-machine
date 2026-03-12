@@ -10,6 +10,12 @@ ui/.env.production
 logs/
 ui/dist/
 
+# Browser data - NEVER track
+chromium-cache/
+chromium-profile/
+kilo/
+chrome-win/
+
 # Node deps
 node_modules/
 ui/node_modules/

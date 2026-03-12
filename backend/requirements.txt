@@ -1,0 +1,11 @@
+fastapi==0.135.1
+uvicorn==0.41.0
+pydantic==2.12.5
+python-dotenv==1.2.2
+openai==2.26.0
+qdrant-client==1.17.0
+psycopg2-binary==2.9.11
+asyncpg==0.31.0
+redis==7.3.0
+websockets==16.0
+httpx==0.28.1

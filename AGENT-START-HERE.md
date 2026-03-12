@@ -25,7 +25,9 @@
 ### 3. VPS LOCATION
 - IP: 187.77.3.56
 - SSH: root@187.77.3.56
-- Project path on VPS: /opt/agent-system
+- Active compose working dir on VPS: /opt/snac-v2/backend
+- Compose file on VPS: /opt/snac-v2/backend/docker-compose.yml
+- Note: /opt/agent-system is stale in older docs and should not be assumed.
 - Backend API: http://187.77.3.56:8000
 - Frontend: http://187.77.3.56:3000
 
@@ -111,7 +113,7 @@ Before proposing any rebuild, every agent MUST run this sequence:
    - `.env.rotation`
    - `scripts/rotate-api-keys.ps1`
 3. Verify VPS live state over SSH:
-   - `ssh root@187.77.3.56 "cd /opt/agent-system && docker compose ps"`
+   - `ssh root@187.77.3.56 "cd /opt/snac-v2/backend && docker compose ps"`
 4. Verify API health from VPS host:
    - `ssh root@187.77.3.56 "curl -fsS http://localhost:8000/health"`
 5. Verify recent container failures before claiming system is down:

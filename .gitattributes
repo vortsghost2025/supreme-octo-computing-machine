@@ -1,0 +1,5 @@
+* text=auto
+*.md text
+*.py text
+*.js text
+*.jsx text

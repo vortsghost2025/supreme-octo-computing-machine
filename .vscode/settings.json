@@ -1,0 +1,12 @@
+{
+        "kilo-code.apiRequestTimeout": 0,
+        "kilo-code.codeIndex.embeddingBatchSize": 200,
+        "kilo-code.debug": true,
+        "kilo-code.debugProxy.enabled": true,
+        "kilo-code.debugProxy.tlsInsecure": true,
+        "kilo-code.maximumIndexedFilesForFileSearch": 500000,
+        "kilo-code.newTaskRequireTodos": true,
+        "editor.defaultFormatter": "kilocode.kilo-code",
+        "notebook.backup.sizeLimit": 0,
+        "todo-tree.ripgrep.ripgrepMaxBuffer": 20000
+}

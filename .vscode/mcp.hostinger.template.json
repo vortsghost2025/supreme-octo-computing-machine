@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Users\\seand"
+      ]
+    },
+    "hostinger": {
+      "command": "REPLACE_WITH_YOUR_HOSTINGER_COMMAND",
+      "args": [
+        "REPLACE_WITH_ARG_1"
+      ]
+    }
+  }
+}

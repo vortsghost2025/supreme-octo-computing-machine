@@ -1,0 +1,113 @@
+# SNAC-v2 Docker Compose
+# Full stack: PostgreSQL, Redis, Qdrant, Backend, Frontend, Nginx
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:15
+    container_name: snac_db
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-agent_secure_password}
+      POSTGRES_USER: snac
+      POSTGRES_DB: snac
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U snac"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - snac_network
+
+  # Redis for caching and queues
+  redis:
+    image: redis:7-alpine
+    container_name: snac_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - snac_network
+
+  # Qdrant Vector Database
+  qdrant:
+    image: qdrant/qdrant:v1.7.0
+    container_name: snac_qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - snac_network
+
+  # Backend API
+  backend:
+    build: ./backend
+    container_name: snac_backend
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-agent_secure_password}
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - snac_network
+
+  # Frontend/Cockpit UI
+  frontend:
+    build: ./ui
+    container_name: snac_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - snac_network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: snac_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
+    networks:
+      - snac_network
+
+volumes:
+  postgres_data:
+  qdrant_data:
+
+networks:
+  snac_network:
+    driver: bridge
