@@ -195,8 +195,10 @@ Still to implement for this spec:
 ## Stabilization Priority Updates (2026-03-12)
 
 Next highest-priority implementation tasks:
-1. Upgrade swarm events/results/memory traffic to Redis Streams as source of truth.
-2. Add checkpoint persistence for resumable long tasks (`swarm.checkpoints`).
-3. Implement `/swarm/graph/snapshot` for live cockpit topology.
-4. Implement `/swarm/intelligence/summary` for adaptive strategy feedback.
+1. ✅ Upgrade swarm events/results/memory traffic to Redis Streams as source of truth.
+2. ✅ Add checkpoint persistence for resumable long tasks (`swarm.checkpoints`).
+3. ✅ Implement `/swarm/graph/snapshot` for live cockpit topology.
+4. ✅ Implement `/swarm/intelligence/summary` for adaptive strategy feedback.
 5. Add idea clustering + project assignment pipeline after `/thoughts/ingest`.
+
+VPS deployment confirmed 2026-03-12: `187.77.3.56`, streams + guardrails + operator token active.

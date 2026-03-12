@@ -253,6 +253,8 @@ This is a separate async background task, not a worker. Runs as `_second_brain_i
 - [x] UI: `SwarmGraphPanel` component
 - [x] UI: `SwarmIntelligencePanel` component
 - [x] CSS for graph + intelligence panels
+- [x] **VPS deployed** — `187.77.3.56`, backend rebuilt, health + swarm/status verified (2026-03-12)
+- [x] `USE_REDIS_STREAMS=true`, `ENFORCE_OPERATOR_TOKEN=true`, `SNAC_OPERATOR_TOKEN` set in VPS .env
 - [ ] Second brain XREADGROUP ingest loop
 - [ ] IDE independence enforcement (no ephemeral state)
 - [ ] Qdrant upsert from result stream
