@@ -51,7 +51,92 @@ swarm_task_results: List[Dict[str, Any]] = []
 swarm_intelligence_stats: Dict[str, Dict[str, Any]] = {}
 swarm_token_events: List[Dict[str, Any]] = []
 
-# Configuration
+# ============== EVENT CONTRACT REGISTRY ==============
+
+_EVENT_CONTRACTS = {
+    "v1": {
+        "swarm.task.created": {
+            "required_fields": ["task_id", "task_type", "worker_type", "runtime"],
+            "optional_fields": ["priority", "payload", "workflow_id"],
+        },
+        "swarm.worker.started": {
+            "required_fields": ["worker_id", "worker_type"],
+            "optional_fields": ["runtime", "task_id"],
+        },
+        "swarm.worker.finished": {
+            "required_fields": ["worker_id", "status", "duration_seconds"],
+            "optional_fields": ["result", "error", "task_id"],
+        },
+        "swarm.guardrail.triggered": {
+            "required_fields": ["guardrail_type", "severity", "message"],
+            "optional_fields": ["task_id", "worker_id"],
+        },
+        "timeline.event.appended": {
+            "required_fields": ["event_type", "timestamp"],
+            "optional_fields": ["session_id", "data"],
+        },
+        "terminal.session.output": {
+            "required_fields": ["session_id", "data"],
+            "optional_fields": ["event_type"],
+        },
+        "agent.plan.created": {
+            "required_fields": ["plan_id", "goal", "dag", "task_count"],
+            "optional_fields": ["estimated_duration", "constraints"],
+        },
+        "agent.task.completed": {
+            "required_fields": ["task_id", "task_type", "result", "duration_seconds"],
+            "optional_fields": ["worker_id", "workflow_id"],
+        },
+        "agent.research.complete": {
+            "required_fields": ["request_id", "query", "confidence"],
+            "optional_fields": ["evidence_count", "citations"],
+        },
+        "agent.build.complete": {
+            "required_fields": ["artifact_id", "file_count"],
+            "optional_fields": ["test_count", "language"],
+        },
+        "agent.review.gate": {
+            "required_fields": [
+                "review_id",
+                "artifact_ids",
+                "decision",
+                "findings_count",
+            ],
+            "optional_fields": ["block_promotion", "severity_summary"],
+        },
+        "agent.deploy.complete": {
+            "required_fields": ["deploy_id", "artifact_ids", "status"],
+            "optional_fields": ["endpoint_count", "verification_results"],
+        },
+    },
+}
+
+_event_contract_version = "v1"
+
+
+def _validate_event_contract(
+    event_type: str, payload: Dict[str, Any]
+) -> tuple[bool, List[str]]:
+    """Validate event payload against contract schema."""
+    global _event_contract_version
+
+    contracts = _EVENT_CONTRACTS.get(_event_contract_version, _EVENT_CONTRACTS["v1"])
+    contract = contracts.get(event_type)
+
+    if not contract:
+        return False, [f"No contract defined for event_type: {event_type}"]
+
+    errors = []
+    required = contract.get("required_fields", [])
+
+    for field in required:
+        if field not in payload:
+            errors.append(f"Missing required field: {field}")
+
+    return len(errors) == 0, errors
+
+
+# ============== CONFIGURATION ==============
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "qwen/qwen2.5-0.5b-instruct")
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://openrouter.ai/api/v1")
@@ -1662,6 +1747,62 @@ async def swarm_events_recent(limit: int = 50):
     limit = max(1, min(limit, 500))
     events = await _swarm_recent_events(limit=limit)
     return SwarmEventsResponse(events=[SwarmEventItem(**e) for e in events])
+
+
+# ============== EVENT CONTRACT REGISTRY ENDPOINTS ==============
+
+
+@app.get("/events/contracts")
+async def get_event_contracts():
+    """Get all event contract schemas."""
+    return {
+        "version": _event_contract_version,
+        "contracts": _EVENT_CONTRACTS.get(_event_contract_version, {}),
+    }
+
+
+@app.get("/events/contracts/{event_type}")
+async def get_event_contract(event_type: str):
+    """Get specific event contract schema."""
+    contracts = _EVENT_CONTRACTS.get(_event_contract_version, {})
+    contract = contracts.get(event_type)
+    if not contract:
+        raise HTTPException(
+            status_code=404, detail=f"No contract found for event_type: {event_type}"
+        )
+    return {
+        "event_type": event_type,
+        "version": _event_contract_version,
+        **contract,
+    }
+
+
+@app.post("/events/validate")
+async def validate_event(event: Dict[str, Any]):
+    """Validate an event against its contract."""
+    event_type = event.get("event_type") or event.get("type")
+    if not event_type:
+        raise HTTPException(status_code=400, detail="event_type is required")
+
+    payload = event.get("payload", {})
+    is_valid, errors = _validate_event_contract(event_type, payload)
+
+    return {
+        "event_type": event_type,
+        "valid": is_valid,
+        "errors": errors,
+        "version": _event_contract_version,
+    }
+
+
+@app.get("/events/contract-topics")
+async def get_contract_topics():
+    """Get all available event topics."""
+    contracts = _EVENT_CONTRACTS.get(_event_contract_version, {})
+    return {
+        "topics": list(contracts.keys()),
+        "count": len(contracts),
+    }
 
 
 @app.post("/swarm/config", response_model=SwarmConfigResponse)
