@@ -198,6 +198,79 @@ _USE_REDIS_STREAMS = os.getenv("USE_REDIS_STREAMS", "true").lower() in {
 }
 _SWARM_INTELLIGENCE_MAX_ITEMS = int(os.getenv("SWARM_INTELLIGENCE_MAX_ITEMS", "2000"))
 
+# ============== COMMAND POLICY ENGINE ==============
+
+_COMMAND_RISK_CLASSES = {
+    "safe": {
+        "description": "No approval required",
+        "examples": ["read", "list", "get", "search", "view"],
+    },
+    "guarded": {
+        "description": "Approval required for production",
+        "examples": ["create", "update", "modify", "build", "test"],
+    },
+    "dangerous": {
+        "description": "Explicit human approval required",
+        "examples": ["delete", "deploy", "restart", "stop", "terminate"],
+    },
+    "blocked": {
+        "description": "Never executable from cockpit",
+        "examples": ["rm -rf", "del /f", "drop table", "format"],
+    },
+}
+
+_BLOCKED_PATTERNS = [
+    r"\brm\s+-rf\b",
+    r"\bdel\s+/[sqf]\b",
+    r"\bdrop\s+database\b",
+    r"\bdrop\s+table\b",
+    r"\btruncate\b",
+    r"\bshutdown\b",
+    r"\breboot\b",
+    r"\bhalt\b",
+]
+_BLOCKED_REGEX = [re.compile(p, re.IGNORECASE) for p in _BLOCKED_PATTERNS]
+_command_policy_audit_log: List[Dict[str, Any]] = []
+
+
+def _classify_command_risk(command: str) -> tuple[str, List[str]]:
+    command_lower = command.lower()
+    violations, risk_class = [], "safe"
+    for pattern in _BLOCKED_REGEX:
+        if pattern.search(command):
+            violations.append(f"Blocked: {pattern.pattern}")
+            risk_class = "blocked"
+    if risk_class != "blocked":
+        for kw in ["delete", "drop", "truncate", "shutdown", "reboot", "halt"]:
+            if kw in command_lower:
+                risk_class = "dangerous" if "force" in command_lower else "guarded"
+                break
+    return risk_class, violations
+
+
+def _log_command_audit(
+    command: str,
+    risk_class: str,
+    approved: bool,
+    source: str,
+    details: Optional[Dict[str, Any]] = None,
+):
+    import uuid
+
+    entry = {
+        "audit_id": str(uuid.uuid4()),
+        "timestamp": datetime.utcnow().isoformat(),
+        "command": command[:500],
+        "risk_class": risk_class,
+        "approved": approved,
+        "source": source,
+        "details": details or {},
+    }
+    _command_policy_audit_log.append(entry)
+    if len(_command_policy_audit_log) > 1000:
+        _command_policy_audit_log[:] = _command_policy_audit_log[-1000:]
+
+
 _SWARM_QUEUE_KEY_PREFIX = "swarm:queue"
 _SWARM_EVENTS_KEY = "swarm:events"
 _SWARM_CONFIG_KEY = "swarm:config"
@@ -1626,6 +1699,147 @@ async def ingest_thought_alias(request: ThoughtIngestRequest):
     return await ingest_thought(request)
 
 
+# ============== THOUGHT PIPELINE ENHANCEMENTS ==============
+
+
+@app.get("/thoughts/ranked")
+async def get_ranked_thoughts(limit: int = 50, category: Optional[str] = None):
+    """Get thoughts ranked by relevance and recency."""
+    import time
+
+    thought_list = thought_memory[-500:] if thought_memory else []
+    if category:
+        thought_list = [t for t in thought_list if t.get("category") == category]
+
+    ranked = []
+    now = time.time()
+    for t in thought_list:
+        created = t.get("created_at", "")
+        try:
+            dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
+            age_hours = (now - dt.timestamp()) / 3600
+        except Exception:
+            age_hours = 24
+
+        recency_score = max(0, 1 - (age_hours / 168))  # Decay over 1 week
+        confidence = t.get("confidence", 0.5)
+        keyword_count = len(t.get("keywords", []))
+
+        rank_score = (recency_score * 0.3) + (confidence * 0.4) + (keyword_count * 0.1)
+
+        ranked.append({**t, "rank_score": rank_score})
+
+    ranked.sort(key=lambda x: x["rank_score"], reverse=True)
+    return {"thoughts": ranked[:limit], "count": min(len(ranked), limit)}
+
+
+@app.get("/thoughts/clusters")
+async def get_thought_clusters(min_cluster_size: int = 3):
+    """Get thought clusters based on keyword similarity."""
+    thought_list = thought_memory[-500:] if thought_memory else []
+
+    clusters = []
+    assigned = set()
+
+    for i, thought in enumerate(thought_list):
+        if thought["id"] in assigned:
+            continue
+
+        cluster_keywords = set(thought.get("keywords", []))
+        cluster_thoughts = [thought]
+        assigned.add(thought["id"])
+
+        for j, other in enumerate(thought_list[i + 1 :], i + 1):
+            if other["id"] in assigned:
+                continue
+
+            other_keywords = set(other.get("keywords", []))
+            overlap = len(cluster_keywords & other_keywords)
+
+            if overlap >= min_cluster_size:
+                cluster_thoughts.append(other)
+                assigned.add(other["id"])
+                cluster_keywords.update(other_keywords)
+
+        if len(cluster_thoughts) >= min_cluster_size:
+            clusters.append(
+                {
+                    "cluster_id": f"cluster-{len(clusters)}",
+                    "size": len(cluster_thoughts),
+                    "keywords": list(cluster_keywords)[:10],
+                    "thoughts": [
+                        {"id": t["id"], "summary": t.get("summary", "")[:100]}
+                        for t in cluster_thoughts
+                    ],
+                }
+            )
+
+    return {"clusters": clusters, "count": len(clusters)}
+
+
+@app.post("/thoughts/to-project")
+async def thoughts_to_project(thought_ids: List[str], project_name: str):
+    """Convert selected thoughts into a project/task DAG."""
+    import uuid
+
+    project_id = str(uuid.uuid4())
+    selected = [t for t in thought_memory if t.get("id") in thought_ids]
+
+    if not selected:
+        raise HTTPException(status_code=400, detail="No valid thought IDs provided")
+
+    # Create project structure
+    project = {
+        "project_id": project_id,
+        "name": project_name,
+        "thoughts": selected,
+        "tasks": [],
+        "created_at": datetime.utcnow().isoformat(),
+    }
+
+    # Auto-generate tasks from thought categories
+    categories = set(t.get("category", "general") for t in selected)
+
+    task_templates = {
+        "feature": "Implement feature from thoughts",
+        "bug": "Fix issue identified in thoughts",
+        "research": "Research topic from thoughts",
+        "idea": "Explore and validate idea",
+        "general": "Process related thoughts",
+    }
+
+    for cat in categories:
+        task = {
+            "id": f"{project_id}-task-{len(project['tasks'])}",
+            "type": "build" if cat == "feature" else "research",
+            "name": task_templates.get(cat, task_templates["general"]),
+            "source_thoughts": [t["id"] for t in selected if t.get("category") == cat],
+            "depends_on": [],
+        }
+        project["tasks"].append(task)
+
+    # Emit event for planner integration
+    await _swarm_emit_event(
+        event_type="thought.project.created",
+        payload={
+            "project_id": project_id,
+            "name": project_name,
+            "thought_count": len(selected),
+            "task_count": len(project["tasks"]),
+        },
+    )
+
+    return {
+        "project_id": project_id,
+        "name": project_name,
+        "thoughts": [
+            {"id": t["id"], "summary": t.get("summary", "")[:100]} for t in selected
+        ],
+        "tasks": project["tasks"],
+        "task_count": len(project["tasks"]),
+    }
+
+
 # ============== SWARM ENDPOINTS ==============
 
 
@@ -1803,6 +2017,70 @@ async def get_contract_topics():
         "topics": list(contracts.keys()),
         "count": len(contracts),
     }
+
+
+# ============== COMMAND POLICY ENDPOINTS ==============
+
+
+@app.get("/policy/commands/classes")
+async def get_command_risk_classes():
+    """Get command risk classification classes."""
+    return {"classes": _COMMAND_RISK_CLASSES}
+
+
+@app.post("/policy/commands/classify")
+async def classify_command(request: Dict[str, str]):
+    """Classify a command into risk category."""
+    command = request.get("command", "")
+    if not command:
+        raise HTTPException(status_code=400, detail="command is required")
+
+    risk_class, violations = _classify_command_risk(command)
+
+    _log_command_audit(
+        command=command,
+        risk_class=risk_class,
+        approved=risk_class not in ["blocked", "dangerous"],
+        source="api",
+    )
+
+    return {
+        "command": command,
+        "risk_class": risk_class,
+        "violations": violations,
+        "requires_approval": risk_class in ["guarded", "dangerous"],
+        "blocked": risk_class == "blocked",
+    }
+
+
+@app.get("/policy/audit/log")
+async def get_audit_log(limit: int = 50):
+    """Get command audit log."""
+    limit = max(1, min(limit, 500))
+    return {
+        "audit_log": _command_policy_audit_log[-limit:],
+        "count": len(_command_policy_audit_log[-limit:]),
+    }
+
+
+@app.post("/policy/commands/approve")
+async def approve_command(request: Dict[str, str]):
+    """Manually approve a guarded/dangerous command."""
+    command = request.get("command", "")
+    reason = request.get("reason", "Manual approval")
+
+    if not command:
+        raise HTTPException(status_code=400, detail="command is required")
+
+    _log_command_audit(
+        command=command,
+        risk_class="approved",
+        approved=True,
+        source="manual_approval",
+        details={"reason": reason},
+    )
+
+    return {"success": True, "command": command, "approved": True}
 
 
 @app.post("/swarm/config", response_model=SwarmConfigResponse)
@@ -3983,22 +4261,55 @@ async def _execute_sandbox_runtime(
 async def _execute_parallel_test_runtime(
     task: str, worker_type: Optional[str], payload: Optional[Dict[str, Any]]
 ) -> Dict[str, Any]:
-    """Execute in parallel test runtime - multiple replicas."""
-    replicas = (payload or {}).get("replicas", 3)
+    """Execute in parallel test runtime - multiple replicas with output comparison."""
+    import hashlib
+    import json
+
+    replicas = min(
+        (payload or {}).get("replicas", 3), _RUNTIME_POLICY_PARALLEL_TEST_MAX_REPLICAS
+    )
     results = []
 
     async def run_replica(replica_id: int):
-        await asyncio.sleep(0.15)
-        return {"replica_id": replica_id, "status": "completed"}
+        """Simulate replica execution with slight variations."""
+        await asyncio.sleep(0.1 + (replica_id * 0.05))
 
-    tasks = [run_replica(i) for i in range(min(replicas, 5))]
-    results = await asyncio.gather(*tasks)
+        output = f"[replica-{replica_id}] Executed: {task[:50]}..."
+
+        # Simulate output (in real implementation, this would be actual execution)
+        return {
+            "replica_id": replica_id,
+            "status": "completed",
+            "output": output,
+            "output_hash": hashlib.md5(output.encode()).hexdigest(),
+        }
+
+    # Run all replicas in parallel
+    replica_tasks = [run_replica(i) for i in range(replicas)]
+    results = await asyncio.gather(*replica_tasks)
+
+    # Compare outputs
+    output_hashes = [r["output_hash"] for r in results]
+    unique_hashes = set(output_hashes)
+
+    comparison = {
+        "total_replicas": len(results),
+        "unique_outputs": len(unique_hashes),
+        "consistent": len(unique_hashes) == 1,
+        "replica_results": results,
+    }
+
+    if len(unique_hashes) > 1:
+        comparison["inconsistencies"] = [
+            f"Replica {r['replica_id']} output differs" for r in results
+        ]
 
     return {
         "status": "completed",
-        "output": f"[parallel_test] {len(results)} replicas completed",
+        "output": f"[parallel_test] {len(results)} replicas completed, consistent={len(unique_hashes) == 1}",
         "worker_type": worker_type or "parallel_test_worker",
         "replicas": len(results),
+        "comparison": comparison,
     }
 
 
