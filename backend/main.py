@@ -3988,6 +3988,37 @@ async def get_session_timeline(session_id: str):
     return {"session_id": session_id, "events": events}
 
 
+# ============== PERSISTENCE AND RETENTION POLICY ==============
+
+
+@app.get("/memory/retention/policy")
+async def get_retention_policy():
+    """Get current retention policy settings."""
+    return {
+        "session_ttl_seconds": _MEMORY_FALLBACK_SESSION_TTL,
+        "max_sessions": _MEMORY_FALLBACK_MAX_SESSIONS,
+        "max_timeline_events": _MEMORY_FALLBACK_MAX_TIMELINE,
+        "max_thoughts": _MEMORY_FALLBACK_MAX_THOUGHTS,
+        "max_shared_knowledge": _MEMORY_FALLBACK_MAX_SHARED_KNOWLEDGE,
+        "max_swarm_events": _MEMORY_FALLBACK_MAX_SWARM_EVENTS,
+        "execution_cleanup_seconds": _EXECUTION_CLEANUP_AFTER_SECONDS,
+        "max_completed_executions": _MAX_COMPLETED_EXECUTIONS,
+    }
+
+
+@app.get("/memory/retention/stats")
+async def get_retention_stats():
+    """Get current storage statistics."""
+    return {
+        "sessions": len(agent_sessions),
+        "timeline_events": len(memory_timeline),
+        "thoughts": len(thought_memory),
+        "shared_knowledge": len(shared_knowledge_memory),
+        "swarm_events": len(swarm_events),
+        "executions": len(executions),
+    }
+
+
 # ============== TOKEN USAGE ==============
 
 
