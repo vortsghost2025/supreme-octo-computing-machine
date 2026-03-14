@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import IDETerminal from './components/IDETerminal';
 
 // API Base URL - relative so it routes through nginx in production; override with VITE_API_URL in dev
 const API_BASE = import.meta.env.VITE_API_URL || "/api";
@@ -369,6 +370,7 @@ function SharedKnowledgePanel({ items }) {
 }
 
 function AgentChatPanel({
+  title = "💬 Agent Console",
   messages,
   draft,
   setDraft,
@@ -377,6 +379,8 @@ function AgentChatPanel({
   isRunning,
   sessionId,
 }) {
+  const [fontSize, setFontSize] = useState(32);
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!draft.trim() || isRunning) return;
@@ -386,10 +390,23 @@ function AgentChatPanel({
   return (
     <div className="panel chat-panel">
       <div className="panel-header">
-        <h2>💬 Agent Console</h2>
+        <h2>{title}</h2>
         <span className="badge success">{sessionId ? "Connected" : "New Session"}</span>
       </div>
       <div className="panel-content chat-panel-content">
+        <div className="chat-controls">
+          <div className="font-size-control">
+            <label>Font Size:</label>
+            <input
+              type="range"
+              min="12"
+              max="48"
+              value={fontSize}
+              onChange={(e) => setFontSize(Number(e.target.value))}
+            />
+            <span>{fontSize}px</span>
+          </div>
+        </div>
         <div className="chat-session-bar">
           <span className="chat-session-label">
             Session: {sessionId ? `${sessionId.substring(0, 12)}...` : "Not started yet"}
@@ -411,7 +428,7 @@ function AgentChatPanel({
                   <span className="chat-role">{message.role === "user" ? "You" : message.role === "assistant" ? "Agent" : "System"}</span>
                   <span className="chat-time">{new Date(message.timestamp).toLocaleTimeString()}</span>
                 </div>
-                <div className="chat-message-body">{message.content}</div>
+                <div className="chat-message-body" style={{ fontSize: fontSize + 'px' }}>{message.content}</div>
                 {Array.isArray(message.steps) && message.steps.length > 0 && (
                   <div className="chat-message-steps">
                     {message.steps.map((step) => (
@@ -433,6 +450,7 @@ function AgentChatPanel({
             onChange={(e) => setDraft(e.target.value)}
             placeholder="Talk to your agents here. You can still use QUERY:/CALC: chaining if you want."
             disabled={isRunning}
+            style={{ fontSize: fontSize + 'px' }}
           />
           <div className="chat-compose-actions">
             <button type="submit" disabled={isRunning || !draft.trim()}>
@@ -1015,6 +1033,12 @@ function App() {
   });
   const [agentChatMessages, setAgentChatMessages] = useState([]);
   const [agentChatDraft, setAgentChatDraft] = useState("");
+
+  // Free Coding Agent chat state
+  const [freeAgentMessages, setFreeAgentMessages] = useState([]);
+  const [freeAgentDraft, setFreeAgentDraft] = useState("");
+  const [freeAgentRunning, setFreeAgentRunning] = useState(false);
+  const FREE_AGENT_API = "/free-coding-agent";
   const [swarmStatus, setSwarmStatus] = useState({
     queue_depth: { high: 0, normal: 0, low: 0 },
     queue_depth_total: 0,
@@ -1266,6 +1290,86 @@ function App() {
     setCurrentTask("");
     setCurrentSteps([]);
     setCurrentCost(0);
+  };
+
+  // Free Coding Agent handlers
+  const handleFreeAgentReset = () => {
+    if (freeAgentRunning) return;
+    setFreeAgentMessages([]);
+    setFreeAgentDraft("");
+  };
+
+  const handleFreeAgentSubmit = async () => {
+    const task = freeAgentDraft.trim();
+    if (!task || freeAgentRunning) return;
+
+    const startedAt = new Date().toISOString();
+    setFreeAgentRunning(true);
+    setFreeAgentDraft("");
+    setFreeAgentMessages((prev) => [
+      ...prev,
+      { role: "user", content: task, timestamp: startedAt },
+    ]);
+
+    try {
+      const res = await fetch(`${FREE_AGENT_API}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ task, provider: "ollama" }),
+      });
+      
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      
+      // Handle streaming response
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullResponse = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const event = JSON.parse(line.slice(6));
+              if (event.type === "chunk") {
+                fullResponse += event.content;
+                setFreeAgentMessages((prev) => {
+                  const newMessages = [...prev];
+                  const lastMsg = newMessages[newMessages.length - 1];
+                  if (lastMsg && lastMsg.role === "assistant") {
+                    lastMsg.content = fullResponse;
+                  } else {
+                    newMessages.push({
+                      role: "assistant",
+                      content: fullResponse,
+                      timestamp: new Date().toISOString(),
+                    });
+                  }
+                  return newMessages;
+                });
+              }
+            } catch {}
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Free agent chat failed:", e);
+      setFreeAgentMessages((prev) => [
+        ...prev,
+        {
+          role: "system",
+          content: `Error: ${e.message}`,
+          timestamp: new Date().toISOString(),
+        },
+      ]);
+    } finally {
+      setFreeAgentRunning(false);
+    }
   };
 
   // Handle document ingestion
@@ -1531,22 +1635,39 @@ function App() {
 
         <main className="cockpit-content">
           <div className="panels-grid">
-            <MemoryTimeline events={timeline} isLoading={backendStatus !== "ok"} />
-            <AgentChatPanel
-              messages={agentChatMessages}
-              draft={agentChatDraft}
-              setDraft={setAgentChatDraft}
-              onSend={handleAgentChatSubmit}
-              onReset={handleAgentChatReset}
-              isRunning={isRunning}
-              sessionId={agentChatSessionId}
-            />
-            <SharedKnowledgePanel items={sharedKnowledge} />
-            <NodeVisualizer currentTask={currentTask} steps={currentSteps} />
-            <TokenMonitor usage={tokenUsage} currentCost={currentCost} />
-            <SwarmMonitor status={swarmStatus} onScalerTick={handleSwarmTick} isTicking={isTickingSwarm} />
-            <SwarmGraphPanel snapshot={swarmGraphSnapshot} />
-            <SwarmIntelligencePanel summary={swarmIntelligenceSummary} />
+            <div className="chat-row">
+              <AgentChatPanel
+                title="🤖 SNAC Agent"
+                messages={agentChatMessages}
+                draft={agentChatDraft}
+                setDraft={setAgentChatDraft}
+                onSend={handleAgentChatSubmit}
+                onReset={handleAgentChatReset}
+                isRunning={isRunning}
+                sessionId={agentChatSessionId}
+              />
+              <AgentChatPanel
+                title="🔥 Free Coding Agent"
+                messages={freeAgentMessages}
+                draft={freeAgentDraft}
+                setDraft={setFreeAgentDraft}
+                onSend={handleFreeAgentSubmit}
+                onReset={handleFreeAgentReset}
+                isRunning={freeAgentRunning}
+                sessionId={null}
+              />
+            </div>
+            <div className="panels-second-row">
+              <MemoryTimeline events={timeline} isLoading={backendStatus !== "ok"} />
+              <IDETerminal />
+              <TokenMonitor usage={tokenUsage} currentCost={currentCost} />
+              <SwarmMonitor status={swarmStatus} onScalerTick={handleSwarmTick} isTicking={isTickingSwarm} />
+            </div>
+            <div className="panels-bottom-row">
+              <SharedKnowledgePanel items={sharedKnowledge} />
+              <SwarmGraphPanel snapshot={swarmGraphSnapshot} />
+              <SwarmIntelligencePanel summary={swarmIntelligenceSummary} />
+            </div>
           </div>
         </main>
       </div>

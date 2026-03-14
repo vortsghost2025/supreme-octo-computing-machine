@@ -14,6 +14,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+    networks:
+      - snac_network
 
   # Redis for caching and queues
   redis:
@@ -26,6 +29,9 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    restart: unless-stopped
+    networks:
+      - snac_network
 
   # Qdrant Vector Database
   qdrant:
@@ -37,10 +43,13 @@ services:
     volumes:
       - qdrant_data:/qdrant/storage
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:6333/health"]
       interval: 10s
       timeout: 5s
       retries: 3
+    restart: unless-stopped
+    networks:
+      - snac_network
 
   # Backend API
   backend:
@@ -55,14 +64,57 @@ services:
       - QDRANT_PORT=6333
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
       qdrant:
-        condition: service_healthy
+        condition: service_started
     restart: unless-stopped
+    networks:
+      - snac_network
+
+  # Free Coding Agent with MCP Tools
+  free-coding-agent:
+    build: ./free-coding-agent
+    container_name: snac_free_coding_agent
+    ports:
+      - "3001:3000"
+    env_file: .env
+    environment:
+      - PROVIDER=ollama
+      - MODEL=llama3.2
+      - OLLAMA_URL=http://host.docker.internal:11434
+      - WORKING_DIR=/workspace
+      - NO_APPROVAL=false
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - BRAVE_API_KEY=${BRAVE_API_KEY:-}
+    volumes:
+      - ./free-coding-agent:/workspace
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    networks:
+      - snac_network
+
+  # Ollama LLM Server
+  ollama:
+    image: ollama/ollama:latest
+    container_name: snac_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - snac_network
 
   # Frontend/Cockpit UI
   frontend:
@@ -73,6 +125,8 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - snac_network
 
   # Nginx Reverse Proxy
   nginx:
@@ -88,7 +142,14 @@ services:
       - backend
       - frontend
     restart: unless-stopped
+    networks:
+      - snac_network
 
 volumes:
   postgres_data:
   qdrant_data:
+  ollama_data:
+
+networks:
+  snac_network:
+    driver: bridge
