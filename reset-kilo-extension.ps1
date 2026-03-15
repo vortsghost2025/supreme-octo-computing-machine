@@ -47,7 +47,7 @@ if (Test-Path $snacProfile) {
     # Profile doesn't exist yet – write a safe empty-servers config.
     @{mcpServers = @{}} | ConvertTo-Json -Depth 10 | Set-Content $settingsFile -Encoding UTF8
     Write-Host "[2/5] SNAC-only profile not found; wrote empty mcpServers config to mcp_settings.json"
-    Write-Host "      To recreate it, run: ./set-kilo-snac-mode.ps1 after confirming S:\snac-v2\snac-v2 exists."
+    Write-Host "      To recreate it, run: ./set-kilo-snac-mode.ps1 once the profile file exists in $settingsDir"
 }
 
 # ── 3. Hard-disable any MCP server that references the VPS ───────────────────
@@ -61,7 +61,9 @@ if ($json.mcpServers) {
     foreach ($key in @($json.mcpServers.PSObject.Properties.Name)) {
         $server = $json.mcpServers.$key
         $allText = ($server | ConvertTo-Json -Compress -Depth 10).ToLower()
-        $isVPS   = $vpsKeywords | Where-Object { $allText -match $_ }
+        # Use [regex]::Escape so keyword literals like "187.77" are not treated
+        # as regex patterns (where '.' would match any character).
+        $isVPS   = $vpsKeywords | Where-Object { $allText -match [regex]::Escape($_) }
         if ($isVPS) {
             if (-not $server.PSObject.Properties['disabled']) {
                 $server | Add-Member -NotePropertyName disabled -NotePropertyValue $true
@@ -87,13 +89,15 @@ $cacheTargets = @(
     (Join-Path $kiloGlobal "cache")
 )
 
+$clearedAny = $false
 foreach ($dir in $cacheTargets) {
     if (Test-Path $dir) {
         Remove-Item -Path $dir -Recurse -Force
         Write-Host "[4/5] Cleared Kilo cache: $dir"
+        $clearedAny = $true
     }
 }
-if (-not ($cacheTargets | Where-Object { Test-Path $_ })) {
+if (-not $clearedAny) {
     Write-Host "[4/5] No Kilo cache directories found to clear (already clean)."
 }
 

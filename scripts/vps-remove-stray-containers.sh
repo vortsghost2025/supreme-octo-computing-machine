@@ -44,8 +44,10 @@ echo "[2/4] All running containers:"
 docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' || true
 echo
 
-echo "[3/4] Identifying stray containers (running but not in canonical list)..."
+echo "[3/4] Identifying stray containers (snac_* containers not in canonical list)..."
 STRAYS=()
+# Scope to containers whose name starts with "snac_" so we never touch
+# unrelated services that may be running on the same VPS host.
 while IFS= read -r name; do
   is_canonical=false
   for c in "${CANONICAL[@]}"; do
@@ -57,7 +59,7 @@ while IFS= read -r name; do
   if [ "$is_canonical" = false ]; then
     STRAYS+=("$name")
   fi
-done < <(docker ps --format '{{.Names}}')
+done < <(docker ps --format '{{.Names}}' | grep '^snac_')
 
 if [ ${#STRAYS[@]} -eq 0 ]; then
   echo "  No stray containers found. Stack is clean."

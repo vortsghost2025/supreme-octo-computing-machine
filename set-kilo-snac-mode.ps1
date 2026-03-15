@@ -1,6 +1,7 @@
 $ErrorActionPreference = "Stop"
 
-$settingsDir = "C:\Users\seand\AppData\Roaming\Code\User\globalStorage\kilocode.kilo-code\settings"
+# Use $env:APPDATA so this works for any Windows user, not just C:\Users\seand
+$settingsDir = Join-Path $env:APPDATA "Code\User\globalStorage\kilocode.kilo-code\settings"
 $source = Join-Path $settingsDir "mcp_settings.snac-only.json"
 $target = Join-Path $settingsDir "mcp_settings.json"
 
