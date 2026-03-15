@@ -4,6 +4,23 @@
 
 ---
 
+## 🚨 SECURITY ALERT — Revoke These Tokens NOW
+
+A GitHub token and a Brave Search API key were accidentally shared in a chat log
+or document related to the free coding agent setup.  Even though neither value
+appears in committed code, they should be treated as **compromised** and rotated
+immediately.
+
+| Token | Where to revoke |
+|-------|----------------|
+| GitHub personal access token | https://github.com/settings/tokens → find the token → Delete |
+| Brave Search API key | https://brave.com/search/api/ → API Keys → Revoke |
+
+Do this before anything else.  A leaked GitHub token gives read/write access
+to your repositories.
+
+---
+
 ## What Happened (Plain English)
 
 ### The confusion: two completely separate Anthropic accounts

@@ -1,13 +1,11 @@
 # SNAC-v2 Docker Compose
-# Full stack: PostgreSQL, Redis, Qdrant, Backend, Frontend, Nginx
+# Full stack: PostgreSQL, Redis, Qdrant, Backend, Frontend, Nginx, Free Agent
 #
-# Canonical container names (only these should be running under the snac_network):
-#   snac_db  snac_redis  snac_qdrant  snac_backend  snac_frontend  snac_nginx
+# Canonical container names (only these should be running under snac_network):
+#   snac_db  snac_redis  snac_qdrant  snac_backend  snac_frontend  snac_nginx  snac_free_agent
 #
 # IMPORTANT: always deploy with --remove-orphans to stop stray containers that
-# are not defined here.  Orphan containers (e.g. snac_free_coding_agent) on the
-# same network create duplicate agent endpoints that crash the Kilo VS Code
-# extension.  Example:
+# are not defined here.  Example:
 #   docker compose up -d --remove-orphans
 #   docker compose pull && docker compose up -d --build --remove-orphans
 
@@ -117,9 +115,31 @@ services:
     networks:
       - snac_network
 
+  # Free Coding Agent (Node.js + MCP tools)
+  # Provides /health, /tools, /run endpoints on port 3001.
+  # MCP servers (GitHub, Brave, postgres) are optional — missing env vars
+  # cause those servers to be skipped, not crash the container.
+  free_agent:
+    build: ./backend/free-coding-agent
+    container_name: snac_free_agent
+    ports:
+      - "3001:3001"
+    env_file: .env
+    environment:
+      - PORT=3001
+      - WORKING_DIR=/workspace
+    volumes:
+      - free_agent_workspace:/workspace
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - snac_network
+
 volumes:
   postgres_data:
   qdrant_data:
+  free_agent_workspace:
 
 networks:
   snac_network:

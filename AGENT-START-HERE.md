@@ -22,7 +22,8 @@
 | PostgreSQL 15  | snac_db           | 5432  | RUNNING  |
 | Redis 7        | snac_redis        | 6379  | RUNNING  |
 | Qdrant         | snac_qdrant       | 6333  | RUNNING  |
-| Nginx          | —                 | 80    | MISSING  |
+| Nginx          | snac_nginx        | 80    | RUNNING  |
+| Free Coding Agent | snac_free_agent | 3001 | In compose (deploy with --build) |
 | n8n            | —                 | 5678  | MISSING  |
 
 ### 3. VPS LOCATION

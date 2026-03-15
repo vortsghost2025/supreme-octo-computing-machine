@@ -1,0 +1,17 @@
+{
+  "name": "snac-free-coding-agent",
+  "version": "1.0.0",
+  "description": "SNAC free coding agent — Node.js service with MCP tool integration",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "@modelcontextprotocol/sdk": "^1.10.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

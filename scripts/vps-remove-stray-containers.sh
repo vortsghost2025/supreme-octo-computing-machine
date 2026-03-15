@@ -3,18 +3,19 @@ set -euo pipefail
 
 # Remove stray containers from the VPS that are not part of the canonical SNAC stack.
 #
-# The canonical containers managed by docker-compose.yml are:
-#   snac_db, snac_redis, snac_qdrant, snac_backend, snac_frontend, snac_nginx
+# Canonical containers managed by docker-compose.yml are:
+#   snac_db, snac_redis, snac_qdrant, snac_backend, snac_frontend,
+#   snac_nginx, snac_free_agent
 #
 # Run on the VPS host (or over SSH):
 #   ssh root@187.77.3.56 'bash -s' < scripts/vps-remove-stray-containers.sh
 #
-# What this fixes:
-#   snac_free_coding_agent was a container running on port 3001 that is not part of
-#   the canonical stack. When the Kilo VS Code extension sends a message it routes
-#   through the nginx proxy; the presence of this duplicate service caused Kilo to
-#   receive conflicting responses from two agent endpoints (duplicate location crash).
-#   Removing it restores a single, well-defined backend endpoint.
+# History:
+#   snac_free_coding_agent was an OLD orphan container (port 3001) that was
+#   deployed manually and never added to docker-compose.yml.  It caused Kilo
+#   to crash by giving two simultaneous responses to the MCP client.
+#   The replacement canonical container is snac_free_agent, which IS defined
+#   in docker-compose.yml and is started with the rest of the stack.
 
 CANONICAL=(
   snac_db
@@ -23,6 +24,7 @@ CANONICAL=(
   snac_backend
   snac_frontend
   snac_nginx
+  snac_free_agent
 )
 
 PROJECT_DIR="/opt/snac-v2/backend"
