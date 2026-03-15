@@ -45,7 +45,7 @@ if (Test-Path $snacProfile) {
     Write-Host "[2/5] Restored SNAC-only MCP profile → mcp_settings.json"
 } else {
     # Profile doesn't exist yet – write a safe empty-servers config.
-    @{mcpServers = @{}} | ConvertTo-Json -Depth 5 | Set-Content $settingsFile -Encoding UTF8
+    @{mcpServers = @{}} | ConvertTo-Json -Depth 10 | Set-Content $settingsFile -Encoding UTF8
     Write-Host "[2/5] SNAC-only profile not found; wrote empty mcpServers config to mcp_settings.json"
     Write-Host "      To recreate it, run: ./set-kilo-snac-mode.ps1 after confirming S:\snac-v2\snac-v2 exists."
 }
@@ -60,7 +60,7 @@ $changed     = $false
 if ($json.mcpServers) {
     foreach ($key in @($json.mcpServers.PSObject.Properties.Name)) {
         $server = $json.mcpServers.$key
-        $allText = ($server | ConvertTo-Json -Compress -Depth 5).ToLower()
+        $allText = ($server | ConvertTo-Json -Compress -Depth 10).ToLower()
         $isVPS   = $vpsKeywords | Where-Object { $allText -match $_ }
         if ($isVPS) {
             if (-not $server.PSObject.Properties['disabled']) {

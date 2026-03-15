@@ -1,5 +1,7 @@
 # SNAC-v2: Agent System with Cockpit UI
 
+> **New here?** Read [GETTING-STARTED.md](GETTING-STARTED.md) first — it explains what to do in plain English.
+
 A modular agent system with RAG, memory timeline, and real-time monitoring cockpit.
 
 ## Deployment Truth
