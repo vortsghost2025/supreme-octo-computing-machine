@@ -1,5 +1,15 @@
 # SNAC-v2 Docker Compose
 # Full stack: PostgreSQL, Redis, Qdrant, Backend, Frontend, Nginx
+#
+# Canonical container names (only these should be running under the snac_network):
+#   snac_db  snac_redis  snac_qdrant  snac_backend  snac_frontend  snac_nginx
+#
+# IMPORTANT: always deploy with --remove-orphans to stop stray containers that
+# are not defined here.  Orphan containers (e.g. snac_free_coding_agent) on the
+# same network create duplicate agent endpoints that crash the Kilo VS Code
+# extension.  Example:
+#   docker compose up -d --remove-orphans
+#   docker compose pull && docker compose up -d --build --remove-orphans
 
 services:
   # PostgreSQL Database
