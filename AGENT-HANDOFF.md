@@ -116,7 +116,48 @@ Start here:
 
 There is too much machine state to rediscover repeatedly. This file preserves the stabilization work already done so future agents do not re-contaminate the repo boundary or repeat unsafe advice.
 
-## 2026-03-11 / 2026-03-12 Delta (Latest)
+## 2026-03-15 Delta — Kilo extension crash fix
+
+### Root cause identified and fixed
+
+A stray container **`snac_free_coding_agent`** (port `3001:3000`) was running on the
+Hostinger VPS inside the `backend` Docker project. It is **not** defined in any
+canonical `docker-compose.yml` in this repo. When Kilo sent a message, it received
+responses from two agent endpoints simultaneously (the expected backend + this
+duplicate), causing an immediate crash. The crash persisted across Windows reinstalls
+because the problem was on the VPS, not the local machine.
+
+### Files added / changed
+
+| File | Change |
+|------|--------|
+| `scripts/vps-remove-stray-containers.sh` | **New** — stops & removes any container not in the canonical list |
+| `reset-kilo-extension.ps1` | **New** — resets Kilo MCP settings and cache on Windows |
+| `scripts/vps-docker-triage.sh` | **Fixed** — wrong `PROJECT_DIR` (`/opt/agent-system` → `/opt/snac-v2/backend`) |
+| `docker-compose.yml` | Added `--remove-orphans` deployment instructions in header comment |
+| `KILO-ISOLATION.md` | Added VPS stray container section with fix instructions |
+
+### How to apply the fix
+
+1. **Remove the stray container from the VPS (run once):**
+   ```bash
+   # Requires SSH key-based access; run ssh-copy-id root@187.77.3.56 first if needed.
+   ssh root@187.77.3.56 'bash -s' < scripts/vps-remove-stray-containers.sh
+   ```
+2. **Reset Kilo locally (run on your Windows machine):**
+   ```powershell
+   ./reset-kilo-extension.ps1
+   ```
+3. **Reload VS Code:** `Ctrl+Shift+P` → `Developer: Reload Window`
+
+### Prevention
+
+Always deploy with `--remove-orphans` to kill stray containers automatically:
+```bash
+docker compose up -d --build --remove-orphans
+```
+
+
 
 ### Completed and Deployed
 

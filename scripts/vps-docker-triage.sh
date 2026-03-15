@@ -5,7 +5,7 @@ set -euo pipefail
 # Run on the VPS host (or over SSH):
 #   ssh root@187.77.3.56 'bash -s' < scripts/vps-docker-triage.sh
 
-PROJECT_DIR="/opt/agent-system"
+PROJECT_DIR="/opt/snac-v2/backend"
 
 echo "=== SNAC VPS TRIAGE START ==="
 date -u '+UTC %Y-%m-%d %H:%M:%S'
