@@ -1,8 +1,55 @@
 # Getting Started
 
-**New here? Start with this file.**  
-Everything else in the repo is for AI agents or advanced reference.  
-This file is for you.
+---
+
+## 🔴 KILO NOT WORKING? FIX IT IN ONE COMMAND
+
+**If Kilo crashes when you send a message, run this first.  
+This is the most common problem and this fixes it.**
+
+Open a terminal in VS Code (`Ctrl + backtick`) and run:
+
+```powershell
+./fix-kilo.ps1
+```
+
+Then press `Ctrl+Shift+P` → type `Reload Window` → press Enter.
+
+That is it. The script handles everything.
+
+**Why it crashes:** A rogue Docker container on your VPS sends duplicate responses to Kilo.  
+The `@swarm` mode (5 parallel agents) makes this 5× worse. The script removes the rogue  
+container and resets Kilo's local settings.
+
+**If `fix-kilo.ps1` cannot reach the VPS over SSH**, do this manually:
+
+```powershell
+ssh root@187.77.3.56
+# once connected:
+docker ps                           # look for anything NOT in the list below
+# canonical containers: snac_db  snac_redis  snac_qdrant  snac_backend  snac_frontend  snac_nginx
+docker stop <any-extra-name> && docker rm <any-extra-name>
+exit
+```
+
+Then run `./fix-kilo.ps1` again (it will still reset Kilo's local settings even without SSH).
+
+---
+
+## ⚠️ API COSTS — READ THIS BEFORE USING KILO
+
+**Your $30/month Claude Pro subscription does NOT cover Kilo's API calls.**  
+They are two completely separate billing accounts.
+
+| What you pay | What it covers |
+|---|---|
+| Claude.ai $30/mo subscription | claude.ai website only |
+| Anthropic API key (pay-per-use) | Kilo Code — billed per message |
+
+- If Kilo is configured with an API key, **every message costs money** on top of your subscription.
+- `@swarm` spawns 5 agents simultaneously — 5× the API calls, 5× the cost.
+- A $10/month hard limit on your API account at **https://console.anthropic.com → Billing → Spending Limits** prevents surprise charges.
+- If you were charged unexpectedly, read **[SPENDING-EMERGENCY.md](SPENDING-EMERGENCY.md)**.
 
 ---
 
@@ -67,30 +114,15 @@ Kilo is the VS Code extension you use to talk to the agent.
 
 ---
 
-## Kilo Crashes When I Send a Message
+## Using the Parallel Modes (@swarm, @coder, etc.)
 
-This is a known issue. Here is the fix, in order.
+Kilo has custom modes like `@architect`, `@coder`, `@debugger`, `@reviewer`, `@orchestrator`.
 
-**Step 1 — Fix the server (run this in a terminal, takes about 10 seconds):**
+**Important — use `@swarm` carefully:**  
+`@swarm` launches all 5 modes at the same time. This costs 5× the API tokens in one go.  
+Use it only for big, deliberate tasks — not for quick questions.
 
-```bash
-ssh root@187.77.3.56 'bash -s' < scripts/vps-remove-stray-containers.sh
-```
-
-This removes a rogue container on the VPS that was causing two agent processes to
-answer at the same time, which confused Kilo.
-
-**Step 2 — Reset Kilo on your PC (run this in PowerShell):**
-
-```powershell
-./reset-kilo-extension.ps1
-```
-
-**Step 3 — Reload VS Code:**
-
-`Ctrl+Shift+P` → type `Reload Window` → press Enter
-
-After these three steps, Kilo should work.
+**Safe daily use:** `@coder`, `@debugger`, or `@reviewer` alone (one mode, one agent).
 
 ---
 
@@ -117,27 +149,30 @@ Run them in a VS Code terminal when you need them.
 
 | Script | What it does |
 |--------|--------------|
+| `./fix-kilo.ps1` | **Fix Kilo crashing — run this first** |
 | `./set-kilo-snac-mode.ps1` | Puts Kilo in SNAC-only mode (recommended default) |
 | `./set-kilo-fullhome-mode.ps1` | Gives Kilo access to your whole home folder |
 | `./set-kilo-vps-mode.ps1` | Disables local filesystem access in Kilo |
-| `./reset-kilo-extension.ps1` | Full Kilo reset — use this when Kilo crashes |
+| `./reset-kilo-extension.ps1` | Full Kilo reset — more thorough version of fix-kilo |
 | `./set-mcp-local.ps1` | Switches MCP profile to local-only |
 | `./set-mcp-vps.ps1` | Switches MCP profile to VPS-only |
+| `./scripts/emergency-stop-api.ps1` | Blanks API key immediately to stop charges |
 
 ---
 
 ## Common Questions
 
+**Q: I ran `./fix-kilo.ps1` but it still crashes.**  
+A: SSH to the VPS manually and check: `docker ps` — if you see any container name that is NOT one of `snac_db snac_redis snac_qdrant snac_backend snac_frontend snac_nginx`, stop and remove it. Then run `./fix-kilo.ps1` again.
+
 **Q: Do I need Docker on my PC?**  
 A: No. Docker runs on the VPS. Your PC only needs VS Code and Kilo.
 
-**Q: Can I break the server by sending messages?**  
-A: No. The worst that happens is an error message. The server keeps running.
+**Q: Does my $30/month Claude subscription cover Kilo?**  
+A: No. Read the API Costs section above and [SPENDING-EMERGENCY.md](SPENDING-EMERGENCY.md).
 
 **Q: I reinstalled Windows and Kilo is broken again.**  
-A: Run `./reset-kilo-extension.ps1` in PowerShell and reload VS Code.  
-If it still crashes after that, the VPS stray container is likely back.  
-Follow the two-step fix in the "Kilo Crashes" section above.
+A: The problem is on the VPS, not your PC. Run `./fix-kilo.ps1`.
 
 **Q: Where is the live server?**  
 A: Hostinger VPS, IP `187.77.3.56`. Cockpit: `http://187.77.3.56`. API: `http://187.77.3.56:8000`.
@@ -151,7 +186,8 @@ A: Read `README.md` for a technical overview, then the files in the `plans/` fol
 
 The best way to diagnose a problem:
 
-1. Open the cockpit at `http://187.77.3.56` — if it loads, the server is up
-2. Check containers: `ssh root@187.77.3.56 "docker compose -f /opt/snac-v2/backend/docker-compose.yml ps"`
-3. Run the triage script: `ssh root@187.77.3.56 'bash -s' < scripts/vps-docker-triage.sh`
-4. If Kilo is the problem, run `./reset-kilo-extension.ps1`
+1. Run `./fix-kilo.ps1` first
+2. Open the cockpit at `http://187.77.3.56` — if it loads, the server is up
+3. Check containers: `ssh root@187.77.3.56 "docker compose -f /opt/snac-v2/backend/docker-compose.yml ps"`
+4. Run the triage script: `ssh root@187.77.3.56 'bash -s' < scripts/vps-docker-triage.sh`
+
