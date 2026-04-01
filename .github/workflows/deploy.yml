@@ -1,0 +1,73 @@
+﻿name: Build, Push, and Deploy
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: vscopilottradingbot/snac-v2-backend:latest
+          cache-from: type=registry,ref=vscopilottradingbot/snac-v2-backend:buildcache
+          cache-to: type=registry,ref=vscopilottradingbot/snac-v2-backend:buildcache,mode=max
+
+      - name: Build & push ui image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./ui
+          file: ./ui/Dockerfile
+          push: true
+          tags: vscopilottradingbot/snac-v2-frontend:latest
+          cache-from: type=registry,ref=vscopilottradingbot/snac-v2-frontend:buildcache
+          cache-to: type=registry,ref=vscopilottradingbot/snac-v2-frontend:buildcache,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH key
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Run deploy script on VPS
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" "/root/auto-deploy.sh"
