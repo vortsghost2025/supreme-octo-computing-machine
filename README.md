@@ -132,3 +132,4 @@ Edit `.env` to configure:
 
 MIT
 # Dashboard Live
+# CI/CD Pipeline Active
