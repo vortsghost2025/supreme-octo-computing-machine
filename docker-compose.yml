@@ -107,6 +107,21 @@ services:
     networks:
       - snac_network
 
+  # One-shot Qdrant WAL recovery service
+  # Run with: docker compose run --rm qdrant-recovery
+  # Then restart qdrant: docker compose restart qdrant
+  qdrant-recovery:
+    image: alpine:3.19
+    container_name: snac_qdrant_recovery
+    entrypoint: ["sh", "-c", "apk add --no-cache bash >/dev/null 2>&1 && exec bash /scripts/fix-qdrant-wal.sh"]
+    volumes:
+      - qdrant_data:/qdrant/storage
+      - ./scripts/fix-qdrant-wal.sh:/scripts/fix-qdrant-wal.sh:ro
+    profiles:
+      - recovery
+    networks:
+      - snac_network
+
 volumes:
   postgres_data:
   qdrant_data:
