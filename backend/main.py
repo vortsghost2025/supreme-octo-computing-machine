@@ -25,6 +25,12 @@ import redis.asyncio as aioredis
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct
 
+from orchestration import (
+    get_scheduler,
+    get_resource_manager,
+    get_decision_engine,
+)
+
 # Agent state storage (in production, use Redis/Postgres)
 agent_sessions: Dict[str, Dict[str, Any]] = {}
 _fallback_session_last_seen: Dict[str, float] = {}
@@ -1537,6 +1543,89 @@ class MemoryInjectApplyResponse(BaseModel):
     applied_count: int
     applied_item_ids: List[str]
     injected_at: str
+
+
+# ============== ORCHESTRATION MODELS ==============
+
+
+class OrchestrationTaskRequest(BaseModel):
+    task: Annotated[str, Field(min_length=1, max_length=8000)]
+    priority: str = "normal"
+    worker_type: str = "automation_worker"
+    payload: Optional[Dict[str, Any]] = None
+    timeout: Annotated[int, Field(gt=0, le=3600)] = 300
+    metadata: Optional[Dict[str, Any]] = None
+
+    @field_validator("priority")
+    @classmethod
+    def validate_priority(cls, v: str) -> str:
+        v2 = v.lower().strip()
+        if v2 not in {"high", "normal", "low"}:
+            raise ValueError("priority must be one of: high, normal, low")
+        return v2
+
+
+class OrchestrationTaskResponse(BaseModel):
+    task_id: str
+    task: str
+    priority: str
+    worker_type: str
+    status: str
+    created_at: str
+
+
+class OrchestrationTaskStatusResponse(BaseModel):
+    task_id: str
+    task: str
+    priority: str
+    worker_type: str
+    status: str
+    created_at: str
+    scheduled_at: Optional[str] = None
+    started_at: Optional[str] = None
+    completed_at: Optional[str] = None
+    result: Optional[Any] = None
+    error: Optional[str] = None
+
+
+class OrchestrationDecisionRequest(BaseModel):
+    context: Dict[str, Any]
+    decision_type: Optional[str] = None
+
+    @field_validator("decision_type")
+    @classmethod
+    def validate_decision_type(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
+        allowed = {
+            "scale_up",
+            "scale_down",
+            "reroute",
+            "retry",
+            "throttle",
+            "recover",
+            "defer",
+        }
+        if v not in allowed:
+            raise ValueError(f"decision_type must be one of: {', '.join(sorted(allowed))}")
+        return v
+
+
+class OrchestrationDecisionResponse(BaseModel):
+    decision_id: str
+    decision_type: str
+    context_summary: Dict[str, Any]
+    reasoning: str
+    action: Dict[str, Any]
+    confidence: float
+    created_at: str
+
+
+class OrchestrationStatsResponse(BaseModel):
+    scheduler: Dict[str, Any]
+    resources: Dict[str, Any]
+    health: Dict[str, Any]
+    recent_decisions: List[Dict[str, Any]]
 
 
 # ============== HEALTH ENDPOINTS ==============
@@ -5101,6 +5190,113 @@ async def get_worker_lifecycle(worker_id: str):
         claimed_at=worker.get("claimed_at"),
         progress_at=worker.get("progress_at"),
         completed_at=worker.get("completed_at"),
+    )
+
+
+# ============== ORCHESTRATION API ENDPOINTS ==============
+
+
+@app.post("/api/orchestration/tasks", response_model=OrchestrationTaskResponse)
+async def orchestration_submit_task(request: OrchestrationTaskRequest):
+    """Submit a task to the orchestration scheduler."""
+    scheduler = get_scheduler(redis_client=_redis)
+    entry = await scheduler.schedule_task(
+        task=request.task,
+        priority=request.priority,
+        worker_type=request.worker_type,
+        payload=request.payload,
+        timeout=request.timeout,
+        metadata=request.metadata,
+    )
+
+    await _timeline_append(
+        {
+            "type": "orchestration_task_submitted",
+            "task_id": entry["task_id"],
+            "priority": request.priority,
+            "worker_type": request.worker_type,
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+    )
+
+    return OrchestrationTaskResponse(
+        task_id=entry["task_id"],
+        task=entry["task"],
+        priority=entry["priority"],
+        worker_type=entry["worker_type"],
+        status=entry["status"],
+        created_at=entry["created_at"],
+    )
+
+
+@app.get(
+    "/api/orchestration/tasks/{task_id}",
+    response_model=OrchestrationTaskStatusResponse,
+)
+async def orchestration_get_task(task_id: str):
+    """Get the status of an orchestration task by ID."""
+    scheduler = get_scheduler(redis_client=_redis)
+    task = await scheduler.get_task(task_id)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    return OrchestrationTaskStatusResponse(
+        task_id=task["task_id"],
+        task=task["task"],
+        priority=task["priority"],
+        worker_type=task["worker_type"],
+        status=task["status"],
+        created_at=task["created_at"],
+        scheduled_at=task.get("scheduled_at"),
+        started_at=task.get("started_at"),
+        completed_at=task.get("completed_at"),
+        result=task.get("result"),
+        error=task.get("error"),
+    )
+
+
+@app.post(
+    "/api/orchestration/decisions",
+    response_model=OrchestrationDecisionResponse,
+)
+async def orchestration_make_decision(request: OrchestrationDecisionRequest):
+    """Trigger an autonomous decision based on system context."""
+    engine = get_decision_engine(redis_client=_redis)
+    decision = await engine.make_decision(
+        context=request.context,
+        decision_type=request.decision_type,
+    )
+
+    await _timeline_append(
+        {
+            "type": "orchestration_decision",
+            "decision_id": decision["decision_id"],
+            "decision_type": decision["decision_type"],
+            "confidence": decision["confidence"],
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+    )
+
+    return OrchestrationDecisionResponse(**decision)
+
+
+@app.get("/api/orchestration/stats", response_model=OrchestrationStatsResponse)
+async def orchestration_get_stats():
+    """Get orchestration statistics including scheduler, resources, and health."""
+    scheduler = get_scheduler(redis_client=_redis)
+    resource_mgr = get_resource_manager(redis_client=_redis)
+    engine = get_decision_engine(redis_client=_redis)
+
+    scheduler_stats = await scheduler.get_stats()
+    resource_stats = await resource_mgr.get_stats()
+    health = await engine.evaluate_health(scheduler_stats, resource_stats)
+    recent_decisions = await engine.get_decisions(limit=10)
+
+    return OrchestrationStatsResponse(
+        scheduler=scheduler_stats,
+        resources=resource_stats,
+        health=health,
+        recent_decisions=recent_decisions,
     )
 
 
