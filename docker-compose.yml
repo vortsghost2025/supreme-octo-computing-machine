@@ -75,28 +75,11 @@ services:
       qdrant:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
-    restart: unless-stopped
-    networks:
-      - snac_network
-
-  # IDE Service (VS Code in browser)
-  snac-ide:
-    image: codercom/code-server:4.96.2
-    container_name: snac_ide
-    ports:
-      - "8080:8080"
-    environment:
-      - PASSWORD=${IDE_PASSWORD:?Set IDE_PASSWORD in .env}
-    volumes:
-      - workspace_data:/home/coder/project
-    depends_on:
-      backend:
-        condition: service_healthy
     restart: unless-stopped
     networks:
       - snac_network
@@ -130,10 +113,34 @@ services:
     networks:
       - snac_network
 
+  # Web IDE (code-server / VS Code in browser)
+  snac-ide:
+    image: codercom/code-server:4.96.2
+    container_name: snac_ide
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      - PASSWORD=${IDE_PASSWORD:?Set IDE_PASSWORD in .env}
+    volumes:
+      - ./:/home/coder/project
+      - code_server_data:/home/coder/.local
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/healthz || curl -f http://localhost:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - snac_network
+
 volumes:
   postgres_data:
   qdrant_data:
-  workspace_data:
+  code_server_data:
 
 networks:
   snac_network:
