@@ -3721,7 +3721,19 @@ async def run_free_coding_agent(request: FreeCodingAgentRequest):
             cwd=agent_dir,
         )
 
-        stdout, stderr = await process.communicate(input=task_data.encode())
+        try:
+            stdout, stderr = await asyncio.wait_for(
+                process.communicate(input=task_data.encode()),
+                timeout=300,  # 5 minute timeout for agent execution
+            )
+        except asyncio.TimeoutError:
+            process.kill()
+            await process.wait()
+            return FreeCodingAgentResponse(
+                success=False,
+                error="Agent execution timed out after 300 seconds",
+                session_id=session_id,
+            )
 
         if process.returncode != 0:
             return FreeCodingAgentResponse(
@@ -3905,13 +3917,19 @@ async def _execute_query(query: str, session: Dict[str, Any]) -> tuple[str, int]
     messages.append({"role": "user", "content": query})
 
     try:
-        response = await _openai_client.chat.completions.create(
-            model=OPENAI_MODEL,
-            messages=messages,
+        response = await asyncio.wait_for(
+            _openai_client.chat.completions.create(
+                model=OPENAI_MODEL,
+                messages=messages,
+            ),
+            timeout=120,  # 2 minute timeout for LLM API calls
         )
         text = response.choices[0].message.content or ""
         tokens = response.usage.total_tokens if response.usage else 0
         return (text, tokens)
+    except asyncio.TimeoutError:
+        print("OpenAI query timed out after 120 seconds")
+        return ("Error: LLM query timed out. The model may be overloaded.", 0)
     except Exception as e:
         error_msg = str(e)
         # Return the actual error message instead of hiding it behind generic text
@@ -4058,7 +4076,7 @@ async def _terminal_session_kill(session_id: str) -> None:
         return
 
     proc = session.get("process")
-    if proc and proc.poll() is None:
+    if proc and proc.returncode is None:
         try:
             proc.terminate()
             await asyncio.wait_for(proc.wait(), timeout=5.0)
@@ -4136,7 +4154,7 @@ async def get_terminal_session(session_id: str):
         raise HTTPException(status_code=404, detail="Terminal session not found")
 
     proc = session.get("process")
-    if proc and proc.poll() is not None:
+    if proc and proc.returncode is not None:
         session["status"] = "ended"
         session["ended_at"] = datetime.utcnow().isoformat()
 
@@ -4179,7 +4197,7 @@ async def send_terminal_input(session_id: str, request: TerminalInputRequest):
         raise HTTPException(status_code=404, detail="Terminal session not found")
 
     proc = session.get("process")
-    if not proc or proc.poll() is not None:
+    if not proc or proc.returncode is not None:
         raise HTTPException(status_code=400, detail="Terminal process not running")
 
     try:
@@ -4208,7 +4226,7 @@ async def stream_terminal_output(session_id: str):
         output_buffer = session.get("output_buffer", [])
 
         while True:
-            if proc.poll() is not None:
+            if proc.returncode is not None:
                 remaining = await proc.stdout.read()
                 if remaining:
                     output_buffer.append(remaining.decode("utf-8", errors="replace"))
@@ -4222,12 +4240,15 @@ async def stream_terminal_output(session_id: str):
             except asyncio.TimeoutError:
                 pass
 
-            stderr = await proc.stderr.read(1024)
-            if stderr:
-                output_buffer.append(
-                    f"[stderr] {stderr.decode('utf-8', errors='replace')}"
-                )
-                yield f"data: {json.dumps({'session_id': session_id, 'type': 'stderr', 'data': stderr.decode('utf-8', errors='replace')})}\n\n"
+            try:
+                stderr = await asyncio.wait_for(proc.stderr.read(1024), timeout=0.5)
+                if stderr:
+                    output_buffer.append(
+                        f"[stderr] {stderr.decode('utf-8', errors='replace')}"
+                    )
+                    yield f"data: {json.dumps({'session_id': session_id, 'type': 'stderr', 'data': stderr.decode('utf-8', errors='replace')})}\n\n"
+            except asyncio.TimeoutError:
+                pass
 
             if len(output_buffer) > 1000:
                 output_buffer[:] = output_buffer[-500:]
