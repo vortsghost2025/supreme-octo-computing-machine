@@ -90,6 +90,36 @@ services:
     networks:
       - snac_network
 
+  # Web IDE (code-server / VS Code in browser)
+  snac-ide:
+    image: ghcr.io/coder/code-server:4.96.4
+    container_name: snac_ide
+    command:
+      - --bind-addr
+      - 0.0.0.0:8080
+      - --auth
+      - password
+      - --disable-telemetry
+      - /home/coder/workspace
+    ports:
+      - "8080:8080"
+    environment:
+      - PASSWORD=${CODE_SERVER_PASSWORD:-changeme}
+    volumes:
+      - ide_data:/home/coder/workspace
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - snac_network
+
   # Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
@@ -110,6 +140,7 @@ services:
 volumes:
   postgres_data:
   qdrant_data:
+  ide_data:
 
 networks:
   snac_network:
