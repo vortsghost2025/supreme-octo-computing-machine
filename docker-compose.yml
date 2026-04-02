@@ -74,6 +74,12 @@ services:
         condition: service_healthy
       qdrant:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
     networks:
       - snac_network
@@ -112,7 +118,7 @@ services:
     image: codercom/code-server:4.96.2
     container_name: snac_ide
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     environment:
       - PASSWORD=${IDE_PASSWORD:?Set IDE_PASSWORD in .env}
     volumes:
