@@ -74,6 +74,29 @@ services:
         condition: service_healthy
       qdrant:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - snac_network
+
+  # IDE Service (VS Code in browser)
+  snac-ide:
+    image: codercom/code-server:4.96.2
+    container_name: snac_ide
+    ports:
+      - "8080:8080"
+    environment:
+      - PASSWORD=${IDE_PASSWORD:?Set IDE_PASSWORD in .env}
+    volumes:
+      - workspace_data:/home/coder/project
+    depends_on:
+      backend:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - snac_network
@@ -110,6 +133,7 @@ services:
 volumes:
   postgres_data:
   qdrant_data:
+  workspace_data:
 
 networks:
   snac_network:
