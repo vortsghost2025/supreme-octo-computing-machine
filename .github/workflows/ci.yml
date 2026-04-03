@@ -22,7 +22,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - name: Install dependencies
+      - name: Install opencode dependencies
         run: npm ci
+      - name: Install singularity workspace dependencies
+        run: |
+          cd ../../../singularity
+          npm ci
+        working-directory: ${{ github.workspace }}
       - name: Run tests
         run: npm test
