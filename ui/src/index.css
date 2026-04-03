@@ -1607,3 +1607,145 @@ body {
 .node.active .node-icon {
   animation: pulse 1s ease-in-out infinite;
 }
+
+/* Governor Panel */
+.governor-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.governor-context h3,
+.governor-validate h3,
+.governor-danger-zones h3 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.governor-context-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.governor-metric {
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.governor-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.governor-metric strong {
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.governor-input-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.governor-input-row input {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.governor-input-row button {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--accent-blue);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.governor-input-row button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.governor-input-row button:last-of-type {
+  background: var(--accent-purple);
+}
+
+.validation-result {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  margin-top: 8px;
+}
+
+.validation-result.allowed {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid var(--accent-green);
+}
+
+.validation-result.blocked {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid var(--accent-red);
+}
+
+.validation-status {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.validation-reason {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.governor-narration {
+  margin-top: 8px;
+  padding: 10px 14px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.governor-narration strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.governor-zone-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.governor-zone-item {
+  padding: 6px 10px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid var(--accent-yellow);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--accent-yellow);
+  font-family: monospace;
+}

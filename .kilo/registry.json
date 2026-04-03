@@ -1,0 +1,46 @@
+{
+  "projects": [
+    {
+      "projectName": "supreme-octo-computing-machine",
+      "lifecycle": "production",
+      "dangerZones": [
+        "Azure credential rotation - verify all service principals before updating",
+        "OpenAI API key changes - requires coordinated deployment across all dependent services",
+        "Database schema migrations - must include rollback scripts"
+      ],
+      "notes": [
+        "Primary AI orchestration platform with multiple downstream dependencies",
+        "All deployments require staging validation before production promotion",
+        "Monitor OpenAI token usage and rate limits closely during peak hours"
+      ]
+    },
+    {
+      "projectName": "snac-v2-backend",
+      "lifecycle": "production",
+      "dangerZones": [
+        "API contract changes - breaking changes require versioned endpoints",
+        "Authentication provider configuration - impacts all connected clients",
+        "Background job queue modifications - can cause processing delays or duplicates"
+      ],
+      "notes": [
+        "Core backend service powering SNAC v2 platform",
+        "Maintains strict backward compatibility for mobile app clients",
+        "Scheduled maintenance windows: Sundays 2-4 AM UTC"
+      ]
+    },
+    {
+      "projectName": "snac-v2-ui",
+      "lifecycle": "development",
+      "dangerZones": [
+        "Component library updates - may introduce breaking style changes",
+        "State management refactoring - affects multiple feature modules",
+        "Build configuration changes - can impact bundle size and performance"
+      ],
+      "notes": [
+        "Frontend application under active development with frequent feature additions",
+        "Coordinated releases with snac-v2-backend on bi-weekly cadence",
+        "Design system migration in progress - avoid mixing old and new component patterns"
+      ]
+    }
+  ]
+}

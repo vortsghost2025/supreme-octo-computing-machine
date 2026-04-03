@@ -1,0 +1,58 @@
+[
+  {
+    "id": "azure-auth-msal",
+    "title": "Azure Authentication with MSAL",
+    "snippet": "Implement Azure AD authentication using MSAL library with token caching and refresh logic",
+    "tags": ["azure", "authentication", "msal", "oauth2", "security"],
+    "relevance": 0.95
+  },
+  {
+    "id": "openai-chat-completion",
+    "title": "OpenAI Chat Completion Integration",
+    "snippet": "Pattern for integrating OpenAI chat completions with streaming responses and error recovery",
+    "tags": ["openai", "llm", "streaming", "api-integration", "ai"],
+    "relevance": 0.92
+  },
+  {
+    "id": "error-handling-middleware",
+    "title": "Structured Error Handling Middleware",
+    "snippet": "Centralized error handling with custom error types, logging, and user-friendly responses",
+    "tags": ["error-handling", "middleware", "logging", "best-practices"],
+    "relevance": 0.88
+  },
+  {
+    "id": "api-rate-limiting",
+    "title": "API Rate Limiting with Token Bucket",
+    "snippet": "Implement rate limiting using token bucket algorithm with configurable limits per endpoint",
+    "tags": ["rate-limiting", "api", "performance", "throttling", "security"],
+    "relevance": 0.85
+  },
+  {
+    "id": "data-validation-zod",
+    "title": "Data Validation with Zod Schemas",
+    "snippet": "Runtime data validation patterns using Zod for request bodies, query params, and responses",
+    "tags": ["validation", "zod", "typescript", "type-safety", "input-sanitization"],
+    "relevance": 0.90
+  },
+  {
+    "id": "session-management",
+    "title": "Secure Session Management",
+    "snippet": "Session handling with secure cookies, expiration, rotation, and Redis-backed storage",
+    "tags": ["session", "security", "cookies", "redis", "authentication"],
+    "relevance": 0.87
+  },
+  {
+    "id": "file-upload-handling",
+    "title": "File Upload with Azure Blob Storage",
+    "snippet": "Pattern for handling file uploads with validation, streaming to Azure Blob Storage, and progress tracking",
+    "tags": ["file-upload", "azure", "blob-storage", "streaming", "validation"],
+    "relevance": 0.83
+  },
+  {
+    "id": "webhook-processing",
+    "title": "Webhook Processing and Verification",
+    "snippet": "Secure webhook endpoint with signature verification, idempotency, and retry handling",
+    "tags": ["webhooks", "security", "idempotency", "event-driven", "api"],
+    "relevance": 0.80
+  }
+]

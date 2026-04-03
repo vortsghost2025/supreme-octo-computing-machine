@@ -5104,6 +5104,238 @@ async def get_worker_lifecycle(worker_id: str):
     )
 
 
+# ============== GOVERNOR MODELS ==============
+
+GOVERNOR_PROJECT_ROOT = os.getenv("GOVERNOR_PROJECT_ROOT", "/workspace")
+_governor_context_cache: Optional[Dict[str, Any]] = None
+_governor_library_cache: Dict[str, List[Dict[str, Any]]] = {}
+
+
+class GovernorContextResponse(BaseModel):
+    name: str
+    lifecycle: str
+    dangerZones: List[str]
+    allowedImports: List[str]
+    manifestPath: Optional[str] = None
+    loadedAt: Optional[str] = None
+
+
+class GovernorValidateRequest(BaseModel):
+    operationPath: Annotated[str, Field(min_length=1, max_length=2000)]
+    projectRoot: Optional[str] = None
+
+
+class GovernorValidateResponse(BaseModel):
+    allowed: bool
+    reason: Optional[str] = None
+    ttsNarration: Optional[str] = None
+
+
+class GovernorSearchResponse(BaseModel):
+    query: str
+    results: List[Dict[str, Any]]
+    count: int
+
+
+class GovernorGuidanceResponse(BaseModel):
+    projectName: str
+    lifecycle: str
+    dangerZones: List[str]
+    notes: List[str]
+
+
+class GovernorNarrateRequest(BaseModel):
+    message: Annotated[str, Field(min_length=1, max_length=5000)]
+
+
+class GovernorNarrateResponse(BaseModel):
+    ssml: str
+    message: str
+
+
+class GovernorRefreshResponse(BaseModel):
+    success: bool
+    context: Optional[GovernorContextResponse] = None
+    message: str
+
+
+def _governor_load_context(project_root: Optional[str] = None) -> Dict[str, Any]:
+    """Load project context from manifest file, with caching."""
+    global _governor_context_cache
+
+    root = project_root or GOVERNOR_PROJECT_ROOT
+    manifest_path = f"{root.rstrip('/')}/project.manifest.json"
+
+    try:
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            parsed = json.load(f)
+        context = {
+            "name": parsed.get("name", "unknown"),
+            "lifecycle": parsed.get("lifecycle", "development"),
+            "dangerZones": parsed.get("dangerZones", []),
+            "allowedImports": parsed.get("allowedImports", []),
+            "manifestPath": manifest_path,
+            "loadedAt": datetime.utcnow().isoformat(),
+        }
+        _governor_context_cache = context
+        return context
+    except FileNotFoundError:
+        return {
+            "name": "unknown",
+            "lifecycle": "development",
+            "dangerZones": [],
+            "allowedImports": [],
+            "manifestPath": None,
+            "loadedAt": None,
+        }
+    except json.JSONDecodeError:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Invalid JSON in manifest at {manifest_path}",
+        )
+
+
+def _governor_validate_operation(context: Dict[str, Any], operation_path: str) -> Dict[str, Any]:
+    """Validate an operation path against danger zones."""
+    normalized = operation_path.lstrip("/")
+    danger_zones = context.get("dangerZones", [])
+
+    is_danger = any(
+        normalized.startswith(zone.lstrip("/"))
+        for zone in danger_zones
+    )
+
+    if is_danger:
+        reason = f"Operation {operation_path} is blocked by danger zone configuration."
+        tts = "Access denied. The requested operation is considered unsafe for this project."
+        return {"allowed": False, "reason": reason, "ttsNarration": tts}
+
+    return {"allowed": True}
+
+
+def _governor_search_library(query: str) -> List[Dict[str, Any]]:
+    """Search the library index at .kilo/library/index.json."""
+    cache_key = query.lower()
+    if cache_key in _governor_library_cache:
+        return _governor_library_cache[cache_key]
+
+    try:
+        with open(".kilo/library/index.json", "r", encoding="utf-8") as f:
+            index = json.load(f)
+        results = [
+            entry for entry in index
+            if (
+                cache_key in entry.get("title", "").lower()
+                or cache_key in entry.get("snippet", "").lower()
+                or any(cache_key in t.lower() for t in entry.get("tags", []))
+            )
+        ]
+        _governor_library_cache[cache_key] = results
+        return results
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
+
+
+def _governor_get_guidance(project_name: str) -> Dict[str, Any]:
+    """Get cross-project guidance from .kilo/registry.json."""
+    try:
+        with open(".kilo/registry.json", "r", encoding="utf-8") as f:
+            registry = json.load(f)
+        entry = registry.get(project_name)
+        if entry:
+            return entry
+        return {
+            "projectName": project_name,
+            "lifecycle": "unknown",
+            "dangerZones": [],
+            "notes": ["No guidance found for this project."],
+        }
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {
+            "projectName": project_name,
+            "lifecycle": "unknown",
+            "dangerZones": [],
+            "notes": ["Project registry not found. Create .kilo/registry.json to enable cross-project guidance."],
+        }
+
+
+def _governor_generate_ssml(message: str) -> str:
+    """Generate SSML-wrapped narration for TTS."""
+    escaped = (
+        message
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+        .replace("'", "&apos;")
+    )
+    return (
+        f'<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="en-US">\n'
+        f'  <voice name="en-US-AriaNeural">\n'
+        f'    <prosody rate="medium" pitch="default">{escaped}</prosody>\n'
+        f"  </voice>\n"
+        f"</speak>"
+    )
+
+
+# ============== GOVERNOR ENDPOINTS ==============
+
+
+@app.get("/api/governor/context", response_model=GovernorContextResponse)
+async def governor_get_context(projectRoot: Optional[str] = None):
+    """Load project context from manifest file."""
+    context = _governor_load_context(projectRoot)
+    return GovernorContextResponse(**context)
+
+
+@app.post("/api/governor/validate", response_model=GovernorValidateResponse)
+async def governor_validate(request: GovernorValidateRequest):
+    """Validate an operation path against project danger zones."""
+    context = _governor_load_context(request.projectRoot)
+    result = _governor_validate_operation(context, request.operationPath)
+    return GovernorValidateResponse(**result)
+
+
+@app.get("/api/governor/search", response_model=GovernorSearchResponse)
+async def governor_search(q: str = ""):
+    """Search the library index."""
+    if not q.strip():
+        return GovernorSearchResponse(query="", results=[], count=0)
+    results = _governor_search_library(q)
+    return GovernorSearchResponse(query=q, results=results, count=len(results))
+
+
+@app.get("/api/governor/guidance", response_model=GovernorGuidanceResponse)
+async def governor_guidance(project: str = ""):
+    """Get cross-project guidance from registry."""
+    if not project.strip():
+        raise HTTPException(status_code=400, detail="project query parameter is required")
+    guidance = _governor_get_guidance(project)
+    return GovernorGuidanceResponse(**guidance)
+
+
+@app.post("/api/governor/narrate", response_model=GovernorNarrateResponse)
+async def governor_narrate(request: GovernorNarrateRequest):
+    """Generate SSML-wrapped narration for TTS."""
+    ssml = _governor_generate_ssml(request.message)
+    return GovernorNarrateResponse(ssml=ssml, message=request.message)
+
+
+@app.post("/api/governor/refresh", response_model=GovernorRefreshResponse)
+async def governor_refresh(projectRoot: Optional[str] = None):
+    """Refresh cached project context by re-reading the manifest."""
+    global _governor_context_cache, _governor_library_cache
+    _governor_library_cache.clear()
+    context = _governor_load_context(projectRoot)
+    _governor_context_cache = context
+    has_manifest = context.get("manifestPath") is not None
+    return GovernorRefreshResponse(
+        success=has_manifest,
+        context=GovernorContextResponse(**context) if has_manifest else None,
+        message="Context refreshed successfully" if has_manifest else "No manifest found to refresh",
+    )
+
+
 if __name__ == "__main__":
     import uvicorn
 

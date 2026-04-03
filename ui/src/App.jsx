@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import IDETerminal from './components/IDETerminal';
 
 // API Base URL - relative so it routes through nginx in production; override with VITE_API_URL in dev
-const API_BASE = import.meta.env.VITE_API_URL || "/api";
+const API_BASE = "http://localhost:4000/api";
 
 // ============== COMPONENTS ==============
 
@@ -330,6 +330,265 @@ function SwarmIntelligencePanel({ summary }) {
         <div className="intel-strategy">
           <span className="intel-label">Recommended strategy:</span>
           <span className={`intel-value ${strategyColor}`}>{summary.recommended_strategy}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GovernorPanel() {
+  const [context, setContext] = useState(null);
+  const [validationResult, setValidationResult] = useState(null);
+  const [operationPath, setOperationPath] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [guidanceProject, setGuidanceProject] = useState("");
+  const [guidanceResult, setGuidanceResult] = useState(null);
+  const [narration, setNarration] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/governor/context`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data) => setContext(data))
+      .catch(() => setContext(null));
+  }, []);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const res = await fetch(`${API_BASE}/governor/refresh`, { method: "POST" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (data.context) setContext(data.context);
+      alert(data.message);
+    } catch (e) {
+      console.error("Refresh failed:", e);
+      alert("Refresh failed: " + e.message);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const handleValidate = async () => {
+    if (!operationPath.trim()) return;
+    setLoading(true);
+    setValidationResult(null);
+    try {
+      const res = await fetch(`${API_BASE}/governor/validate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ operationPath }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setValidationResult(data);
+    } catch (e) {
+      console.error("Validation failed:", e);
+      setValidationResult({ allowed: false, reason: e.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE}/governor/search?q=${encodeURIComponent(searchQuery)}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setSearchResults(data.results || []);
+    } catch (e) {
+      console.error("Search failed:", e);
+      setSearchResults([]);
+    }
+  };
+
+  const handleGuidance = async () => {
+    if (!guidanceProject.trim()) return;
+    try {
+      const res = await fetch(`${API_BASE}/governor/guidance?project=${encodeURIComponent(guidanceProject)}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setGuidanceResult(data);
+    } catch (e) {
+      console.error("Guidance failed:", e);
+      setGuidanceResult(null);
+    }
+  };
+
+  const handleNarrate = async () => {
+    const msg = validationResult
+      ? validationResult.ttsNarration || validationResult.reason || "Operation allowed."
+      : `Operation path: ${operationPath}`;
+    if (!msg.trim()) return;
+    try {
+      const res = await fetch(`${API_BASE}/governor/narrate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setNarration(data.ssml || data.message || msg);
+    } catch (e) {
+      console.error("Narration failed:", e);
+      setNarration(msg);
+    }
+  };
+
+  return (
+    <div className="panel">
+      <div className="panel-header">
+        <h2>🛡️ Governor</h2>
+        <span className={`badge ${context ? "success" : "warning"}`}>
+          {context ? "Active" : "No Context"}
+        </span>
+      </div>
+      <div className="panel-content governor-panel">
+        <div className="governor-context">
+          <div className="governor-context-header">
+            <h3>Project Context</h3>
+            <button onClick={handleRefresh} disabled={refreshing}>
+              {refreshing ? "Refreshing..." : "↻ Refresh"}
+            </button>
+          </div>
+          {context ? (
+            <div className="governor-context-grid">
+              <div className="governor-metric">
+                <span className="governor-label">Name</span>
+                <strong>{context.name}</strong>
+              </div>
+              <div className="governor-metric">
+                <span className="governor-label">Lifecycle</span>
+                <strong>{context.lifecycle}</strong>
+              </div>
+              <div className="governor-metric">
+                <span className="governor-label">Danger Zones</span>
+                <strong>{(context.dangerZones ?? []).length}</strong>
+              </div>
+              <div className="governor-metric">
+                <span className="governor-label">Allowed Imports</span>
+                <strong>{(context.allowedImports ?? []).length}</strong>
+              </div>
+            </div>
+          ) : (
+            <div className="empty">No project manifest found. Create project.manifest.json in your project root.</div>
+          )}
+        </div>
+
+        <div className="governor-validate">
+          <h3>Validate Operation</h3>
+          <div className="governor-input-row">
+            <input
+              type="text"
+              value={operationPath}
+              onChange={(e) => { setOperationPath(e.target.value); setValidationResult(null); }}
+              placeholder="Enter operation path (e.g., /backend/secrets.env)"
+            />
+            <button onClick={handleValidate} disabled={loading}>
+              {loading ? "Checking..." : "Validate"}
+            </button>
+            <button onClick={handleNarrate} disabled={!validationResult && !operationPath.trim()}>
+              Narrate
+            </button>
+          </div>
+          {validationResult && (
+            <div className={`validation-result ${validationResult.allowed ? "allowed" : "blocked"}`}>
+              <span className="validation-status">
+                {validationResult.allowed ? "✅ Allowed" : "🚫 Blocked"}
+              </span>
+              {validationResult.reason && <div className="validation-reason">{validationResult.reason}</div>}
+            </div>
+          )}
+          {narration && (
+            <div className="governor-narration">
+              <strong>TSS Narration:</strong>
+              <p>{narration}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="governor-search">
+          <h3>Search Library</h3>
+          <div className="governor-input-row">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search library..."
+            />
+            <button onClick={handleSearch}>Search</button>
+          </div>
+          {searchResults.length > 0 && (
+            <ul className="governor-search-results">
+              {searchResults.map((entry, idx) => (
+                <li key={idx} className="governor-search-item">
+                  <strong>{entry.title}</strong>
+                  <p>{entry.snippet}</p>
+                  {entry.tags && <span className="governor-search-tags">{entry.tags.join(", ")}</span>}
+                </li>
+              ))}
+            </ul>
+          )}
+          {searchQuery && searchResults.length === 0 && (
+            <div className="empty">No results found for "{searchQuery}".</div>
+          )}
+        </div>
+
+        <div className="governor-guidance">
+          <h3>Cross-Project Guidance</h3>
+          <div className="governor-input-row">
+            <input
+              type="text"
+              value={guidanceProject}
+              onChange={(e) => { setGuidanceProject(e.target.value); setGuidanceResult(null); }}
+              placeholder="Enter project name..."
+            />
+            <button onClick={handleGuidance}>Get Guidance</button>
+          </div>
+          {guidanceResult && (
+            <div className="governor-guidance-result">
+              <div className="governor-metric">
+                <span className="governor-label">Lifecycle</span>
+                <strong>{guidanceResult.lifecycle}</strong>
+              </div>
+              {guidanceResult.dangerZones && guidanceResult.dangerZones.length > 0 && (
+                <ul className="governor-zone-list">
+                  {guidanceResult.dangerZones.map((zone, idx) => (
+                    <li key={idx}>⚠️ {zone}</li>
+                  ))}
+                </ul>
+              )}
+              {guidanceResult.notes && (
+                <ul className="governor-guidance-notes">
+                  {guidanceResult.notes.map((note, idx) => (
+                    <li key={idx}>{note}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="governor-danger-zones">
+          <h3>Danger Zones</h3>
+          {context && (context.dangerZones ?? []).length > 0 ? (
+            <ul className="governor-zone-list">
+              {(context.dangerZones ?? []).map((zone, idx) => (
+                <li key={idx} className="governor-zone-item">⚠️ {zone}</li>
+              ))}
+            </ul>
+          ) : (
+            <div className="empty">No danger zones configured.</div>
+          )}
         </div>
       </div>
     </div>
@@ -1658,6 +1917,7 @@ function App() {
               />
             </div>
             <div className="panels-second-row">
+              <GovernorPanel />
               <MemoryTimeline events={timeline} isLoading={backendStatus !== "ok"} />
               <IDETerminal />
               <TokenMonitor usage={tokenUsage} currentCost={currentCost} />

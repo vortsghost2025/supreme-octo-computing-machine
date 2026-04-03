@@ -1,0 +1,42 @@
+{
+  "version": "1.0",
+  "policies": [
+    {
+      "id": "POL-001",
+      "name": "Require Managed Identity for Storage Accounts",
+      "type": "require_managed_identity",
+      "match": "azure/storage/",
+      "details": {
+        "resourceType": "Azure Storage Account"
+      },
+      "enabled": true
+    },
+    {
+      "id": "POL-002",
+      "name": "Require Storage Blob Data Contributor for Blob Writes",
+      "type": "require_role",
+      "match": "azure/blob/write",
+      "details": {
+        "role": "Storage Blob Data Contributor"
+      },
+      "enabled": true
+    },
+    {
+      "id": "POL-003",
+      "name": "Block Secret and Key Rotation Without Approval",
+      "type": "require_approval",
+      "match": "azure/keyvault/rotate",
+      "details": {
+        "operation": "Secret/Key rotation"
+      },
+      "enabled": true
+    },
+    {
+      "id": "POL-004",
+      "name": "Block Unauthenticated Azure Operations",
+      "type": "block_unauthenticated",
+      "match": "azure/",
+      "enabled": true
+    }
+  ]
+}
