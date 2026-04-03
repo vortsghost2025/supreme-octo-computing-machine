@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - name: Install dependencies
+      - name: Install opencode dependencies
         run: npm ci
       - name: Install integrated-swarm dependencies
         working-directory: ./integrated-swarm
@@ -31,5 +31,8 @@ jobs:
       - name: Build integrated-swarm
         working-directory: ./integrated-swarm
         run: npm run build
+      - name: Install UI package dependencies
+        run: npm ci
+        working-directory: ../../../ui
       - name: Run tests
         run: npm test
