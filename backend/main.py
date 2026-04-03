@@ -841,6 +841,7 @@ class FreeCodingAgentRequest(BaseModel):
     model: str = "free-coding-agent"
     working_dir: Optional[str] = None
     no_approval: bool = False
+    environment: Optional[Dict[str, str]] = None
 
 
 class FreeCodingAgentResponse(BaseModel):
@@ -3683,6 +3684,7 @@ async def run_free_coding_agent(request: FreeCodingAgentRequest):
     import uuid
     import subprocess
     import json
+    import os
 
     session_id = str(uuid.uuid4())
 
@@ -3700,6 +3702,16 @@ async def run_free_coding_agent(request: FreeCodingAgentRequest):
                 session_id=session_id,
             )
 
+        # Read GITHUB_TOKEN from environment
+        github_token = os.environ.get("GITHUB_TOKEN", "")
+
+        # Build environment for subprocess
+        env = os.environ.copy()
+        if request.environment:
+            env.update(request.environment)
+        if github_token:
+            env["GITHUB_TOKEN"] = github_token
+
         # Prepare the task as JSON
         task_data = json.dumps(
             {
@@ -3708,6 +3720,7 @@ async def run_free_coding_agent(request: FreeCodingAgentRequest):
                 "model": request.model,
                 "working_dir": working_dir,
                 "no_approval": request.no_approval,
+                "environment": request.environment,
             }
         )
 
@@ -3719,6 +3732,7 @@ async def run_free_coding_agent(request: FreeCodingAgentRequest):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             cwd=agent_dir,
+            env=env,
         )
 
         stdout, stderr = await process.communicate(input=task_data.encode())
