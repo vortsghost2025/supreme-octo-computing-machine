@@ -140,6 +140,7 @@ def _validate_event_contract(
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "qwen/qwen2.5-0.5b-instruct")
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://openrouter.ai/api/v1")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "")
 QDRANT_HOST = os.getenv("QDRANT_HOST", "qdrant")
 QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
@@ -841,6 +842,7 @@ class FreeCodingAgentRequest(BaseModel):
     model: str = "free-coding-agent"
     working_dir: Optional[str] = None
     no_approval: bool = False
+    environment: Optional[Dict[str, str]] = None
 
 
 class FreeCodingAgentResponse(BaseModel):
@@ -3712,6 +3714,12 @@ async def run_free_coding_agent(request: FreeCodingAgentRequest):
         )
 
         # Run the agent
+        env = os.environ.copy()
+        if GITHUB_TOKEN:
+            env["GITHUB_TOKEN"] = GITHUB_TOKEN
+        if request.environment:
+            env.update(request.environment)
+        
         process = await asyncio.create_subprocess_exec(
             "node",
             cli_path,
@@ -3719,6 +3727,7 @@ async def run_free_coding_agent(request: FreeCodingAgentRequest):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             cwd=agent_dir,
+            env=env,
         )
 
         stdout, stderr = await process.communicate(input=task_data.encode())
