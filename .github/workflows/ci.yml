@@ -25,5 +25,11 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
+      - name: Install integrated-swarm dependencies
+        working-directory: ./integrated-swarm
+        run: npm ci
+      - name: Build integrated-swarm
+        working-directory: ./integrated-swarm
+        run: npm run build
       - name: Run tests
         run: npm test
