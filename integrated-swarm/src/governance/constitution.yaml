@@ -1,0 +1,13 @@
+version: 1.0.0
+invariants:
+  - id: no-unsafe-deploy-without-dual-consensus
+    severity: critical
+    rule: "verify_l_pass && verify_r_pass"
+  - id: no-high-risk-change-without-human-signoff
+    severity: critical
+    rule: "riskScore == 'HIGH' || riskScore == 'CRITICAL' => humanApproval == true"
+policies:
+  - id: confidence-threshold-default
+    rule: "confidence >= 85"
+  - id: rollback-window
+    rule: "rollbackWindowMinutes == 5"
