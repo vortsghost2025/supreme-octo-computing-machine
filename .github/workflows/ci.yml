@@ -22,7 +22,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - name: Install dependencies
+      - name: Install opencode dependencies
         run: npm ci
+      - name: Install UI package dependencies
+        run: npm ci
+        working-directory: ../../../ui
       - name: Run tests
         run: npm test
