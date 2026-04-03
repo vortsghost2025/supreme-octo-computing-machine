@@ -27,3 +27,11 @@ __pycache__/
 # Local preflight/temp artifacts
 .preflight.json
 .snac_*.txt
+
+# Monorepo / TS build outputs
+dist/
+**/dist/
+*.tsbuildinfo
+
+# Root-level env overrides (do not commit secrets)
+.env.local
