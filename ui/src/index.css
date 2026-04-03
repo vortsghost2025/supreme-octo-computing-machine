@@ -12,12 +12,21 @@
   --bg-tertiary: #334155;
   --border: #475569;
   --text-primary: #f8fafc;
+<<<<<<< HEAD
   --text-secondary: #cbd5e1;
   --accent-blue: #60a5fa;
   --accent-green: #34d399;
   --accent-yellow: #fbbf24;
   --accent-red: #f87171;
   --accent-purple: #a78bfa;
+=======
+  --text-secondary: #b4c2d4;
+  --accent-blue: #3b82f6;
+  --accent-green: #10b981;
+  --accent-yellow: #f59e0b;
+  --accent-red: #ef4444;
+  --accent-purple: #8b5cf6;
+>>>>>>> 77a5603 (Sync local UI changes)
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
@@ -41,7 +50,8 @@ body {
 
 /* Cockpit Layout */
 .cockpit-new {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -50,6 +60,9 @@ body {
 /* Header */
 .cockpit-header {
   display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 100;
   justify-content: space-between;
   align-items: center;
   padding: 28px 40px;
@@ -88,6 +101,8 @@ body {
   display: flex;
   flex: 1;
   gap: 0;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .cockpit-sidebar {
@@ -99,6 +114,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 30px;
+  overflow-y: auto;
 }
 
 .cockpit-content {
@@ -114,6 +130,7 @@ body {
   gap: 24px;
 }
 
+<<<<<<< HEAD
 }
 
 .chat-row {
@@ -191,6 +208,11 @@ body {
 .panels-second-row > * {
   flex: 1;
   min-width: 280px;
+=======
+.sidebar-section + .sidebar-section {
+  border-top: 1px solid var(--border);
+  padding-top: 30px;
+>>>>>>> 77a5603 (Sync local UI changes)
 }
 
 /* Sidebar sections */
@@ -873,7 +895,7 @@ body {
 
 .panel-content {
   padding: 24px;
-  min-height: 340px;
+  min-height: 120px;
 }
 
 /* Agent chat panel */
@@ -1056,6 +1078,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-height: 540px;
+  overflow-y: auto;
 }
 
 .timeline-item {

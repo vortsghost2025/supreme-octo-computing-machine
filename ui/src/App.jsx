@@ -506,7 +506,7 @@ function TaskInput({ onSubmit, isRunning, onMaximize }) {
         <button type="submit" disabled={isRunning || !task.trim()}>
           {isRunning ? "Running..." : "Run Agent"}
         </button>
-        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input">
+        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input">
           ⛶
         </button>
       </div>
@@ -571,7 +571,7 @@ function IngestInput({ onIngest, isLoading, onMaximize }) {
         <button type="submit" disabled={isLoading || !content.trim()}>
           {isLoading ? "Ingesting..." : "Ingest Document"}
         </button>
-        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input">
+        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input">
           ⛶
         </button>
       </div>
