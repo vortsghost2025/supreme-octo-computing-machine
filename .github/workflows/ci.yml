@@ -24,5 +24,8 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
+      - name: Install UI package dependencies
+        working-directory: ./ui
+        run: npm ci
       - name: Run tests
         run: npm test
