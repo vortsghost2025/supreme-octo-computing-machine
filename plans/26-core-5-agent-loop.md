@@ -234,6 +234,52 @@ Routing decision (in task payload):
   - routing: auto|local_preferred|cloud_preferred
 ```
 
+### 3.1 SNAC Agent Worker Mapping
+
+Map your 20+ existing agents to task types for the Core-5 orchestration:
+
+| Core Role | Task Type | Worker Agents |
+|----------|---------|--------------|
+| **Researcher** | research | agent-meta-monitor, agent-source-grounding, agent-who-data, agent-protocols |
+| **Builder** | build | agent-builder, agent-code-reviewer, agent-orchestrator |
+| **Reviewer** | review | agent-reviewer, agent-fact-checker, agent-self-healer |
+| **Operator** | deploy | agent-azure-coordinator, agent-trust-router, agent-ide |
+| **Analyzer** | analyze | agent-contradiction-detector, agent-claim-extractor, agent-source-verifier |
+| **Specialized** | various | agent-openclaw, agent-medical-pipeline, agent-memory-coord, agent-nvidia |
+
+**Full Agent Inventory:**
+1. agent-builder
+2. agent-orchestrator
+3. agent-reviewer
+4. agent-monitor
+5. agent-self-healer
+6. agent-fact-checker
+7. agent-meta-monitor
+8. agent-openclaw
+9. agent-who-data
+10. agent-protocols
+11. agent-medical-pipeline
+12. agent-trust-router
+13. agent-ide
+14. agent-nvidia
+15. agent-azure-coordinator
+16. agent-source-grounding
+17. agent-contradiction-detector
+18. agent-source-verifier
+19. agent-claim-extractor
+20. agent-memory-coord
+
+**Worker Selection Logic:**
+- Complex/Large → Run multiple workers in parallel
+- Security-critical → Use fact-checker + reviewer together
+- GPU-intensive → Route to agent-nvidia first
+- Unknown → Default to agent-builder + agent-reviewer combo
+
+**Agent Registration at Startup:**
+- Each agent registers with the Core-5 via `/swarm/register`
+- Core-5 maintains worker registry with capabilities
+- Dynamic scaling: add/remove workers without code changes
+
 ---
 
 ### 4. Event Contract Definitions
