@@ -22,7 +22,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - name: Install dependencies
+      - name: Install kilocode dependencies
         run: npm ci
+      - name: Install integrated-swarm dependencies
+        run: npm ci
+        working-directory: ./integrated-swarm
       - name: Run tests
         run: npm test
