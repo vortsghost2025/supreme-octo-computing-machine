@@ -27,5 +27,8 @@ jobs:
       - name: Install UI package dependencies
         working-directory: ./ui
         run: npm ci
+      - name: Install integrated-swarm package dependencies
+        working-directory: ./integrated-swarm
+        run: npm ci
       - name: Run tests
         run: npm test
