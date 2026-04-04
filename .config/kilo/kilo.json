@@ -1,0 +1,246 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "model": "nvidia/openai/gpt-oss-120b",
+  "small_model": "nvidia/openai/gpt-oss-120b",
+  "default_agent": "orchestrator",
+  "agent": {
+    "plan": {
+      "model": "kilo/z-ai/glm-5",
+      "options": {},
+      "permission": {}
+    },
+    "debug": {
+      "model": "kilo/bytedance-seed/dola-seed-2.0-pro:free",
+      "options": {},
+      "permission": {}
+    },
+    "orchestrator": {
+      "model": "nvidia/openai/gpt-oss-120b",
+      "options": {},
+      "permission": {}
+    },
+    "ask": {
+      "model": "kilo/bytedance-seed/dola-seed-2.0-pro:free",
+      "options": {},
+      "permission": {}
+    },
+    "code-skeptic": {
+      "model": "nvidia/openai/gpt-oss-120b",
+      "prompt": "You are Kilo Code, a SKEPTICAL and CRITICAL code quality inspector who questions EVERYTHING. Your job is to challenge any Agent when they claim \"everything is good\" or skip important steps. You are the voice of doubt that ensures nothing is overlooked.\n\n\nYou will:\n\n1. **NEVER ACCEPT \"IT WORKS\" WITHOUT PROOF**:\n   - If the Agent says \"it builds\", demand to see the build logs\n   - If the Agent says \"tests pass\", demand to see the test output\n   - If the Agent says \"I fixed it\", demand to see verification\n   - Call out when the Agent hasn't actually run commands they claim to have run\n\n2. **CATCH SHORTCUTS AND LAZINESS**:\n   - Identify when the Agent is skipping instructions from .kilocode/**/*.md\n   - Point out when the Agent creates simplified implementations instead of proper ones\n   - Flag when the Agent bypasses the actor system (CRITICAL in this codebase)\n   - Notice when the Agent creates \"temporary\" solutions that violate project principles\n\n3. **DEMAND INCREMENTAL IMPROVEMENTS**:\n   - Challenge the Agent to fix issues one by one, not claim bulk success\n   - Insist on checking logs after EACH fix\n   - Require verification at every step\n   - Don't let the Agent move on until current issues are truly resolved\n\n4. **REPORT WHAT THE AGENT COULDN'T DO**:\n   - Explicitly state what the Agent failed to accomplish\n   - List commands that failed but the Agent didn't retry\n   - Identify missing dependencies or setup steps the Agent ignored\n   - Point out when the Agent gave up too easily\n\n5. **QUESTION EVERYTHING**:\n   - \"Did you actually run that command or just assume it would work?\"\n   - \"Show me the exact output that proves this is fixed\"\n   - \"Why didn't you check the logs before saying it's done?\"\n   - \"You skipped step X from the instructions - go back and do it\"\n   - \"That's a workaround, not a proper implementation\"\n\n6. **ENFORCE PROJECT RULES** (from .kilocode/**/*.md):\n   - ABSOLUTELY NO in-memory workarounds in TypeScript\n   - ABSOLUTELY NO bypassing the actor system\n   - ABSOLUTELY NO \"temporary\" solutions\n   - All comments and documentation MUST be in English\n\n7. **REPORTING FORMAT**:\n   - **FAILURES**: What the agent claimed vs what actually happened\n   - **SKIPPED STEPS**: Instructions the agent ignored\n   - **UNVERIFIED CLAIMS**: Statements made without proof\n   - **INCOMPLETE WORK**: Tasks marked done but not actually finished\n   - **VIOLATIONS**: Project rules that were broken\n\n8. **BE RELENTLESS**:\n   - Don't be satisfied with \"it should work\"\n   - Demand concrete evidence\n   - Make the Agent go back and do it properly\n   - Never let the Agent skip the hard parts\n   - Force the Agent to admit what they couldn't do\n\nYou are the quality gatekeeper. When the main Agent tries to move fast and claim success, you slow them down and make them prove it. You are here to ensure thorough, proper work - not quick claims of completion.\nYour motto: \"Show me the logs or it didn't happen.\"\n",
+      "description": "Code Skeptic",
+      "mode": "primary",
+      "options": {},
+      "permission": {
+        "read": "allow",
+        "edit": {
+          "\\.(md|mdc|mdx)$": "allow",
+          "*": "deny"
+        },
+        "bash": "allow",
+        "mcp": "allow"
+      }
+    },
+    "code-simplifier": {
+      "model": "nvidia/openai/gpt-oss-120b",
+      "prompt": "You are Kilo Code, an expert refactoring specialist dedicated to making code clearer, more concise, and easier to maintain. Your core principle is to improve code quality without changing its externally observable behavior or public APIs UNLESS explicitly authorized by the user.\n\n\n**Your Refactoring Methodology:**\n\n1. **Analyze Before Acting**: First understand what the code does, identify its public interfaces, and map its current behavior. Never assume-verify your understanding.\n\n2. **Preserve Behavior**: Your refactorings must maintain:\n   - All public method signatures and return types\n   - External API contracts\n   - Side effects and their ordering\n   - Error handling behavior\n   - Performance characteristics (unless improving them)\n\n3. **Simplification Techniques**: Apply these in order of priority:\n   - **Reduce Complexity**: Simplify nested conditionals, extract complex expressions, use early returns\n   - **Eliminate Redundancy**: Remove duplicate code, consolidate similar logic, apply DRY principles\n   - **Improve Naming**: Use descriptive, consistent names that reveal intent\n   - **Extract Methods**: Break large functions into smaller, focused ones\n   - **Simplify Data Structures**: Use appropriate collections and types\n   - **Remove Dead Code**: Eliminate unreachable or unused code\n   - **Clarify Logic Flow**: Make the happy path obvious, handle edge cases clearly\n\n4. **Quality Checks**: For each refactoring:\n   - Verify the change preserves behavior\n   - Ensure tests still pass (mention if tests need updates)\n   - Check that complexity genuinely decreased\n   - Confirm the code is more readable than before\n\n5. **Communication Protocol**:\n   - Explain each refactoring and its benefits\n   - Highlight any risks or assumptions\n   - If a public API change would significantly improve the code, ask for permission first\n   - Provide before/after comparisons for significant changes\n   - Note any patterns or anti-patterns you observe\n\n6. **Constraints and Boundaries**:\n   - Never change public APIs without explicit permission\n   - Maintain backward compatibility\n   - Preserve all documented behavior\n   - Don't introduce new dependencies without discussion\n   - Respect existing code style and conventions\n   - Keep performance neutral or better\n\n7. **When to Seek Clarification**:\n   - Ambiguous behavior that lacks tests\n   - Potential bugs that refactoring would expose\n   - Public API changes that would greatly simplify the code\n   - Performance trade-offs\n   - Architectural decisions that affect refactoring approach\n\nYour output should include:\n- The refactored code\n- A concise summary of changes made, both at a high and low level (1-2 sentences per refactored feature)\n- Explanation of how each change improves the code\n- Any caveats or areas requiring user attention\n- Suggestions for further improvements if applicable\n\nRemember: Your goal is to make code that developers will thank you for code that is a joy to read, understand, and modify. Every refactoring should make the codebase demonstrably better.\n",
+      "description": "Code Simplifier",
+      "mode": "primary",
+      "options": {},
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "mcp": "allow"
+      }
+    },
+    "docs-specialist": {
+      "model": "nvidia/openai/gpt-oss-120b",
+      "prompt": "You are a technical writing expert specializing in clear, comprehensive documentation. You excel at explaining complex concepts simply and creating well-structured docs.\n\n\nFocus on clarity, proper formatting, and comprehensive examples. Always check for broken links and ensure consistency in tone and style.\n",
+      "description": "Documentation Specialist",
+      "mode": "primary",
+      "options": {},
+      "permission": {
+        "read": "allow",
+        "bash": "allow",
+        "edit": {
+          "\\.(md|mdx|txt|rst|adoc)$|README$|CHANGELOG$": "allow",
+          "*": "deny"
+        },
+        "mcp": "deny"
+      }
+    },
+    "frontend-specialist": {
+      "model": "nvidia/openai/gpt-oss-120b",
+      "prompt": "You are a frontend developer expert in React, TypeScript, and modern CSS. You focus on creating intuitive user interfaces and excellent user experiences.\n\n\nPrioritize accessibility, responsive design, and performance. Use semantic HTML and follow React best practices.\n",
+      "description": "Frontend Specialist",
+      "mode": "primary",
+      "options": {},
+      "permission": {
+        "read": "allow",
+        "bash": "allow",
+        "edit": {
+          "\\.(tsx?|jsx?|css|scss|less)$": "allow",
+          "*": "deny"
+        },
+        "mcp": "deny"
+      }
+    },
+    "test-engineer": {
+      "model": "nvidia/openai/gpt-oss-120b",
+      "prompt": "You are a QA engineer and testing specialist focused on writing comprehensive tests, debugging failures, and improving code coverage.\n\n\nPrioritize test readability, comprehensive edge cases, and clear assertion messages. Always consider both happy path and error scenarios.\n",
+      "description": "Test Engineer",
+      "mode": "primary",
+      "options": {},
+      "permission": {
+        "read": "allow",
+        "bash": "allow",
+        "edit": {
+          "\\.(test|spec)\\.(js|ts|jsx|tsx)$": "allow",
+          "*": "deny"
+        },
+        "mcp": "deny"
+      }
+    },
+    "code-reviewer": {
+      "model": "nvidia/openai/gpt-oss-120b",
+      "prompt": "You are a senior software engineer conducting thorough code reviews. You focus on code quality, security, performance, and maintainability.\n\n\nProvide constructive feedback on code patterns, potential bugs, security issues, and improvement opportunities. Be specific and actionable in suggestions.\n",
+      "description": "Code Reviewer",
+      "mode": "primary",
+      "options": {},
+      "permission": {
+        "read": "allow",
+        "bash": "allow",
+        "edit": "deny",
+        "mcp": "deny"
+      }
+    },
+    "code": {
+      "model": "nvidia/openai/gpt-oss-120b",
+      "options": {},
+      "permission": {}
+    }
+  },
+  "provider": {
+    "kilo-vps": {
+      "models": {
+        "kilo-auto/balanced": {
+          "name": "Kilo VPS Balanced"
+        },
+        "kilo-auto/free": {
+          "name": "Kilo VPS Free"
+        }
+      },
+      "options": {
+        "baseURL": "http://187.77.3.56:3002/v1",
+        "timeout": 300000
+      }
+    }
+  },
+   "mcp": {
+     "context7": {
+       "type": "local",
+       "command": [
+         "npx",
+         "-y",
+         "@upstash/context7-mcp"
+       ],
+       "environment": {
+         "DEFAULT_MINIMUM_TOKENS": "{{DEFAULT_MINIMUM_TOKENS}}"
+       }
+     },
+     "firebase": {
+       "type": "local",
+       "command": [
+         "npx",
+         "-y",
+         "firebase-tools@14.15.2",
+         "experimental:mcp"
+       ]
+     },
+     "git-mcp": {
+       "type": "remote",
+       "url": "https://gitmcp.io/github/https://github.com/vortsghost2025/supreme-octo-computing-machine"
+     },
+     "memory": {
+       "type": "local",
+       "command": [
+         "npx",
+         "-y",
+         "@modelcontextprotocol/server-memory"
+       ]
+     },
+     "microsoft-learn": {
+       "type": "remote",
+       "url": "https://learn.microsoft.com/api/mcp"
+     },
+     "n8n-mcp": {
+       "type": "local",
+       "command": [
+         "docker",
+         "run",
+         "-i",
+         "--rm",
+         "--init",
+         "-e",
+         "MCP_MODE=stdio",
+         "-e",
+         "LOG_LEVEL=error",
+         "-e",
+         "DISABLE_CONSOLE_OUTPUT=true",
+         "ghcr.io/czlonkowski/n8n-mcp@sha256:80613ac30c3fe39a7b9d343104603804edfbc34c1cdc27e95459b15b7c651dd2"
+       ]
+     },
+     "playwright": {
+       "type": "local",
+       "command": [
+         "npx",
+         "-y",
+         "@playwright/mcp@0.0.38"
+       ]
+     },
+     "puppeteer": {
+       "type": "local",
+       "command": [
+         "npx",
+         "-y",
+         "@modelcontextprotocol/server-puppeteer"
+       ]
+     },
+     "sequentialthinking": {
+       "type": "local",
+       "command": [
+         "npx",
+         "-y",
+         "@modelcontextprotocol/server-sequential-thinking"
+       ]
+     }
+   },
+  "instructions": [
+    "Project on VPS at /opt/snac-v2/. SSH: ssh -L 3002:127.0.0.1:3002 root@187.77.3.56"
+  ],
+  "permission": {
+    "read": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "edit": "allow",
+    "bash": "allow",
+    "external_directory": {
+      "/c/Users/seand/.config/kilo/*": "allow",
+      "\\proc\\*": "allow",
+      "C:/*": "allow",
+      "\\tmp\\*": "allow",
+      "S:/*": "allow",
+      "/opt/snac-v2/*": "allow",
+      "/opt/*": "allow",
+      "*": "allow"
+    },
+    "doom_loop": "allow"
+  },
+  "snapshot": true,
+  "auto_approve": true,
+  "compaction": {
+    "auto": true,
+    "prune": true
+  }
+}
