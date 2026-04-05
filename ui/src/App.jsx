@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import IDETerminal from './components/IDETerminal';
+import AgentsPanel from './components/AgentsPanel.jsx';
 
 // API Base URL - relative so it routes through nginx in production; override with VITE_API_URL in dev
 const API_BASE = "http://localhost:4000/api";
@@ -1922,6 +1923,7 @@ function App() {
               <IDETerminal />
               <TokenMonitor usage={tokenUsage} currentCost={currentCost} />
               <SwarmMonitor status={swarmStatus} onScalerTick={handleSwarmTick} isTicking={isTickingSwarm} />
+        <AgentsPanel />
             </div>
             <div className="panels-bottom-row">
               <SharedKnowledgePanel items={sharedKnowledge} />

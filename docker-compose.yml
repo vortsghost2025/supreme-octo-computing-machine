@@ -26,7 +26,7 @@ services:
     image: redis:7-alpine
     container_name: snac_redis
     ports:
-      - "6379:6379"
+      - "6380:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -96,7 +96,25 @@ services:
     networks:
       - snac_network
 
-  # Nginx Reverse Proxy
+  # n8n Workflow Automation
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: swarming_n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER:?Set N8N_USER in .env}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD:?Set N8N_PASSWORD in .env}
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - snac_network
+
+# Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
     container_name: snac_nginx

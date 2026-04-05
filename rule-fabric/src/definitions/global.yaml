@@ -1,0 +1,18 @@
+rules:
+  - id: lowRisk
+    when:
+      - field: confidence
+        op: '>='
+        value: 0.8
+      - field: riskScore
+        op: '=='
+        value: LOW
+    then:
+      - type: continue
+  - id: highRisk
+    when:
+      - field: riskScore
+        op: '=='
+        value: HIGH
+    then:
+      - type: reject

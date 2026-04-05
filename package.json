@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@genkit-ai/mcp": "^1.31.0"
+  }
+}

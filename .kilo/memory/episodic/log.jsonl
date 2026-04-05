@@ -1,0 +1,4 @@
+{"__id":"f59ae0e0-8df6-4872-a85a-7d5b7788828b","__ts":1775219541961,"type":"proposal","payload":{"proposalId":"wf-123","proposal":{"id":"wf-123","nodes":[],"connections":{}},"confidence":0.92,"riskScore":"LOW","laneL":true,"laneR":true}}
+{"__id":"fcfa1a49-b066-43ac-8d37-5cef82291969","__ts":1775219541962,"type":"proposal","payload":{"proposalId":"wf-124","proposal":{"id":"wf-124","nodes":[],"connections":{}},"confidence":0.95,"riskScore":"CRITICAL","laneL":true,"laneR":true}}
+{"__id":"3e5f20f7-4572-4ab4-913d-43bd5592ab05","__ts":1775219542061,"type":"deployment","proposalId":"wf-124","status":"rejected","error":"Consensus rejected"}
+{"__id":"912c605b-dec2-4e2c-a845-5a85a7c24641","__ts":1775219542064,"type":"deployment","proposalId":"wf-123","status":"rejected","error":"Consensus rejected"}

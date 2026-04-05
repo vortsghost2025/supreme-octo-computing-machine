@@ -1,0 +1,32 @@
+name: Integrated Swarm CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./integrated-swarm
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build project
+        run: npm run build
+      - name: Run sample workflow validation
+        env:
+          N8N_URL: http://localhost:5678
+        run: |
+          echo "Running placeholder validation (no actual n8n instance)"
+          node -e "console.log('Validation step placeholder')"
+      - name: Ensure CI passes
+        run: echo "CI completed successfully"

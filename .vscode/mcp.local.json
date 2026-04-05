@@ -7,6 +7,14 @@
         "@modelcontextprotocol/server-filesystem",
         "C:\\Users\\seand"
       ]
+    },
+    "dbt": {
+      "command": "uvx",
+      "args": ["dbt-mcp"],
+      "env": {
+        "DBT_PROJECT_DIR": "YOUR_PROJECT_PATH",
+        "DBT_PATH": "YOUR_DBT_EXECUTABLE_PATH"
+      }
     }
   }
 }

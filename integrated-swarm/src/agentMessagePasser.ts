@@ -1,6 +1,7 @@
 import { pullWorkflow, validateWorkflow, pushWorkflow, runDry } from './n8nAdapter.js';
 import { getRiskScore } from './riskBreaker.js';
 import { enrichMemoryRecord } from './memoryTransformer.js';
+import { verifyConstitution } from './governance/constitution.js';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
 
@@ -27,6 +28,10 @@ export async function handleProposal(proposal: {
 
   // 4. Build verification reports for both lanes (L & R)
   const verification = {
+  // lane outcomes (both lanes run the same validation here)
+  verify_l_pass: schemaValid,
+  verify_r_pass: schemaValid,
+
     confidence: proposal.confidence,
     riskScore,
     schemaValid,
@@ -41,6 +46,25 @@ export async function handleProposal(proposal: {
   if (!consensusPass) {
     console.warn('Consensus rejected proposal', verification);
     return { accepted: false, reason: verification };
+  }
+
+  // ---------------------------------------------------
+  // Constitution layer validation (policy & invariants)
+  // ---------------------------------------------------
+  const constitutionResult = await verifyConstitution({
+    confidence: proposal.confidence,
+    riskScore,
+    schemaValid,
+    verify_l_pass: verification.verify_l_pass,
+    verify_r_pass: verification.verify_r_pass,
+    // placeholder for future humanApproval flag
+    humanApproval: false,
+    rollbackWindowMinutes: 5
+  });
+
+  if (!constitutionResult.satisfied) {
+    console.warn('Constitution violations', constitutionResult);
+    return { accepted: false, reason: constitutionResult };
   }
 
   // 6. Push the new workflow to n8n

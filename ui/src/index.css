@@ -12,21 +12,12 @@
   --bg-tertiary: #334155;
   --border: #475569;
   --text-primary: #f8fafc;
-<<<<<<< HEAD
-  --text-secondary: #cbd5e1;
-  --accent-blue: #60a5fa;
-  --accent-green: #34d399;
-  --accent-yellow: #fbbf24;
-  --accent-red: #f87171;
-  --accent-purple: #a78bfa;
-=======
   --text-secondary: #b4c2d4;
   --accent-blue: #3b82f6;
   --accent-green: #10b981;
   --accent-yellow: #f59e0b;
   --accent-red: #ef4444;
   --accent-purple: #8b5cf6;
->>>>>>> 77a5603 (Sync local UI changes)
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
@@ -130,8 +121,6 @@ body {
   gap: 24px;
 }
 
-<<<<<<< HEAD
-}
 
 .chat-row {
   display: flex;

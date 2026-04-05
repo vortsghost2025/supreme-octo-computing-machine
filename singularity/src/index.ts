@@ -1,5 +1,5 @@
-import { EventBus, EventEnvelope } from './bus/EventBus';
-import { Orchestrator } from './orchestrator/Orchestrator';
+import { EventBus, EventEnvelope } from './bus/EventBus.js';
+import { Orchestrator } from './orchestrator/Orchestrator.js';
 
 // bootstrap the orchestrator – this also starts verification lanes and red‑team
 new Orchestrator();

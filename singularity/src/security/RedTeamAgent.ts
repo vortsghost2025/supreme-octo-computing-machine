@@ -1,4 +1,4 @@
-import { EventBus, EventEnvelope } from '../bus/EventBus';
+import { EventBus, EventEnvelope } from '../bus/EventBus.js';
 
 /** Simple vulnerability interface */
 interface Vulnerability {

@@ -1,0 +1,31 @@
+rules:
+  - id: confidence-threshold
+    description: "Require minimum confidence"
+    when:
+      - field: confidence
+        op: ">="
+        value: 0.85
+    then:
+      - type: continue
+
+  - id: risk-high-human-approval
+    description: "High risk needs human escalation"
+    when:
+      - field: riskScore
+        op: in
+        value: [HIGH, CRITICAL]
+    then:
+      - type: reject
+      - type: escalate
+
+  - id: dual-consensus
+    description: "Both verification lanes must pass"
+    when:
+      - field: laneL
+        op: "=="
+        value: true
+      - field: laneR
+        op: "=="
+        value: true
+    then:
+      - type: continue

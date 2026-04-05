@@ -8,9 +8,12 @@
     "test": "echo \"No tests defined\""
   },
   "dependencies": {
+    "jexl": "^2.3.0",
+    "js-yaml": "^4.1.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20",
     "@types/uuid": "^9",
     "typescript": "^5.2.2"

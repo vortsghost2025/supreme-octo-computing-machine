@@ -1,5 +1,5 @@
-import { EventBus, EventEnvelope } from '../bus/EventBus';
-import { N8nAdapter } from '../adapters/n8n/N8nAdapter';
+import { EventBus, EventEnvelope } from '../bus/EventBus.js';
+import { N8nAdapter } from '../adapters/n8n/N8nAdapter.js';
 
 /**
  * Verification lane L – isolated from lane R.
