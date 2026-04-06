@@ -86,13 +86,13 @@ test.describe('SNAC Cockpit UI end‑to‑end verification', () => {
 
   test('All monitors display data after interactions', async ({ page }) => {
     // Memory Timeline count
-    const memCount = await page.textContent('.memory-timeline .count');
+    const memCount = await page.textContent('[data-testid="memory-count"]');
     expect(parseInt(memCount || '0')).toBeGreaterThan(0);
     // Token Cost Monitor
-    const tokenCount = await page.textContent('.token-cost-monitor .count');
+    const tokenCount = await page.textContent('[data-testid="token-total"]');
     expect(parseInt(tokenCount || '0')).toBeGreaterThan(0);
     // Swarm Monitor
-    const swarmCount = await page.textContent('.swarm-monitor .count');
+    const swarmCount = await page.textContent('[data-testid="swarm-count"]');
     expect(parseInt(swarmCount || '0')).toBeGreaterThan(0);
   });
 });

@@ -15,12 +15,12 @@ function MemoryTimeline({ events = [], isLoading }) {
     <div className="panel">
       <div className="panel-header">
         <h2>📋 Memory Timeline</h2>
-        <span className="badge" data-testid="memory-count">{events.length} events</span>
+        <span className="badge" data-testid="memory-count">{events?.length ?? 0} events</span>
       </div>
       <div className="panel-content timeline memory-timeline">
         {isLoading ? (
           <div className="loading">Loading timeline...</div>
-        ) : events.length === 0 ? (
+        ) : (events?.length ?? 0) === 0 ? (
           <div className="empty">No events yet. Run an agent task to see activity.</div>
         ) : (
           events.map((event, idx) => (
@@ -190,6 +190,10 @@ function SwarmMonitor({ status = {}, onScalerTick, isTicking }) {
         </span>
       </div>
       <div className="panel-content swarm-monitor">
+        <div className="swarm-metric-total">
+          <span className="swarm-label">Total Queue</span>
+          <strong data-testid="swarm-count">{status?.queue_depth_total ?? 0}</strong>
+        </div>
         <div className="swarm-grid">
           <div className="swarm-metric">
             <span className="swarm-label">Queue (High)</span>
