@@ -67,6 +67,7 @@ services:
       - QDRANT_PORT=6333
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
     depends_on:
       db:
         condition: service_healthy
@@ -83,6 +84,8 @@ services:
     restart: unless-stopped
     networks:
       - snac_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   # Frontend/Cockpit UI
   frontend:
@@ -156,6 +159,8 @@ kilo-gateway:
     - KILO_CONFIG=/app/kilo.json
   volumes:
     - ./.kilo:/app/.kilo
+  networks:
+    - snac_network
   healthcheck:
     test: ["CMD","curl","-f","http://localhost:3002/health"]
     interval: 10s
