@@ -1,5 +1,2 @@
-* text=lf
-*.md text
-*.py text
-*.js text
-*.jsx text
+* text=auto
+*.py text working
