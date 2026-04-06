@@ -34,5 +34,13 @@ jobs:
       - name: Install UI package dependencies
         run: npm ci
         working-directory: ../../../ui
+      - name: Start Vite dev server
+        run: npm run dev &
+        working-directory: ../../../ui
+        env:
+          OLLAMA_BASE_URL: http://host.docker.internal:11434
+          VITE_API_URL: http://localhost:9002
+      - name: Wait for Vite server
+        run: sleep 5
       - name: Run tests
         run: npm test

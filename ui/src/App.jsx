@@ -213,7 +213,7 @@ function SwarmMonitor({ status = {}, onScalerTick, isTicking }) {
           </div>
           <div className="swarm-metric">
             <span className="swarm-label">Queue Total</span>
-            <strong>{status?.queue_depth_total || 0}</strong>
+            <strong data-testid="swarm-count">{status?.queue_depth_total || 0}</strong>
           </div>
         </div>
 
