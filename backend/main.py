@@ -5336,6 +5336,52 @@ async def governor_refresh(projectRoot: Optional[str] = None):
     )
 
 
+# ============== LLM ENDPOINTS ==============
+
+
+class LLMGenerateRequest(BaseModel):
+    prompt: Annotated[str, Field(min_length=1, max_length=8000)]
+    model: str = "llama3:8b"
+    system: Optional[str] = None
+
+
+class LLMGenerateResponse(BaseModel):
+    response: str
+    model: str
+
+
+class LLMModelsResponse(BaseModel):
+    models: List[str]
+
+
+@app.post("/llm", response_model=LLMGenerateResponse)
+async def llm_generate(request: LLMGenerateRequest):
+    """Generate a completion using Ollama."""
+    try:
+        from backend.llm_client import generate as _llm_generate, _validate_model
+
+        _validate_model(request.model)
+        result = await _llm_generate(
+            prompt=request.prompt,
+            model=request.model,
+            system=request.system,
+        )
+        return LLMGenerateResponse(response=result, model=request.model)
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": str(e)},
+        )
+
+
+@app.get("/llm/models", response_model=LLMModelsResponse)
+async def llm_models():
+    """List allowed Ollama models."""
+    from backend.llm_client import ALLOWED_MODELS
+
+    return LLMModelsResponse(models=sorted(ALLOWED_MODELS))
+
+
 if __name__ == "__main__":
     import uvicorn
 
