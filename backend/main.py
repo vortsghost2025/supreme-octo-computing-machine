@@ -1542,6 +1542,166 @@ class MemoryInjectApplyResponse(BaseModel):
 # ============== HEALTH ENDPOINTS ==============
 
 
+# Import Ollama client for local GPU inference
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+try:
+    from backend.llm_client import generate as ollama_generate, OLLAMA_BASE_URL
+    from backend.model_router import router, route_request
+except ImportError:
+    ollama_generate = None
+    router = None
+    route_request = None
+    OLLAMA_BASE_URL = "http://127.0.0.1:11434"
+
+
+# LLM endpoint for local Ollama GPU inference with automatic routing
+class LLMRequest(BaseModel):
+    prompt: str = Field(..., min_length=1)
+    model: Optional[str] = Field(default=None)  # None = auto-route
+    system: Optional[str] = None
+    temperature: float = Field(default=0.7, ge=0.0, le=2.0)
+    auto_route: bool = Field(default=True, description="Enable automatic model selection")
+
+
+class LLMResponse(BaseModel):
+    response: str
+    model: str
+    success: bool = True
+    routing: str = "manual"
+
+
+@app.post("/llm", response_model=LLMResponse)
+async def llm_generate(request: LLMRequest):
+    """Generate text using local Ollama with automatic model routing."""
+    if ollama_generate is None:
+        raise HTTPException(status_code=500, detail="Ollama client not available")
+    
+    # Auto-route if enabled and no model specified
+    routing_info = {"routing": "manual", "model": request.model}
+    if request.auto_route and not request.model and router:
+        routing_info = route_request(request.prompt)
+        request.model = routing_info.get("model", "llama3:8b")
+    
+    # Use context optimization
+    ctx_size = 2048 if routing_info.get("routing") == "auto_fast" else 4096
+    
+    try:
+        result = await ollama_generate(
+            prompt=request.prompt,
+            model=request.model or "llama3:8b",
+            system=request.system,
+        )
+        return LLMResponse(
+            response=result, 
+            model=request.model,
+            routing=routing_info.get("routing", "manual")
+        )
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Ollama error: {str(e)}")
+
+
+@app.get("/llm/router")
+async def get_router_info():
+    """Get model routing information."""
+    if router is None:
+        return {"error": "Router not available"}
+    return {
+        "models": router.list_models(),
+        "default": router.default_model
+    }
+
+
+# Multi-agent pipeline endpoint
+class MultiAgentRequest(BaseModel):
+    tasks: List[Dict[str, str]]  # [{"prompt": "...", "agent_type": "research"}]
+    mode: str = Field(default="parallel")  # "parallel", "sequential", "delegate"
+
+
+class MultiAgentResponse(BaseModel):
+    results: List[Dict[str, Any]]
+    total_duration: float
+
+
+@app.post("/llm/agents", response_model=MultiAgentResponse)
+async def multi_agent_pipeline(request: MultiAgentRequest):
+    """Run multiple agents in parallel with different models."""
+    try:
+        from backend.multi_agent_pipeline import AgentTask, MultiAgentPipeline
+        
+        pipeline = MultiAgentPipeline()
+        
+        # Convert request to AgentTasks
+        tasks = [
+            AgentTask(
+                prompt=task.get("prompt", ""),
+                agent_type=task.get("agent_type", "general"),
+                model=task.get("model")
+            )
+            for task in request.tasks
+        ]
+        
+        import time
+        start = time.time()
+        
+        if request.mode == "delegate":
+            # Auto-delegate mode
+            if not request.tasks:
+                raise HTTPException(status_code=400, detail="No prompt provided for delegate mode")
+            results = await pipeline.run_delegate(request.tasks[0].get("prompt", ""))
+            results_list = [
+                {
+                    "agent_type": agent_type,
+                    "response": r.response,
+                    "model": r.model,
+                    "success": r.success,
+                    "duration": r.duration
+                }
+                for agent_type, r in results.items()
+            ]
+        else:
+            # Parallel or sequential
+            if request.mode == "sequential":
+                results = await pipeline.run_sequential(tasks)
+            else:
+                results = await pipeline.run_parallel(tasks)
+            
+            results_list = [
+                {
+                    "agent_type": r.agent_type,
+                    "response": r.response[:500],  # Truncate for response
+                    "model": r.model,
+                    "success": r.success,
+                    "duration": round(r.duration, 2)
+                }
+                for r in results
+            ]
+        
+        total_duration = time.time() - start
+        
+        return MultiAgentResponse(
+            results=results_list,
+            total_duration=round(total_duration, 2)
+        )
+    except ImportError:
+        raise HTTPException(status_code=500, detail="Multi-agent pipeline not available")
+
+
+@app.get("/llm/models")
+async def llm_models():
+    """List available Ollama models."""
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(f"{OLLAMA_BASE_URL}/api/tags")
+            if resp.status_code == 200:
+                data = resp.json()
+                models = [{"name": m["name"], "size": m.get("size", 0)} for m in data.get("models", [])]
+                return {"models": models, "base_url": OLLAMA_BASE_URL}
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Cannot reach Ollama: {str(e)}")
+
+
 def _health_payload() -> HealthResponse:
     return HealthResponse(
         status="ok",
