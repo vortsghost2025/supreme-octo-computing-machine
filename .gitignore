@@ -1,3 +1,7 @@
+# Azure deployment configs (contains secrets)
+.azure/
+main.bicep
+
 # Local secrets and runtime configs
 .env
 .env.rotation
