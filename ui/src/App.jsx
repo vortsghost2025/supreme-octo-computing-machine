@@ -10,18 +10,19 @@ const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:9002";
 // ============== COMPONENTS ==============
 
 // 1. MEMORY TIMELINE PANEL
-function MemoryTimeline({ events, isLoading }) {
+function MemoryTimeline({ events = [], isLoading }) {
+  const eventCount = events?.length ?? 0;
   return (
     <div className="panel">
       <div className="panel-header">
         <h2>📋 Memory Timeline</h2>
-        <span className="badge">{events.length} events</span>
-		<span className="count">{events.length}</span>
+        <span className="badge">{eventCount} events</span>
+		<span className="count" data-testid="memory-count">{eventCount}</span>
       </div>
       <div className="panel-content timeline memory-timeline">
         {isLoading ? (
           <div className="loading">Loading timeline...</div>
-        ) : events.length === 0 ? (
+        ) : eventCount === 0 ? (
           <div className="empty">No events yet. Run an agent task to see activity.</div>
         ) : (
           events.map((event, idx) => (
@@ -122,12 +123,13 @@ function NodeVisualizer({ currentTask, steps }) {
 }
 
 // 3. TOKEN COST MONITOR PANEL
-function TokenMonitor({ usage, currentCost }) {
+function TokenMonitor({ usage = { total: 0, bySession: {} }, currentCost = 0 }) {
   const budget = 4.50;
   const alertThreshold = 4.00;
-  const percentUsed = (usage.total / budget) * 100;
-  const isAlert = usage.total >= alertThreshold;
-  const isOverBudget = usage.total >= budget;
+  const total = usage?.total ?? 0;
+  const percentUsed = (total / budget) * 100;
+  const isAlert = total >= alertThreshold;
+  const isOverBudget = total >= budget;
 
   return (
     <div className="panel">
@@ -140,7 +142,7 @@ function TokenMonitor({ usage, currentCost }) {
       <div className="panel-content">
         <div className="cost-display">
           <div className="cost-total">
-			<span className="count">{usage.total.toFixed(4)}</span>
+			<span className="count" data-testid="token-cost-count">{total.toFixed(4)}</span>
             <span className="cost-label">Total Spent</span>
             <span className="cost-value">${usage.total.toFixed(4)}</span>
           </div>
@@ -162,7 +164,7 @@ function TokenMonitor({ usage, currentCost }) {
           <span>${budget.toFixed(2)} (limit)</span>
         </div>
 
-        {Object.keys(usage.bySession).length > 0 && (
+        {usage?.bySession && Object.keys(usage.bySession).length > 0 && (
           <div className="session-costs">
             <strong>By Session:</strong>
             {Object.entries(usage.bySession).map(([session, cost]) => (
@@ -178,10 +180,11 @@ function TokenMonitor({ usage, currentCost }) {
   );
 }
 
-function SwarmMonitor({ status, onScalerTick, isTicking }) {
+function SwarmMonitor({ status = {}, onScalerTick, isTicking }) {
   const queue = status?.queue_depth || { high: 0, normal: 0, low: 0 };
   const guard = status?.guardrails || {};
   const frozen = Boolean(guard.frozen_scale_up);
+  const queueTotal = status?.queue_depth_total ?? 0;
 
   return (
     <div className="panel">
@@ -189,7 +192,7 @@ function SwarmMonitor({ status, onScalerTick, isTicking }) {
         <h2>🐝 Swarm Monitor</h2>
         <span className={`badge ${frozen ? "warning" : "success"}`}>
           {frozen ? "GUARDRAIL" : "ACTIVE"}
-			<span className="count">{status?.queue_depth_total || 0}</span>
+			<span className="count" data-testid="swarm-count">{queueTotal}</span>
         </span>
       </div>
       <div className="panel-content swarm-monitor">
@@ -601,15 +604,16 @@ function GovernorPanel() {
   );
 }
 
-function SharedKnowledgePanel({ items }) {
+function SharedKnowledgePanel({ items = [] }) {
+  const itemCount = items?.length ?? 0;
   return (
     <div className="panel">
       <div className="panel-header">
         <h2>🧠 Shared Knowledge</h2>
-        <span className="badge">{items.length} items</span>
+        <span className="badge">{itemCount} items</span>
       </div>
       <div className="panel-content knowledge-feed shared-knowledge">
-        {items.length === 0 ? (
+        {itemCount === 0 ? (
           <div className="empty">No shared learning yet.</div>
         ) : (
           items
@@ -636,12 +640,12 @@ function SharedKnowledgePanel({ items }) {
 
 function AgentChatPanel({
   title = "💬 Agent Console",
-  messages,
-  draft,
+  messages = [],
+  draft = "",
   setDraft,
   onSend,
   onReset,
-  isRunning,
+  isRunning = false,
   sessionId,
 }) {
   const [fontSize, setFontSize] = useState(32);
@@ -682,7 +686,7 @@ function AgentChatPanel({
         </div>
 
         <div className="chat-thread">
-          {messages.length === 0 ? (
+          {(messages?.length ?? 0) === 0 ? (
             <div className="empty chat-empty">
               No conversation yet. Talk to an agent here and the backend will keep session context alive.
             </div>
