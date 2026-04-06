@@ -18,14 +18,14 @@ function MemoryTimeline({ events, isLoading }) {
         <span className="badge">{events.length} events</span>
 		<span className="count">{events.length}</span>
       </div>
-      <div className="panel-content timeline">
+      <div className="panel-content timeline memory-timeline">
         {isLoading ? (
           <div className="loading">Loading timeline...</div>
         ) : events.length === 0 ? (
           <div className="empty">No events yet. Run an agent task to see activity.</div>
         ) : (
           events.map((event, idx) => (
-            <div key={idx} className={`timeline-item ${event.type}`}>
+            <div key={idx} className={`timeline-item thought-entry ${event.type}`}>
               <div className="timeline-time">
                 {new Date(event.timestamp).toLocaleTimeString()}
               </div>
@@ -78,7 +78,6 @@ function NodeVisualizer({ currentTask, steps }) {
       <div className="panel-header">
         <h2>🔗 Node Visualizer</h2>
         <span className="badge">{currentTask ? "Running" : "Idle"}</span>
-		<span className="count">{events.length}</span>
       </div>
       <div className="panel-content visualizer">
         <div className="node-graph">
@@ -242,7 +241,6 @@ function SwarmGraphPanel({ snapshot }) {
         <div className="panel-header">
           <h2>🕸️ Swarm Topology</h2>
           <span className="badge">Loading...</span>
-		<span className="count">{events.length}</span>
         </div>
         <div className="panel-content"><div className="empty">Waiting for graph snapshot...</div></div>
       </div>
@@ -298,7 +296,6 @@ function SwarmIntelligencePanel({ summary }) {
         <div className="panel-header">
           <h2>🧬 Swarm Intelligence</h2>
           <span className="badge">No data</span>
-		<span className="count">{events.length}</span>
         </div>
         <div className="panel-content"><div className="empty">No task history yet. Queue some swarm tasks to see intelligence metrics.</div></div>
       </div>
@@ -610,9 +607,8 @@ function SharedKnowledgePanel({ items }) {
       <div className="panel-header">
         <h2>🧠 Shared Knowledge</h2>
         <span className="badge">{items.length} items</span>
-		<span className="count">{events.length}</span>
       </div>
-      <div className="panel-content knowledge-feed">
+      <div className="panel-content knowledge-feed shared-knowledge">
         {items.length === 0 ? (
           <div className="empty">No shared learning yet.</div>
         ) : (
@@ -940,6 +936,11 @@ function SwarmQueueInput({ onQueueTask, isLoading }) {
       <button type="submit" disabled={isLoading || !task.trim()}>
         {isLoading ? "Queueing..." : "Queue Swarm Task"}
       </button>
+      {task && (
+        <div className="swarm-queue-list">
+          <div className="swarm-queue-item">{task}</div>
+        </div>
+      )}
     </form>
   );
 }
