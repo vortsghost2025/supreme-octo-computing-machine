@@ -140,93 +140,91 @@ services:
     networks:
       - snac_network
 
+  # Kilo gateway
+  kilo-gateway:
+    image: ghcr.io/vorts/kilo-gateway:latest
+    container_name: kilo-gateway
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+      - "9001:9001"
+    environment:
+      - KILO_CONFIG=/app/kilo.json
+    volumes:
+      - ./.kilo:/app/.kilo
+    networks:
+      - snac_network
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:3002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Agent workers
+  agent-orchestrator:
+    build: ./services/agent-orchestrator
+    container_name: agent-orchestrator
+    restart: unless-stopped
+    env_file: ./services/agent-orchestrator/.env
+    depends_on:
+      - kilo-gateway
+    networks:
+      - snac_network
+
+  agent-builder:
+    build: ./services/agent-builder
+    container_name: agent-builder
+    restart: unless-stopped
+    env_file: ./services/agent-builder/.env
+    depends_on:
+      - kilo-gateway
+    networks:
+      - snac_network
+
+  agent-reviewer:
+    build: ./services/agent-reviewer
+    container_name: agent-reviewer
+    restart: unless-stopped
+    env_file: ./services/agent-reviewer/.env
+    depends_on:
+      - kilo-gateway
+    networks:
+      - snac_network
+
+  agent-monitor:
+    build: ./services/agent-monitor
+    container_name: agent-monitor
+    restart: unless-stopped
+    env_file: ./services/agent-monitor/.env
+    depends_on:
+      - kilo-gateway
+    networks:
+      - snac_network
+
+  agent-nvidia:
+    build: ./services/agent-nvidia
+    container_name: agent-nvidia
+    restart: unless-stopped
+    env_file: ./services/agent-nvidia/.env
+    depends_on:
+      - kilo-gateway
+    networks:
+      - snac_network
+
+  agent-azure-coordinator:
+    build: ./services/agent-azure-coordinator
+    container_name: agent-azure-coordinator
+    restart: unless-stopped
+    env_file: ./services/agent-azure-coordinator/.env
+    depends_on:
+      - kilo-gateway
+    networks:
+      - snac_network
+
 volumes:
   postgres_data:
   qdrant_data:
   code_server_data:
-
-
-
-# Kilo gateway
-kilo-gateway:
-  image: ghcr.io/vorts/kilo-gateway:latest
-  container_name: kilo-gateway
-  restart: unless-stopped
-  ports:
-    - "3002:3002"
-    - "9001:9001"
-  environment:
-    - KILO_CONFIG=/app/kilo.json
-  volumes:
-    - ./.kilo:/app/.kilo
-  networks:
-    - snac_network
-  healthcheck:
-    test: ["CMD","curl","-f","http://localhost:3002/health"]
-    interval: 10s
-    timeout: 5s
-    retries: 3
-
-# Agent workers
-agent-orchestrator:
-  build: ./services/agent-orchestrator
-  container_name: agent-orchestrator
-  restart: unless-stopped
-  env_file: ./services/agent-orchestrator/.env
-  depends_on:
-    - kilo-gateway
-  networks:
-    - snac_network
-
-agent-builder:
-  build: ./services/agent-builder
-  container_name: agent-builder
-  restart: unless-stopped
-  env_file: ./services/agent-builder/.env
-  depends_on:
-    - kilo-gateway
-  networks:
-    - snac_network
-
-agent-reviewer:
-  build: ./services/agent-reviewer
-  container_name: agent-reviewer
-  restart: unless-stopped
-  env_file: ./services/agent-reviewer/.env
-  depends_on:
-    - kilo-gateway
-  networks:
-    - snac_network
-
-agent-monitor:
-  build: ./services/agent-monitor
-  container_name: agent-monitor
-  restart: unless-stopped
-  env_file: ./services/agent-monitor/.env
-  depends_on:
-    - kilo-gateway
-  networks:
-    - snac_network
-
-agent-nvidia:
-  build: ./services/agent-nvidia
-  container_name: agent-nvidia
-  restart: unless-stopped
-  env_file: ./services/agent-nvidia/.env
-  depends_on:
-    - kilo-gateway
-  networks:
-    - snac_network
-
-agent-azure-coordinator:
-  build: ./services/agent-azure-coordinator
-  container_name: agent-azure-coordinator
-  restart: unless-stopped
-  env_file: ./services/agent-azure-coordinator/.env
-  depends_on:
-    - kilo-gateway
-  networks:
-    - snac_network
 
 networks:
   snac_network:
