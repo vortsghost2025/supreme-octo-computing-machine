@@ -10,13 +10,12 @@ const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:9002";
 // ============== COMPONENTS ==============
 
 // 1. MEMORY TIMELINE PANEL
-function MemoryTimeline({ events, isLoading }) {
+function MemoryTimeline({ events = [], isLoading }) {
   return (
     <div className="panel">
       <div className="panel-header">
         <h2>📋 Memory Timeline</h2>
-        <span className="badge">{events.length} events</span>
-		<span className="count">{events.length}</span>
+        <span className="badge" data-testid="memory-count">{events.length} events</span>
       </div>
       <div className="panel-content timeline memory-timeline">
         {isLoading ? (
@@ -51,7 +50,7 @@ function MemoryTimeline({ events, isLoading }) {
 }
 
 // 2. NODE VISUALIZER PANEL
-function NodeVisualizer({ currentTask, steps }) {
+function NodeVisualizer({ currentTask, steps = [] }) {
   const nodes = [
     { id: "planner", label: "Planner", status: "idle" },
     { id: "worker1", label: "Worker 1", status: "idle" },
@@ -122,7 +121,7 @@ function NodeVisualizer({ currentTask, steps }) {
 }
 
 // 3. TOKEN COST MONITOR PANEL
-function TokenMonitor({ usage, currentCost }) {
+function TokenMonitor({ usage = { total: 0, bySession: {} }, currentCost = 0 }) {
   const budget = 4.50;
   const alertThreshold = 4.00;
   const percentUsed = (usage.total / budget) * 100;
@@ -140,9 +139,8 @@ function TokenMonitor({ usage, currentCost }) {
       <div className="panel-content">
         <div className="cost-display">
           <div className="cost-total">
-			<span className="count">{usage.total.toFixed(4)}</span>
             <span className="cost-label">Total Spent</span>
-            <span className="cost-value">${usage.total.toFixed(4)}</span>
+            <span className="cost-value" data-testid="token-total">${usage.total.toFixed(4)}</span>
           </div>
           <div className="cost-current">
             <span className="cost-label">Current Request</span>
@@ -178,7 +176,7 @@ function TokenMonitor({ usage, currentCost }) {
   );
 }
 
-function SwarmMonitor({ status, onScalerTick, isTicking }) {
+function SwarmMonitor({ status = {}, onScalerTick, isTicking }) {
   const queue = status?.queue_depth || { high: 0, normal: 0, low: 0 };
   const guard = status?.guardrails || {};
   const frozen = Boolean(guard.frozen_scale_up);
@@ -187,9 +185,8 @@ function SwarmMonitor({ status, onScalerTick, isTicking }) {
     <div className="panel">
       <div className="panel-header">
         <h2>🐝 Swarm Monitor</h2>
-        <span className={`badge ${frozen ? "warning" : "success"}`}>
+        <span className={`badge ${frozen ? "warning" : "success"}`} data-testid="swarm-status">
           {frozen ? "GUARDRAIL" : "ACTIVE"}
-			<span className="count">{status?.queue_depth_total || 0}</span>
         </span>
       </div>
       <div className="panel-content swarm-monitor">
@@ -247,9 +244,8 @@ function SwarmGraphPanel({ snapshot }) {
     );
   }
 
-  const { nodes = [], edges = [], active_workers, tasks_running, queue_depth, recent_event_types = [], snapshot_at } = snapshot;
+  const { nodes = [], active_workers, tasks_running, queue_depth, recent_event_types = [], snapshot_at } = snapshot;
   const workers = nodes.filter((n) => n.type === "worker");
-  const queueNode = nodes.find((n) => n.type === "queue");
 
   return (
     <div className="panel">
@@ -601,7 +597,7 @@ function GovernorPanel() {
   );
 }
 
-function SharedKnowledgePanel({ items }) {
+function SharedKnowledgePanel({ items = [] }) {
   return (
     <div className="panel">
       <div className="panel-header">
@@ -1270,8 +1266,8 @@ function App() {
   const [backendStatus, setBackendStatus] = useState("checking...");
   const [timeline, setTimeline] = useState([]);
   const [tokenUsage, setTokenUsage] = useState({ total: 0, bySession: {} });
-  const [currentTask, setCurrentTask] = useState("");
-  const [currentSteps, setCurrentSteps] = useState([]);
+  const [_currentTask, setCurrentTask] = useState("");
+  const [_currentSteps, setCurrentSteps] = useState([]);
   const [currentCost, setCurrentCost] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [isIngesting, setIsIngesting] = useState(false);
@@ -1618,7 +1614,9 @@ function App() {
                   return newMessages;
                 });
               }
-            } catch {}
+            } catch (e) {
+                console.error("Failed to parse SSE event:", e);
+              }
           }
         }
       }
