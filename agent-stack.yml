@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  kilo-gateway:
+    image: ghcr.io/vorts/kilo-gateway:latest
+    container_name: kilo-gateway
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      - KILO_CONFIG=/app/kilo.json
+    volumes:
+      - ./.kilo:/app/.kilo
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:3002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  agent-orchestrator:
+    build: ./services/agent-orchestrator
+    container_name: agent-orchestrator
+    restart: unless-stopped
+    env_file: ./services/agent-orchestrator/.env
+    depends_on:
+      - kilo-gateway
+    networks:
+      - default
+
+  agent-builder:
+    build: ./services/agent-builder
+    container_name: agent-builder
+    restart: unless-stopped
+    env_file: ./services/agent-builder/.env
+    depends_on:
+      - kilo-gateway
+    networks:
+      - default
+
+  agent-reviewer:
+    build: ./services/agent-reviewer
+    container_name: agent-reviewer
+    restart: unless-stopped
+    env_file: ./services/agent-reviewer/.env
+    depends_on:
+      - kilo-gateway
+    networks:
+      - default
+
+  agent-monitor:
+    build: ./services/agent-monitor
+    container_name: agent-monitor
+    restart: unless-stopped
+    env_file: ./services/agent-monitor/.env
+    depends_on:
+      - kilo-gateway
+    networks:
+      - default
+
+  agent-nvidia:
+    build: ./services/agent-nvidia
+    container_name: agent-nvidia
+    restart: unless-stopped
+    env_file: ./services/agent-nvidia/.env
+    depends_on:
+      - kilo-gateway
+    networks:
+      - default
+
+  agent-azure-coordinator:
+    build: ./services/agent-azure-coordinator
+    container_name: agent-azure-coordinator
+    restart: unless-stopped
+    env_file: ./services/agent-azure-coordinator/.env
+    depends_on:
+      - kilo-gateway
+    networks:
+      - default
+
+networks:
+  default:
+    external: true
+    name: bridge

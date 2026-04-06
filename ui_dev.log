@@ -1,0 +1,969 @@
+
+> snac-cockpit@0.1.0 dev
+> vite --port 5179
+
+[2m10:42:12 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m Re-optimizing dependencies because lockfile has changed
+
+  [32m[1mVITE[22m v7.3.1[39m  [2mready in [0m[1m326[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5179[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m10:48:45 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:48:48 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/s[2m10:48:48 p.m[2m10:48:51 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:48:54 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:48:57 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:48:59 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:49:06 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:57:50 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:57:54 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:58:03 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:58:17 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:58:44 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:58:48 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:59:00 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:01:31 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:01:34 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:02:00 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:02:03 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:02:13 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:02:16 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:02:26 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:02:29 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:18:39 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:18:41 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+d (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6619:16)
+      at JSXParserMixin.jsxParseIdentifier (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4569:12)
+      at JSXParserMixin.jsxParseNamespacedName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4576:23)
+      at JSXParserMixin.jsxParseAttribute (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4652:22)
+      at JSXParserMixin.jsxParseOpeningElementAfterName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4667:28)
+      at JSXParserMixin.jsxParseOpeningElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4662:17)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4686:33)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13445:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12403:14)
+      at JSXParserMixin.parseFunction (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13444:10)
+      at JSXParserMixin.parseFunctionStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13125:17)
+[2m10:57:50 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:57:50 p.m.[22m [31m[1m[vite][22m[39m [31mInternal server error: S:\supreme-octo-computing-machine-main\ui\src\App.jsx: Unexpected token (761:12)
+
+[0m [90m 759 |[31m     [33m<[31m[33mform[31m className[33m=[31m[32m"task-input-form"[31m onSubmit[33m=[31m{handleSubmit}[33m>[31m
+ [90m 760 |[31m       [33m<[31m[33minput[31m
+[31m[1m>[22m[31m[90m 761 |[31m             [33m<[31m[33mtextarea[31m rows[33m=[31m[32m"2"[31m placeholder[33m=[31m[32m"Enter task…"[31m value[33m=[31m{task} onChange[33m=[31m{(e) [33m=>[31m setTask(e[33m.[31mtarget[33m.[31mvalue)} disabled[33m=[31m{isRunning}[33m>[31m[33m<[31m[33m/[31m[33mtextarea[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 762 |[31m       [33m<[31m[33mdiv[31m className[33m=[31m[32m"task-input-buttons"[31m[33m>[31m
+ [90m 763 |[31m         [33m<[31m[33mbutton[31m type[33m=[31m[32m"submit"[31m disabled[33m=[31m{isRunning [33m||[31m [33m![31mtask[33m.[31mtrim()}[33m>[31m
+ [90m 764 |[31m           {isRunning [33m?[31m [32m"Running..."[31m [33m:[31m [32m"Run Agent"[31m}[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mS:/supreme-octo-computing-machine-main/ui/src/App.jsx[39m:761:12
+[33m  759 |      <form className="task-input-form" onSubmit={handleSubmit}>
+  760 |        <input
+  761 |              <textarea rows="2" placeholder="Enter task…" value={task} onChange={(e) => setTask(e.target.value)} disab...
+      |              ^
+  762 |        <div className="task-input-buttons">
+  763 |          <button type="submit" disabled={isRunning || !task.trim()}>[39m
+      at constructor (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.unexpected (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6619:16)
+      at JSXParserMixin.jsxParseIdentifier (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4569:12)
+      at JSXParserMixin.jsxParseNamespacedName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4576:23)
+      at JSXParserMixin.jsxParseAttribute (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4652:22)
+      at JSXParserMixin.jsxParseOpeningElementAfterName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4667:28)
+      at JSXParserMixin.jsxParseOpeningElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4662:17)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4686:33)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13445:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12403:14)
+      at JSXParserMixin.parseFunction (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13444:10)
+      at JSXParserMixin.parseFunctionStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13125:17)
+[2m10:57:54 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:57:54 p.m.[22m [31m[1m[vite][22m[39m [31mInternal server error: S:\supreme-octo-computing-machine-main\ui\src\App.jsx: Unexpected token (766:12)
+
+[0m [90m 764 |[31m     [33m<[31m[33mform[31m className[33m=[31m[32m"task-input-form"[31m onSubmit[33m=[31m{handleSubmit}[33m>[31m
+ [90m 765 |[31m       [33m<[31m[33minput[31m
+[31m[1m>[22m[31m[90m 766 |[31m             [33m<[31m[33mtextarea[31m rows[33m=[31m[32m"2"[31m placeholder[33m=[31m[32m"Enter task…"[31m value[33m=[31m{task} onChange[33m=[31m{(e) [33m=>[31m setTask(e[33m.[31mtarget[33m.[31mvalue)} disabled[33m=[31m{isRunning}[33m>[31m[33m<[31m[33m/[31m[33mtextarea[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 767 |[31m       [33m<[31m[33mdiv[31m className[33m=[31m[32m"task-input-buttons"[31m[33m>[31m
+ [90m 768 |[31m         [33m<[31m[33mbutton[31m type[33m=[31m[32m"submit"[31m disabled[33m=[31m{isRunning [33m||[31m [33m![31mtask[33m.[31mtrim()}[33m>[31m
+ [90m 769 |[31m           {isRunning [33m?[31m [32m"Running..."[31m [33m:[31m [32m"Run Agent"[31m}[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mS:/supreme-octo-computing-machine-main/ui/src/App.jsx[39m:766:12
+[33m  764 |      <form className="task-input-form" onSubmit={handleSubmit}>
+  765 |        <input
+  766 |              <textarea rows="2" placeholder="Enter task…" value={task} onChange={(e) => setTask(e.target.value)} disab...
+      |              ^
+  767 |        <div className="task-input-buttons">
+  768 |          <button type="submit" disabled={isRunning || !task.trim()}>[39m
+      at constructor (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.unexpected (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6619:16)
+      at JSXParserMixin.jsxParseIdentifier (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4569:12)
+      at JSXParserMixin.jsxParseNamespacedName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4576:23)
+      at JSXParserMixin.jsxParseAttribute (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4652:22)
+      at JSXParserMixin.jsxParseOpeningElementAfterName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4667:28)
+      at JSXParserMixin.jsxParseOpeningElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4662:17)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4686:33)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13445:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12403:14)
+      at JSXParserMixin.parseFunction (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13444:10)
+      at JSXParserMixin.parseFunctionStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13125:17)
+[2m10:58:03 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:58:03 p.m.[22m [31m[1m[vite][22m[39m [31mInternal server error: S:\supreme-octo-computing-machine-main\ui\src\App.jsx: Unexpected token (767:12)
+
+[0m [90m 765 |[31m     [33m<[31m[33mform[31m className[33m=[31m[32m"task-input-form"[31m onSubmit[33m=[31m{handleSubmit}[33m>[31m
+ [90m 766 |[31m       [33m<[31m[33minput[31m
+[31m[1m>[22m[31m[90m 767 |[31m             [33m<[31m[33mtextarea[31m rows[33m=[31m[32m"2"[31m placeholder[33m=[31m[32m"Enter task…"[31m value[33m=[31m{task} onChange[33m=[31m{(e) [33m=>[31m setTask(e[33m.[31mtarget[33m.[31mvalue)} disabled[33m=[31m{isRunning}[33m>[31m[33m<[31m[33m/[31m[33mtextarea[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 768 |[31m       [33m<[31m[33mdiv[31m className[33m=[31m[32m"task-input-buttons"[31m[33m>[31m
+ [90m 769 |[31m         [33m<[31m[33mbutton[31m type[33m=[31m[32m"submit"[31m disabled[33m=[31m{isRunning [33m||[31m [33m![31mtask[33m.[31mtrim()}[33m>[31m
+ [90m 770 |[31m           {isRunning [33m?[31m [32m"Running..."[31m [33m:[31m [32m"Run Agent"[31m}[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mS:/supreme-octo-computing-machine-main/ui/src/App.jsx[39m:767:12
+[33m  765 |      <form className="task-input-form" onSubmit={handleSubmit}>
+  766 |        <input
+  767 |              <textarea rows="2" placeholder="Enter task…" value={task} onChange={(e) => setTask(e.target.value)} disab...
+      |              ^
+  768 |        <div className="task-input-buttons">
+  769 |          <button type="submit" disabled={isRunning || !task.trim()}>[39m
+      at constructor (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.unexpected (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6619:16)
+      at JSXParserMixin.jsxParseIdentifier (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4569:12)
+      at JSXParserMixin.jsxParseNamespacedName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4576:23)
+      at JSXParserMixin.jsxParseAttribute (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4652:22)
+      at JSXParserMixin.jsxParseOpeningElementAfterName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4667:28)
+      at JSXParserMixin.jsxParseOpeningElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4662:17)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4686:33)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13445:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12403:14)
+      at JSXParserMixin.parseFunction (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13444:10)
+      at JSXParserMixin.parseFunctionStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13125:17)
+[2m10:58:17 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:58:17 p.m.[22m [31m[1m[vite][22m[39m [31mInternal server error: S:\supreme-octo-computing-machine-main\ui\src\App.jsx: Unexpected token (768:12)
+
+[0m [90m 766 |[31m     [33m<[31m[33mform[31m className[33m=[31m[32m"task-input-form"[31m onSubmit[33m=[31m{handleSubmit}[33m>[31m
+ [90m 767 |[31m       [33m<[31m[33minput[31m
+[31m[1m>[22m[31m[90m 768 |[31m             [33m<[31m[33mtextarea[31m rows[33m=[31m[32m"2"[31m placeholder[33m=[31m[32m"Enter task…"[31m value[33m=[31m{task} onChange[33m=[31m{(e) [33m=>[31m setTask(e[33m.[31mtarget[33m.[31mvalue)} disabled[33m=[31m{isRunning}[33m>[31m[33m<[31m[33m/[31m[33mtextarea[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 769 |[31m       [33m<[31m[33mdiv[31m className[33m=[31m[32m"task-input-buttons"[31m[33m>[31m
+ [90m 770 |[31m         [33m<[31m[33mbutton[31m type[33m=[31m[32m"submit"[31m disabled[33m=[31m{isRunning [33m||[31m [33m![31mtask[33m.[31mtrim()}[33m>[31m
+ [90m 771 |[31m           {isRunning [33m?[31m [32m"Running..."[31m [33m:[31m [32m"Run Agent"[31m}[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mS:/supreme-octo-computing-machine-main/ui/src/App.jsx[39m:768:12
+[33m  766 |      <form className="task-input-form" onSubmit={handleSubmit}>
+  767 |        <input
+  768 |              <textarea rows="2" placeholder="Enter task…" value={task} onChange={(e) => setTask(e.target.value)} disab...
+      |              ^
+  769 |        <div className="task-input-buttons">
+  770 |          <button type="submit" disabled={isRunning || !task.trim()}>[39m
+      at constructor (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.unexpected (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6619:16)
+      at JSXParserMixin.jsxParseIdentifier (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4569:12)
+      at JSXParserMixin.jsxParseNamespacedName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4576:23)
+      at JSXParserMixin.jsxParseAttribute (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4652:22)
+      at JSXParserMixin.jsxParseOpeningElementAfterName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4667:28)
+      at JSXParserMixin.jsxParseOpeningElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4662:17)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4686:33)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13445:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12403:14)
+      at JSXParserMixin.parseFunction (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13444:10)
+      at JSXParserMixin.parseFunctionStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13125:17)
+[2m10:58:44 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:58:44 p.m.[22m [31m[1m[vite][22m[39m [31mInternal server error: S:\supreme-octo-computing-machine-main\ui\src\App.jsx: Unexpected token (768:12)
+
+[0m [90m 766 |[31m     [33m<[31m[33mform[31m className[33m=[31m[32m"task-input-form"[31m onSubmit[33m=[31m{handleSubmit}[33m>[31m
+ [90m 767 |[31m       [33m<[31m[33minput[31m
+[31m[1m>[22m[31m[90m 768 |[31m             [33m<[31m[33mtextarea[31m rows[33m=[31m[32m"2"[31m placeholder[33m=[31m[32m"Enter task…"[31m value[33m=[31m{task} onChange[33m=[31m{(e) [33m=>[31m setTask(e[33m.[31mtarget[33m.[31mvalue)} disabled[33m=[31m{isRunning}[33m>[31m[33m<[31m[33m/[31m[33mtextarea[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 769 |[31m       [33m<[31m[33mdiv[31m className[33m=[31m[32m"task-input-buttons"[31m[33m>[31m
+ [90m 770 |[31m         [33m<[31m[33mbutton[31m type[33m=[31m[32m"submit"[31m disabled[33m=[31m{isRunning [33m||[31m [33m![31mtask[33m.[31mtrim()}[33m>[31m
+ [90m 771 |[31m           {isRunning [33m?[31m [32m"Running..."[31m [33m:[31m [32m"Run Agent"[31m}[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mS:/supreme-octo-computing-machine-main/ui/src/App.jsx[39m:768:12
+[33m  766 |      <form className="task-input-form" onSubmit={handleSubmit}>
+  767 |        <input
+  768 |              <textarea rows="2" placeholder="Enter task…" value={task} onChange={(e) => setTask(e.target.value)} disab...
+      |              ^
+  769 |        <div className="task-input-buttons">
+  770 |          <button type="submit" disabled={isRunning || !task.trim()}>[39m
+      at constructor (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.unexpected (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6619:16)
+      at JSXParserMixin.jsxParseIdentifier (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4569:12)
+      at JSXParserMixin.jsxParseNamespacedName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4576:23)
+      at JSXParserMixin.jsxParseAttribute (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4652:22)
+      at JSXParserMixin.jsxParseOpeningElementAfterName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4667:28)
+      at JSXParserMixin.jsxParseOpeningElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4662:17)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4686:33)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13445:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12403:14)
+      at JSXParserMixin.parseFunction (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13444:10)
+      at JSXParserMixin.parseFunctionStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13125:17)
+[2m10:58:48 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:58:48 p.m.[22m [31m[1m[vite][22m[39m [31mInternal server error: S:\supreme-octo-computing-machine-main\ui\src\App.jsx: Expected corresponding JSX closing tag for <div>. (729:12)
+
+[0m [90m 727 |[31m             [33m<[31m[33m/[31m[33mbutton[31m[33m>[31m
+ [90m 728 |[31m               {isRunning [33m?[31m [32m"Sending..."[31m [33m:[31m [32m"Send to Agent"[31m}
+[31m[1m>[22m[31m[90m 729 |[31m             [33m<[31m[33m/[31m[33mbutton[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 730 |[31m           [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 731 |[31m         [33m<[31m[33m/[31m[33mform[31m[33m>[31m
+ [90m 732 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mS:/supreme-octo-computing-machine-main/ui/src/App.jsx[39m:729:12
+[33m  727 |              </button>
+  728 |                {isRunning ? "Sending..." : "Send to Agent"}
+  729 |              </button>
+      |              ^
+  730 |            </div>
+  731 |          </form>[39m
+      at constructor (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4727:16)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13445:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12403:14)
+      at JSXParserMixin.parseFunction (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13444:10)
+      at JSXParserMixin.parseFunctionStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13125:17)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12791:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseModuleItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12744:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:36)
+[2m10:59:00 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:59:00 p.m.[22m [31m[1m[vite][22m[39m [31mInternal server error: S:\supreme-octo-computing-machine-main\ui\src\App.jsx: Expected corresponding JSX closing tag for <div>. (729:12)
+
+[0m [90m 727 |[31m             [33m<[31m[33m/[31m[33mbutton[31m[33m>[31m
+ [90m 728 |[31m               {isRunning [33m?[31m [32m"Sending..."[31m [33m:[31m [32m"Send to Agent"[31m}
+[31m[1m>[22m[31m[90m 729 |[31m             [33m<[31m[33m/[31m[33mbutton[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 730 |[31m           [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m
+ [90m 731 |[31m         [33m<[31m[33m/[31m[33mform[31m[33m>[31m
+ [90m 732 |[31m       [33m<[31m[33m/[31m[33mdiv[31m[33m>[31m[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mS:/supreme-octo-computing-machine-main/ui/src/App.jsx[39m:729:12
+[33m  727 |              </button>
+  728 |                {isRunning ? "Sending..." : "Send to Agent"}
+  729 |              </button>
+      |              ^
+  730 |            </div>
+  731 |          </form>[39m
+      at constructor (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4727:16)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13445:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12403:14)
+      at JSXParserMixin.parseFunction (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13444:10)
+      at JSXParserMixin.parseFunctionStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13125:17)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12791:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseModuleItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12744:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:36)
+[2m11:01:31 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:01:31 p.m.[22m [31m[1m[vite][22m[39m [31mInternal server error: S:\supreme-octo-computing-machine-main\ui\src\App.jsx: Unexpected token (768:12)
+
+[0m [90m 766 |[31m     [33m<[31m[33mform[31m className[33m=[31m[32m"task-input-form"[31m onSubmit[33m=[31m{handleSubmit}[33m>[31m
+ [90m 767 |[31m       [33m<[31m[33minput[31m
+[31m[1m>[22m[31m[90m 768 |[31m             [33m<[31m[33mtextarea[31m rows[33m=[31m[32m"2"[31m placeholder[33m=[31m[32m"Enter task…"[31m value[33m=[31m{task} onChange[33m=[31m{(e) [33m=>[31m setTask(e[33m.[31mtarget[33m.[31mvalue)} disabled[33m=[31m{isRunning}[33m>[31m[33m<[31m[33m/[31m[33mtextarea[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 769 |[31m       [33m<[31m[33mdiv[31m className[33m=[31m[32m"task-input-buttons"[31m[33m>[31m
+ [90m 770 |[31m         [33m<[31m[33mbutton[31m type[33m=[31m[32m"submit"[31m disabled[33m=[31m{isRunning [33m||[31m [33m![31mtask[33m.[31mtrim()}[33m>[31m
+ [90m 771 |[31m           {isRunning [33m?[31m [32m"Running..."[31m [33m:[31m [32m"Run Agent"[31m}[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mS:/supreme-octo-computing-machine-main/ui/src/App.jsx[39m:768:12
+[33m  766 |      <form className="task-input-form" onSubmit={handleSubmit}>
+  767 |        <input
+  768 |              <textarea rows="2" placeholder="Enter task…" value={task} onChange={(e) => setTask(e.target.value)} disab...
+      |              ^
+  769 |        <div className="task-input-buttons">
+  770 |          <button type="submit" disabled={isRunning || !task.trim()}>[39m
+      at constructor (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.unexpected (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6619:16)
+      at JSXParserMixin.jsxParseIdentifier (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4569:12)
+      at JSXParserMixin.jsxParseNamespacedName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4576:23)
+      at JSXParserMixin.jsxParseAttribute (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4652:22)
+      at JSXParserMixin.jsxParseOpeningElementAfterName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4667:28)
+      at JSXParserMixin.jsxParseOpeningElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4662:17)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4686:33)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13445:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12403:14)
+      at JSXParserMixin.parseFunction (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13444:10)
+      at JSXParserMixin.parseFunctionStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13125:17)
+[2m11:01:34 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:01:34 p.m.[22m [31m[1m[vite][22m[39m [31mInternal server error: S:\supreme-octo-computing-machine-main\ui\src\App.jsx: Unexpected token (768:12)
+
+[0m [90m 766 |[31m     [33m<[31m[33mform[31m className[33m=[31m[32m"task-input-form"[31m onSubmit[33m=[31m{handleSubmit}[33m>[31m
+ [90m 767 |[31m       [33m<[31m[33minput[31m
+[31m[1m>[22m[31m[90m 768 |[31m             [33m<[31m[33mtextarea[31m rows[33m=[31m[32m"2"[31m placeholder[33m=[31m[32m"Enter task…"[31m value[33m=[31m{task} onChange[33m=[31m{(e) [33m=>[31m setTask(e[33m.[31mtarget[33m.[31mvalue)} disabled[33m=[31m{isRunning}[33m>[31m[33m<[31m[33m/[31m[33mtextarea[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 769 |[31m       [33m<[31m[33mdiv[31m className[33m=[31m[32m"task-input-buttons"[31m[33m>[31m
+ [90m 770 |[31m         [33m<[31m[33mbutton[31m type[33m=[31m[32m"submit"[31m disabled[33m=[31m{isRunning [33m||[31m [33m![31mtask[33m.[31mtrim()}[33m>[31m
+ [90m 771 |[31m           {isRunning [33m?[31m [32m"Running..."[31m [33m:[31m [32m"Run Agent"[31m}[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mS:/supreme-octo-computing-machine-main/ui/src/App.jsx[39m:768:12
+[33m  766 |      <form className="task-input-form" onSubmit={handleSubmit}>
+  767 |        <input
+  768 |              <textarea rows="2" placeholder="Enter task…" value={task} onChange={(e) => setTask(e.target.value)} disab...
+      |              ^
+  769 |        <div className="task-input-buttons">
+  770 |          <button type="submit" disabled={isRunning || !task.trim()}>[39m
+      at constructor (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.unexpected (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6619:16)
+      at JSXParserMixin.jsxParseIdentifier (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4569:12)
+      at JSXParserMixin.jsxParseNamespacedName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4576:23)
+      at JSXParserMixin.jsxParseAttribute (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4652:22)
+      at JSXParserMixin.jsxParseOpeningElementAfterName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4667:28)
+      at JSXParserMixin.jsxParseOpeningElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4662:17)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4686:33)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13445:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12403:14)
+      at JSXParserMixin.parseFunction (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13444:10)
+      at JSXParserMixin.parseFunctionStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13125:17)
+[2m11:02:00 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:02:00 p.m.[22m [31m[1m[vite][22m[39m [31mInternal server error: S:\supreme-octo-computing-machine-main\ui\src\App.jsx: Unexpected token (768:12)
+
+[0m [90m 766 |[31m     [33m<[31m[33mform[31m className[33m=[31m[32m"task-input-form"[31m onSubmit[33m=[31m{handleSubmit}[33m>[31m
+ [90m 767 |[31m       [33m<[31m[33minput[31m
+[31m[1m>[22m[31m[90m 768 |[31m             [33m<[31m[33mtextarea[31m rows[33m=[31m[32m"2"[31m placeholder[33m=[31m[32m"Enter task…"[31m value[33m=[31m{task} onChange[33m=[31m{(e) [33m=>[31m setTask(e[33m.[31mtarget[33m.[31mvalue)} disabled[33m=[31m{isRunning}[33m>[31m[33m<[31m[33m/[31m[33mtextarea[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 769 |[31m       [33m<[31m[33mdiv[31m className[33m=[31m[32m"task-input-buttons"[31m[33m>[31m
+ [90m 770 |[31m         [33m<[31m[33mbutton[31m type[33m=[31m[32m"submit"[31m disabled[33m=[31m{isRunning [33m||[31m [33m![31mtask[33m.[31mtrim()}[33m>[31m
+ [90m 771 |[31m           {isRunning [33m?[31m [32m"Running..."[31m [33m:[31m [32m"Run Agent"[31m}[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mS:/supreme-octo-computing-machine-main/ui/src/App.jsx[39m:768:12
+[33m  766 |      <form className="task-input-form" onSubmit={handleSubmit}>
+  767 |        <input
+  768 |              <textarea rows="2" placeholder="Enter task…" value={task} onChange={(e) => setTask(e.target.value)} disab...
+      |              ^
+  769 |        <div className="task-input-buttons">
+  770 |          <button type="submit" disabled={isRunning || !task.trim()}>[39m
+      at constructor (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.unexpected (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6619:16)
+      at JSXParserMixin.jsxParseIdentifier (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4569:12)
+      at JSXParserMixin.jsxParseNamespacedName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4576:23)
+      at JSXParserMixin.jsxParseAttribute (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4652:22)
+      at JSXParserMixin.jsxParseOpeningElementAfterName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4667:28)
+      at JSXParserMixin.jsxParseOpeningElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4662:17)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4686:33)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13445:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12403:14)
+      at JSXParserMixin.parseFunction (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13444:10)
+      at JSXParserMixin.parseFunctionStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13125:17)
+[2m11:02:03 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:02:03 p.m.[22m [31m[1m[vite][22m[39m [31mInternal server error: S:\supreme-octo-computing-machine-main\ui\src\App.jsx: Unexpected token (768:12)
+
+[0m [90m 766 |[31m     [33m<[31m[33mform[31m className[33m=[31m[32m"task-input-form"[31m onSubmit[33m=[31m{handleSubmit}[33m>[31m
+ [90m 767 |[31m       [33m<[31m[33minput[31m
+[31m[1m>[22m[31m[90m 768 |[31m             [33m<[31m[33mtextarea[31m rows[33m=[31m[32m"2"[31m placeholder[33m=[31m[32m"Enter task…"[31m value[33m=[31m{task} onChange[33m=[31m{(e) [33m=>[31m setTask(e[33m.[31mtarget[33m.[31mvalue)} disabled[33m=[31m{isRunning}[33m>[31m[33m<[31m[33m/[31m[33mtextarea[31m[33m>[31m
+ [90m     |[31m             [31m[1m^[22m[31m
+ [90m 769 |[31m       [33m<[31m[33mdiv[31m className[33m=[31m[32m"task-input-buttons"[31m[33m>[31m
+ [90m 770 |[31m         [33m<[31m[33mbutton[31m type[33m=[31m[32m"submit"[31m disabled[33m=[31m{isRunning [33m||[31m [33m![31mtask[33m.[31mtrim()}[33m>[31m
+ [90m 771 |[31m           {isRunning [33m?[31m [32m"Running..."[31m [33m:[31m [32m"Run Agent"[31m}[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mS:/supreme-octo-computing-machine-main/ui/src/App.jsx[39m:768:12
+[33m  766 |      <form className="task-input-form" onSubmit={handleSubmit}>
+  767 |        <input
+  768 |              <textarea rows="2" placeholder="Enter task…" value={task} onChange={(e) => setTask(e.target.value)} disab...
+      |              ^
+  769 |        <div className="task-input-buttons">
+  770 |          <button type="submit" disabled={isRunning || !task.trim()}>[39m
+      at constructor (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.unexpected (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6619:16)
+      at JSXParserMixin.jsxParseIdentifier (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4569:12)
+      at JSXParserMixin.jsxParseNamespacedName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4576:23)
+      at JSXParserMixin.jsxParseAttribute (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4652:22)
+      at JSXParserMixin.jsxParseOpeningElementAfterName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4667:28)
+      at JSXParserMixin.jsxParseOpeningElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4662:17)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4686:33)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13445:12
+      at JSXParserMixin.withSmartMixTopicForbiddingContext (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12403:14)
+      at JSXParserMixin.parseFunction (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13444:10)
+      at JSXParserMixin.parseFunctionStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13125:17)
+[2m11:02:13 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:02:13 p.m.[22m [31m[1m[vite][22m[39m [31mInternal server error: S:\supreme-octo-computing-machine-main\ui\src\App.jsx: Unexpected token (1912:4)
+
+[0m [90m 1910 |[31m               [33m/[31m[33m>[31m
+ [90m 1911 |[31m               [33m<[31m[33mAgentChatPanel[31m
+[31m[1m>[22m[31m[90m 1912 |[31m     [33m<[31m[33mdiv[31m className[33m=[31m[32m"free-coding-agent"[31m[33m>[31m
+ [90m      |[31m     [31m[1m^[22m[31m
+ [90m 1913 |[31m                 title[33m=[31m[32m"🔥 Free Coding Agent"[31m
+ [90m 1914 |[31m                 messages[33m=[31m{freeAgentMessages}
+ [90m 1915 |[31m                 draft[33m=[31m{freeAgentDraft}[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mS:/supreme-octo-computing-machine-main/ui/src/App.jsx[39m:1912:4
+[33m  1910 |                />
+  1911 |                <AgentChatPanel
+  1912 |      <div className="free-coding-agent">
+       |      ^
+  1913 |                  title="🔥 Free Coding Agent"
+  1914 |                  messages={freeAgentMessages}[39m
+      at constructor (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.unexpected (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6619:16)
+      at JSXParserMixin.jsxParseIdentifier (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4569:12)
+      at JSXParserMixin.jsxParseNamespacedName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4576:23)
+      at JSXParserMixin.jsxParseAttribute (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4652:22)
+      at JSXParserMixin.jsxParseOpeningElementAfterName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4667:28)
+      at JSXParserMixin.jsxParseOpeningElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4662:17)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4686:33)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+[2m11:02:16 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:02:16 p.m.[22m [31m[1m[vite][22m[39m [31mInternal server error: S:\supreme-octo-computing-machine-main\ui\src\App.jsx: Unexpected token (1913:4)
+
+[0m [90m 1911 |[31m               [33m/[31m[33m>[31m
+ [90m 1912 |[31m               [33m<[31m[33mAgentChatPanel[31m
+[31m[1m>[22m[31m[90m 1913 |[31m     [33m<[31m[33mdiv[31m className[33m=[31m[32m"free-coding-agent"[31m[33m>[31m
+ [90m      |[31m     [31m[1m^[22m[31m
+ [90m 1914 |[31m                 title[33m=[31m[32m"🔥 Free Coding Agent"[31m
+ [90m 1915 |[31m                 messages[33m=[31m{freeAgentMessages}
+ [90m 1916 |[31m                 draft[33m=[31m{freeAgentDraft}[0m[39m
+  Plugin: [35mvite:react-babel[39m
+  File: [36mS:/supreme-octo-computing-machine-main/ui/src/App.jsx[39m:1913:4
+[33m  1911 |                />
+  1912 |                <AgentChatPanel
+  1913 |      <div className="free-coding-agent">
+       |      ^
+  1914 |                  title="🔥 Free Coding Agent"
+  1915 |                  messages={freeAgentMessages}[39m
+      at constructor (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:365:19)
+      at JSXParserMixin.raise (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6599:19)
+      at JSXParserMixin.unexpected (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:6619:16)
+      at JSXParserMixin.jsxParseIdentifier (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4569:12)
+      at JSXParserMixin.jsxParseNamespacedName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4576:23)
+      at JSXParserMixin.jsxParseAttribute (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4652:22)
+      at JSXParserMixin.jsxParseOpeningElementAfterName (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4667:28)
+      at JSXParserMixin.jsxParseOpeningElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4662:17)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4686:33)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElementAt (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4698:32)
+      at JSXParserMixin.jsxParseElement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4749:17)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4759:19)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12426:12)
+      at JSXParserMixin.parseMaybeAssignAllowIn (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10800:17)
+      at JSXParserMixin.parseMaybeAssignAllowInOrVoidPattern (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12493:17)
+      at JSXParserMixin.parseParenAndDistinguishExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11675:28)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11331:23)
+      at JSXParserMixin.parseExprAtom (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:4764:20)
+      at JSXParserMixin.parseExprSubscripts (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11081:23)
+      at JSXParserMixin.parseUpdate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11066:21)
+      at JSXParserMixin.parseMaybeUnary (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:11046:23)
+      at JSXParserMixin.parseMaybeUnaryOrPrivate (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10899:61)
+      at JSXParserMixin.parseExprOps (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10904:23)
+      at JSXParserMixin.parseMaybeConditional (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10881:23)
+      at JSXParserMixin.parseMaybeAssign (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10831:21)
+      at JSXParserMixin.parseExpressionBase (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10784:23)
+      at S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:39
+      at JSXParserMixin.allowInAnd (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12421:16)
+      at JSXParserMixin.parseExpression (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:10780:17)
+      at JSXParserMixin.parseReturnStatement (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13142:28)
+      at JSXParserMixin.parseStatementContent (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12798:21)
+      at JSXParserMixin.parseStatementLike (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12767:17)
+      at JSXParserMixin.parseStatementListItem (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12747:17)
+      at JSXParserMixin.parseBlockOrModuleBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13316:61)
+      at JSXParserMixin.parseBlockBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13309:10)
+      at JSXParserMixin.parseBlock (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:13297:10)
+      at JSXParserMixin.parseFunctionBody (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12100:24)
+      at JSXParserMixin.parseFunctionBodyAndFinish (S:\supreme-octo-computing-machine-main\ui\node_modules\@babel\parser\lib\index.js:12086:10)
+[2m11:02:26 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:02:29 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:18:39 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m11:18:41 p.m.[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/App.jsx[22m

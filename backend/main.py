@@ -669,7 +669,7 @@ def _prune_memory_fallback_state() -> None:
 
 def _get_allowed_origins() -> List[str]:
     """Resolve allowed CORS origins from env for safer production defaults."""
-    raw = os.getenv("CORS_ALLOW_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000")
+    raw = os.getenv("CORS_ALLOW_ORIGINS", "*")
     return [origin.strip() for origin in raw.split(",") if origin.strip()]
 
 
@@ -5339,4 +5339,4 @@ async def governor_refresh(projectRoot: Optional[str] = None):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=9001)

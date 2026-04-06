@@ -1,8 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
-import IDETerminal from './components/IDETerminal';
+// IDETerminal component will be added later
 
 // API Base URL - relative so it routes through nginx in production; override with VITE_API_URL in dev
-const API_BASE = "http://localhost:4000/api";
+// API Base URL – derived from Vite environment variable if present.
+// In production the backend is proxied, but during local development we rely on the VITE_API_URL variable defined in `ui/.env`.
+// Falling back to the default port 9002 keeps the UI functional even if the env file is missing.
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:9002";
 
 // ============== COMPONENTS ==============
 
@@ -13,6 +16,7 @@ function MemoryTimeline({ events, isLoading }) {
       <div className="panel-header">
         <h2>📋 Memory Timeline</h2>
         <span className="badge">{events.length} events</span>
+		<span className="count">{events.length}</span>
       </div>
       <div className="panel-content timeline">
         {isLoading ? (
@@ -74,6 +78,7 @@ function NodeVisualizer({ currentTask, steps }) {
       <div className="panel-header">
         <h2>🔗 Node Visualizer</h2>
         <span className="badge">{currentTask ? "Running" : "Idle"}</span>
+		<span className="count">{events.length}</span>
       </div>
       <div className="panel-content visualizer">
         <div className="node-graph">
@@ -136,6 +141,7 @@ function TokenMonitor({ usage, currentCost }) {
       <div className="panel-content">
         <div className="cost-display">
           <div className="cost-total">
+			<span className="count">{usage.total.toFixed(4)}</span>
             <span className="cost-label">Total Spent</span>
             <span className="cost-value">${usage.total.toFixed(4)}</span>
           </div>
@@ -184,6 +190,7 @@ function SwarmMonitor({ status, onScalerTick, isTicking }) {
         <h2>🐝 Swarm Monitor</h2>
         <span className={`badge ${frozen ? "warning" : "success"}`}>
           {frozen ? "GUARDRAIL" : "ACTIVE"}
+			<span className="count">{status?.queue_depth_total || 0}</span>
         </span>
       </div>
       <div className="panel-content swarm-monitor">
@@ -235,6 +242,7 @@ function SwarmGraphPanel({ snapshot }) {
         <div className="panel-header">
           <h2>🕸️ Swarm Topology</h2>
           <span className="badge">Loading...</span>
+		<span className="count">{events.length}</span>
         </div>
         <div className="panel-content"><div className="empty">Waiting for graph snapshot...</div></div>
       </div>
@@ -290,6 +298,7 @@ function SwarmIntelligencePanel({ summary }) {
         <div className="panel-header">
           <h2>🧬 Swarm Intelligence</h2>
           <span className="badge">No data</span>
+		<span className="count">{events.length}</span>
         </div>
         <div className="panel-content"><div className="empty">No task history yet. Queue some swarm tasks to see intelligence metrics.</div></div>
       </div>
@@ -457,7 +466,7 @@ function GovernorPanel() {
           <div className="governor-context-header">
             <h3>Project Context</h3>
             <button onClick={handleRefresh} disabled={refreshing}>
-              {refreshing ? "Refreshing..." : "↻ Refresh"}
+              {refreshing ? "Refreshing..." : "Refresh"}
             </button>
           </div>
           {context ? (
@@ -601,6 +610,7 @@ function SharedKnowledgePanel({ items }) {
       <div className="panel-header">
         <h2>🧠 Shared Knowledge</h2>
         <span className="badge">{items.length} items</span>
+		<span className="count">{events.length}</span>
       </div>
       <div className="panel-content knowledge-feed">
         {items.length === 0 ? (
@@ -707,13 +717,13 @@ function AgentChatPanel({
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="Talk to your agents here. You can still use QUERY:/CALC: chaining if you want."
+            placeholder={title.includes('Free Coding') ? 'Enter coding task…' : 'Talk to your agents here. You can still use QUERY:/CALC: chaining if you want.'}
             disabled={isRunning}
             style={{ fontSize: fontSize + 'px' }}
           />
           <div className="chat-compose-actions">
             <button type="submit" disabled={isRunning || !draft.trim()}>
-              {isRunning ? "Sending..." : "Send to Agent"}
+              {isRunning ? (title.includes('Free Coding') ? 'Running...' : 'Sending...') : (title.includes('Free Coding') ? 'Run Free Coding' : 'Send to Agent')}
             </button>
           </div>
         </form>
@@ -754,13 +764,7 @@ function TaskInput({ onSubmit, isRunning, onMaximize }) {
 
   return (
     <form className="task-input-form" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={task}
-        onChange={(e) => setTask(e.target.value)}
-        placeholder="Enter task..."
-        disabled={isRunning}
-      />
+    <textarea rows="2" placeholder="Enter task…" value={task} onChange={(e) => setTask(e.target.value)} disabled={isRunning}></textarea>
       <div className="task-input-buttons">
         <button type="submit" disabled={isRunning || !task.trim()}>
           {isRunning ? "Running..." : "Run Agent"}
@@ -822,7 +826,7 @@ function IngestInput({ onIngest, isLoading, onMaximize }) {
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Paste content to ingest for RAG..."
+        placeholder="Paste document text here…"
         disabled={isLoading}
         rows={3}
       />
@@ -854,7 +858,7 @@ function IngestInputMaximized({ onIngest, isLoading, onClose }) {
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Paste content to ingest for RAG..."
+        placeholder="Paste document text here…"
         disabled={isLoading}
         style={{ minHeight: "400px", flex: 1 }}
         autoFocus
@@ -885,7 +889,7 @@ function ThoughtInput({ onIngestThought, isLoading }) {
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Dump any idea, link, note, or research snippet..."
+        placeholder="Enter a thought…"
         disabled={isLoading}
         rows={4}
       />
@@ -914,7 +918,7 @@ function SwarmQueueInput({ onQueueTask, isLoading }) {
       <textarea
         value={task}
         onChange={(e) => setTask(e.target.value)}
-        placeholder="Queue swarm task..."
+        placeholder="Enter swarm task…"
         rows={3}
         disabled={isLoading}
       />
@@ -972,13 +976,13 @@ function MemoryLearnInput({ onSubmitLearning, isLoading }) {
       <input
         value={topic}
         onChange={(e) => setTopic(e.target.value)}
-        placeholder="Learning topic"
+        placeholder="Topic"
         disabled={isLoading}
       />
       <textarea
         value={details}
         onChange={(e) => setDetails(e.target.value)}
-        placeholder="Learning details"
+        placeholder="Details"
         rows={4}
         disabled={isLoading}
       />
@@ -1294,6 +1298,7 @@ function App() {
   const [agentChatDraft, setAgentChatDraft] = useState("");
 
   // Free Coding Agent chat state
+  const [task, setTask] = useState("");
   const [freeAgentMessages, setFreeAgentMessages] = useState([]);
   const [freeAgentDraft, setFreeAgentDraft] = useState("");
   const [freeAgentRunning, setFreeAgentRunning] = useState(false);
@@ -1571,7 +1576,7 @@ function App() {
     ]);
 
     try {
-      const res = await fetch(`${FREE_AGENT_API}/api/chat`, {
+      const res = await fetch(`${FREE_AGENT_API}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task, provider: "ollama" }),
@@ -1905,21 +1910,31 @@ function App() {
                 isRunning={isRunning}
                 sessionId={agentChatSessionId}
               />
-              <AgentChatPanel
-                title="🔥 Free Coding Agent"
-                messages={freeAgentMessages}
-                draft={freeAgentDraft}
-                setDraft={setFreeAgentDraft}
-                onSend={handleFreeAgentSubmit}
-                onReset={handleFreeAgentReset}
-                isRunning={freeAgentRunning}
-                sessionId={null}
-              />
+    <div className="free-coding-agent">
+      <AgentChatPanel
+        title="🔥 Free Coding Agent"
+        messages={freeAgentMessages}
+        draft={freeAgentDraft}
+        setDraft={setFreeAgentDraft}
+        onSend={handleFreeAgentSubmit}
+        onReset={handleFreeAgentReset}
+        isRunning={freeAgentRunning}
+        sessionId={null}
+      />
+    <div className="task-input-wrapper">
+      <form className="task-input-form" onSubmit={(e)=>{e.preventDefault(); if(task.trim() && !isRunning){handleTaskSubmit(task); setTask("");}}}>
+        <textarea rows="2" placeholder="Enter task…" value={task} onChange={(e)=>setTask(e.target.value)} disabled={isRunning}></textarea>
+        <div className="task-input-buttons">
+          <button type="submit" disabled={isRunning || !task.trim()}>Run Agent</button>
+        </div>
+      </form>
+    </div>
+    </div>
             </div>
             <div className="panels-second-row">
               <GovernorPanel />
               <MemoryTimeline events={timeline} isLoading={backendStatus !== "ok"} />
-              <IDETerminal />
+              {/* IDETerminal component disabled */}
               <TokenMonitor usage={tokenUsage} currentCost={currentCost} />
               <SwarmMonitor status={swarmStatus} onScalerTick={handleSwarmTick} isTicking={isTickingSwarm} />
             </div>
