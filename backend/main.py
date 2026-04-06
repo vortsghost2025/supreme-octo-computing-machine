@@ -21,6 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, field_validator
 import httpx
 from openai import AsyncOpenAI
+import llm_client
 import redis.asyncio as aioredis
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct
@@ -1577,6 +1578,54 @@ async def api_health():
 async def status():
     """Simple text-friendly status endpoint for scripts and monitors."""
     return _health_payload()
+
+
+# ============== LLM ENDPOINTS ==============
+
+
+class LLMGenerateRequest(BaseModel):
+    prompt: Annotated[str, Field(min_length=1, max_length=10000)]
+    model: Optional[str] = None
+    system: Optional[str] = None
+
+
+class LLMGenerateResponse(BaseModel):
+    result: str
+    model: str
+
+
+class LLMModelsResponse(BaseModel):
+    models: List[str]
+    default_model: str
+
+
+@app.get("/llm/models", response_model=LLMModelsResponse)
+async def list_llm_models():
+    """List allowed Ollama models."""
+    return LLMModelsResponse(
+        models=sorted(llm_client.ALLOWED_MODELS),
+        default_model=llm_client.OLLAMA_MODEL_DEFAULT,
+    )
+
+
+@app.post("/llm", response_model=LLMGenerateResponse)
+async def generate_llm(request: LLMGenerateRequest):
+    """Generate text using Ollama with model whitelist."""
+    try:
+        result = await llm_client.generate(
+            prompt=request.prompt,
+            model=request.model,
+            system=request.system,
+        )
+        model_used = request.model or llm_client.OLLAMA_MODEL_DEFAULT
+        return LLMGenerateResponse(result=result, model=model_used)
+    except llm_client.OllamaError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"LLM generation failed: {str(e)}",
+        )
 
 
 # ============== INGEST ENDPOINT ==============
