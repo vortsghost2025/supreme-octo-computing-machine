@@ -229,7 +229,7 @@ function SwarmMonitor({ status = {}, onScalerTick, isTicking }) {
           <span>{guard.reason ? `Reason: ${guard.reason}` : "No guardrail block"}</span>
         </div>
 
-        <button className="swarm-tick-btn" onClick={onScalerTick} disabled={isTicking}>
+        <button className="swarm-tick-btn" onClick={onScalerTick} disabled={isTicking} aria-label="Run swarm scaler tick">
           {isTicking ? "Running Scaler..." : "Run Scaler Tick"}
         </button>
       </div>
@@ -739,7 +739,7 @@ function Modal({ isOpen, onClose, title, children }) {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{title}</h2>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose} aria-label="Close modal">✕</button>
         </div>
         <div className="modal-body">{children}</div>
       </div>
@@ -800,7 +800,7 @@ function TaskInputMaximized({ onSubmit, isRunning, onClose }) {
         <button type="submit" disabled={isRunning || !task.trim()}>
           {isRunning ? "Running..." : "Run Agent"}
         </button>
-        <button type="button" onClick={onClose}>Cancel</button>
+        <button type="button" onClick={onClose} aria-label="Cancel">Cancel</button>
       </div>
     </form>
   );
@@ -865,7 +865,7 @@ function IngestInputMaximized({ onIngest, isLoading, onClose }) {
         <button type="submit" disabled={isLoading || !content.trim()}>
           {isLoading ? "Ingesting..." : "Ingest Document"}
         </button>
-        <button type="button" onClick={onClose}>Cancel</button>
+        <button type="button" onClick={onClose} aria-label="Cancel">Cancel</button>
       </div>
     </form>
   );
@@ -1132,6 +1132,7 @@ function MemoryInjectionInput({
             type="button"
             onClick={handleApply}
             disabled={isApplying || isPreviewing || selectedIds.length === 0}
+            aria-label="Apply memory injection"
           >
             {isApplying ? "Applying..." : `Apply (${selectedIds.length})`}
           </button>
@@ -1265,6 +1266,8 @@ function ProjectVaultPanel({ onSaveToBrain, savingVaultId }) {
     </div>
   );
 }
+
+SharedKnowledgePanel.defaultProps = { items: [] };
 
 // ============== MAIN APP ==============
 
