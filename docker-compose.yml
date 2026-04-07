@@ -60,7 +60,7 @@ services:
     build: ./backend
     container_name: snac_backend
     ports:
-      - "8000:8000"
+      - "8001:8000"
     env_file: .env
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
@@ -68,8 +68,8 @@ services:
       - QDRANT_PORT=6333
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - OLLAMA_BASE_URL=http://187.77.3.56:11434
-      - OLLAMA_MODEL=llama3.2:3b
+      - OLLAMA_BASE_URL=http://host.docker.internal:9001
+      - OLLAMA_MODEL=mistral:7b
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
