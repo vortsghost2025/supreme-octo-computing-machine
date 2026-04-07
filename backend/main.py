@@ -137,9 +137,12 @@ def _validate_event_contract(
 
 
 # ============== CONFIGURATION ==============
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "qwen/qwen2.5-0.5b-instruct")
-OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://openrouter.ai/api/v1")
+AZURE_OPENAI_KEY = os.getenv("AZURE_OPENAI_KEY")
+AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", "").rstrip("/")
+AZURE_OPENAI_DEPLOYMENT = os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4o")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY") or AZURE_OPENAI_KEY
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", AZURE_OPENAI_DEPLOYMENT or "gpt-4o")
+OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", f"{AZURE_OPENAI_ENDPOINT}/openai/deployments/{AZURE_OPENAI_DEPLOYMENT}/" if AZURE_OPENAI_ENDPOINT else "https://openrouter.ai/api/v1")
 QDRANT_HOST = os.getenv("QDRANT_HOST", "qdrant")
 QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
@@ -337,7 +340,14 @@ _WORKER_CLASSES = {
 }
 
 # OpenAI async client (None when key is absent)
-_openai_client: Optional[AsyncOpenAI] = (
+_azure_client = None
+if AZURE_OPENAI_KEY and AZURE_OPENAI_ENDPOINT:
+    _azure_client = AsyncOpenAI(
+        api_key=AZURE_OPENAI_KEY,
+        base_url=f"{AZURE_OPENAI_ENDPOINT}/openai/deployments/{AZURE_OPENAI_DEPLOYMENT}/",
+        api_version="2024-02-15-preview",
+    )
+_openai_client: Optional[AsyncOpenAI] = _azure_client or (
     AsyncOpenAI(
         api_key=OPENAI_API_KEY,
         base_url=OPENAI_BASE_URL,

@@ -1,0 +1,1 @@
+resource st 'Microsoft.Storage/storageAccounts@2021-04-01' = { name: 'validatestorage12345' location: 'eastus' sku: { name: 'Standard_LRS' } kind: 'StorageV2' }

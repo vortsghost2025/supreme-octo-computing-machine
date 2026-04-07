@@ -2,13 +2,13 @@
   "name": "snac-cockpit",
   "private": true,
   "version": "0.1.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:ui": "playwright test"
+    "test:ui": "playwright test",
+    "test:ui:auto": "start /B npm run dev && ping -n 8 127.0.0.1 >nul && npm run test:ui"
   },
   "dependencies": {
     "react": "^19.2.0",

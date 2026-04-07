@@ -10,21 +10,22 @@ const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:9002";
 // ============== COMPONENTS ==============
 
 // 1. MEMORY TIMELINE PANEL
-function MemoryTimeline({ events = [], isLoading }) {
+function MemoryTimeline({ events, isLoading }) {
   return (
     <div className="panel">
       <div className="panel-header">
         <h2>📋 Memory Timeline</h2>
-        <span className="badge" data-testid="memory-count">{events?.length ?? 0} events</span>
+        <span className="badge">{events.length} events</span>
+
       </div>
-      <div className="panel-content timeline memory-timeline">
+      <div className="panel-content timeline">
         {isLoading ? (
           <div className="loading">Loading timeline...</div>
-        ) : (events?.length ?? 0) === 0 ? (
+        ) : events.length === 0 ? (
           <div className="empty">No events yet. Run an agent task to see activity.</div>
         ) : (
           events.map((event, idx) => (
-            <div key={idx} className={`timeline-item thought-entry ${event.type}`}>
+            <div key={idx} className={`timeline-item ${event.type}`}>
               <div className="timeline-time">
                 {new Date(event.timestamp).toLocaleTimeString()}
               </div>
@@ -50,7 +51,7 @@ function MemoryTimeline({ events = [], isLoading }) {
 }
 
 // 2. NODE VISUALIZER PANEL
-function NodeVisualizer({ currentTask, steps = [] }) {
+function NodeVisualizer({ currentTask, steps }) {
   const nodes = [
     { id: "planner", label: "Planner", status: "idle" },
     { id: "worker1", label: "Worker 1", status: "idle" },
@@ -77,6 +78,7 @@ function NodeVisualizer({ currentTask, steps = [] }) {
       <div className="panel-header">
         <h2>🔗 Node Visualizer</h2>
         <span className="badge">{currentTask ? "Running" : "Idle"}</span>
+
       </div>
       <div className="panel-content visualizer">
         <div className="node-graph">
@@ -121,7 +123,7 @@ function NodeVisualizer({ currentTask, steps = [] }) {
 }
 
 // 3. TOKEN COST MONITOR PANEL
-function TokenMonitor({ usage = { total: 0, bySession: {} }, currentCost = 0 }) {
+function TokenMonitor({ usage, currentCost }) {
   const budget = 4.50;
   const alertThreshold = 4.00;
   const percentUsed = (usage.total / budget) * 100;
@@ -139,8 +141,9 @@ function TokenMonitor({ usage = { total: 0, bySession: {} }, currentCost = 0 }) 
       <div className="panel-content">
         <div className="cost-display">
           <div className="cost-total">
+			<span className="count">{usage.total.toFixed(4)}</span>
             <span className="cost-label">Total Spent</span>
-            <span className="cost-value" data-testid="token-total">${usage.total.toFixed(4)}</span>
+            <span className="cost-value">${usage.total.toFixed(4)}</span>
           </div>
           <div className="cost-current">
             <span className="cost-label">Current Request</span>
@@ -176,7 +179,7 @@ function TokenMonitor({ usage = { total: 0, bySession: {} }, currentCost = 0 }) 
   );
 }
 
-function SwarmMonitor({ status = {}, onScalerTick, isTicking }) {
+function SwarmMonitor({ status, onScalerTick, isTicking }) {
   const queue = status?.queue_depth || { high: 0, normal: 0, low: 0 };
   const guard = status?.guardrails || {};
   const frozen = Boolean(guard.frozen_scale_up);
@@ -185,15 +188,12 @@ function SwarmMonitor({ status = {}, onScalerTick, isTicking }) {
     <div className="panel">
       <div className="panel-header">
         <h2>🐝 Swarm Monitor</h2>
-        <span className={`badge ${frozen ? "warning" : "success"}`} data-testid="swarm-status">
+        <span className={`badge ${frozen ? "warning" : "success"}`}>
           {frozen ? "GUARDRAIL" : "ACTIVE"}
+			<span className="count">{status?.queue_depth_total || 0}</span>
         </span>
       </div>
       <div className="panel-content swarm-monitor">
-        <div className="swarm-metric-total">
-          <span className="swarm-label">Total Queue</span>
-          <strong data-testid="swarm-count">{status?.queue_depth_total ?? 0}</strong>
-        </div>
         <div className="swarm-grid">
           <div className="swarm-metric">
             <span className="swarm-label">Queue (High)</span>
@@ -242,14 +242,16 @@ function SwarmGraphPanel({ snapshot }) {
         <div className="panel-header">
           <h2>🕸️ Swarm Topology</h2>
           <span className="badge">Loading...</span>
+
         </div>
         <div className="panel-content"><div className="empty">Waiting for graph snapshot...</div></div>
       </div>
     );
   }
 
-  const { nodes = [], active_workers, tasks_running, queue_depth, recent_event_types = [], snapshot_at } = snapshot;
+  const { nodes = [], edges = [], active_workers, tasks_running, queue_depth, recent_event_types = [], snapshot_at } = snapshot;
   const workers = nodes.filter((n) => n.type === "worker");
+  const queueNode = nodes.find((n) => n.type === "queue");
 
   return (
     <div className="panel">
@@ -296,6 +298,7 @@ function SwarmIntelligencePanel({ summary }) {
         <div className="panel-header">
           <h2>🧬 Swarm Intelligence</h2>
           <span className="badge">No data</span>
+
         </div>
         <div className="panel-content"><div className="empty">No task history yet. Queue some swarm tasks to see intelligence metrics.</div></div>
       </div>
@@ -601,14 +604,15 @@ function GovernorPanel() {
   );
 }
 
-function SharedKnowledgePanel({ items = [] }) {
+function SharedKnowledgePanel({ items }) {
   return (
     <div className="panel">
       <div className="panel-header">
         <h2>🧠 Shared Knowledge</h2>
         <span className="badge">{items.length} items</span>
+
       </div>
-      <div className="panel-content knowledge-feed shared-knowledge">
+      <div className="panel-content knowledge-feed">
         {items.length === 0 ? (
           <div className="empty">No shared learning yet.</div>
         ) : (
@@ -936,11 +940,6 @@ function SwarmQueueInput({ onQueueTask, isLoading }) {
       <button type="submit" disabled={isLoading || !task.trim()}>
         {isLoading ? "Queueing..." : "Queue Swarm Task"}
       </button>
-      {task && (
-        <div className="swarm-queue-list">
-          <div className="swarm-queue-item">{task}</div>
-        </div>
-      )}
     </form>
   );
 }
@@ -1270,8 +1269,8 @@ function App() {
   const [backendStatus, setBackendStatus] = useState("checking...");
   const [timeline, setTimeline] = useState([]);
   const [tokenUsage, setTokenUsage] = useState({ total: 0, bySession: {} });
-  const [_currentTask, setCurrentTask] = useState("");
-  const [_currentSteps, setCurrentSteps] = useState([]);
+  const [currentTask, setCurrentTask] = useState("");
+  const [currentSteps, setCurrentSteps] = useState([]);
   const [currentCost, setCurrentCost] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [isIngesting, setIsIngesting] = useState(false);
@@ -1618,9 +1617,7 @@ function App() {
                   return newMessages;
                 });
               }
-            } catch (e) {
-                console.error("Failed to parse SSE event:", e);
-              }
+            } catch (e) { console.error('Parse error in streaming response:', e); }
           }
         }
       }

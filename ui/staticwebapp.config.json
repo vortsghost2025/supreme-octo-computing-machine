@@ -1,0 +1,13 @@
+{
+  "mimeTypes": {
+    "*.js": "application/javascript",
+    "*.mjs": "application/javascript"
+  },
+  "routes": [
+    {
+      "route": "/*",
+      "serve": "/index.html",
+      "statusCode": 200
+    }
+  ]
+}

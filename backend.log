@@ -1,11 +1,8 @@
-INFO:     Started server process [108200]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-ERROR:    [Errno 10048] error while attempting to bind on address ('127.0.0.1', 9002): [winerror 10048] only one usage of each socket address (protocol/network address/port) is normally permitted
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
 SNAC-v2 Backend starting up...
 OpenAI API: configured
 Redis: unavailable (Error 11001 connecting to redis:6379. getaddrinfo failed.) - using in-memory fallback
 Qdrant: unavailable ([Errno 11001] getaddrinfo failed) - RAG disabled
-SNAC-v2 Backend shutting down...
+INFO:     127.0.0.1:29290 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:29294 - "GET /llm/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:29297 - "POST /llm HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:29300 - "POST /llm HTTP/1.1" 503 Service Unavailable

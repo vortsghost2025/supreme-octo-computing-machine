@@ -20,9 +20,9 @@ class ModelRouter:
             "description": "Good balance of speed and quality"
         },
         "quality": {
-            "name": "llama3:8b",
+            "name": "llama3:8b-instruct-q4_K_M",
             "context": 4096,
-            "description": "Best quality for complex reasoning"
+            "description": "Best quality for complex reasoning (quantized)"
         }
     }
     
