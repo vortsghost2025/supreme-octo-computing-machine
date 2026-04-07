@@ -12,7 +12,7 @@ const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:9002";
 // 1. MEMORY TIMELINE PANEL
 function MemoryTimeline({ events = [], isLoading }) {
   return (
-    <div className="panel">
+    <div className="panel" data-testid="timeline">
       <div className="panel-header">
         <h2>📋 Memory Timeline</h2>
         <span className="badge" data-testid="memory-count">{events?.length ?? 0} events</span>
@@ -48,6 +48,8 @@ function MemoryTimeline({ events = [], isLoading }) {
     </div>
   );
 }
+
+MemoryTimeline.defaultProps = { events: [] };
 
 // 2. NODE VISUALIZER PANEL
 function NodeVisualizer({ currentTask, steps = [] }) {
@@ -765,7 +767,7 @@ function TaskInput({ onSubmit, isRunning, onMaximize }) {
         <button type="submit" disabled={isRunning || !task.trim()}>
           {isRunning ? "Running..." : "Run Agent"}
         </button>
-        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input">
+        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input" data-testid="input-expand">
           ⛶
         </button>
       </div>
@@ -830,7 +832,7 @@ function IngestInput({ onIngest, isLoading, onMaximize }) {
         <button type="submit" disabled={isLoading || !content.trim()}>
           {isLoading ? "Ingesting..." : "Ingest Document"}
         </button>
-        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input">
+        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input" data-testid="input-expand">
           ⛶
         </button>
       </div>
