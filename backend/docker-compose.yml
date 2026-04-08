@@ -86,7 +86,7 @@ services:
     environment:
       - PROVIDER=ollama
       - MODEL=llama3.2
-      - OLLAMA_URL=http://host.docker.internal:11434
+      - OLLAMA_URL=http://host.docker.internal:9001
       - WORKING_DIR=/workspace
       - NO_APPROVAL=false
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
@@ -104,11 +104,11 @@ services:
     image: ollama/ollama:latest
     container_name: snac_ollama
     ports:
-      - "11434:11434"
+      - "9001:9001"
     volumes:
       - ollama_data:/root/.ollama
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      test: ["CMD", "curl", "-f", "http://localhost:9001/api/tags"]
       interval: 10s
       timeout: 5s
       retries: 5
