@@ -1563,7 +1563,7 @@ except ImportError:
     ollama_generate = None
     router = None
     route_request = None
-    OLLAMA_BASE_URL = "http://127.0.0.1:11434"
+    OLLAMA_BASE_URL = "http://127.0.0.1:9001"
 
 
 # LLM endpoint for local Ollama GPU inference with automatic routing
