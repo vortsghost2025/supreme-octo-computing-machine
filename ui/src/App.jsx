@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import PropTypes from "prop-types";
 // IDETerminal component will be added later
 
 // API Base URL - relative so it routes through nginx in production; override with VITE_API_URL in dev
@@ -10,18 +11,19 @@ const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:9002";
 // ============== COMPONENTS ==============
 
 // 1. MEMORY TIMELINE PANEL
-function MemoryTimeline({ events, isLoading }) {
+function MemoryTimeline({ events = [], isLoading }) {
+  const eventCount = events?.length ?? 0;
   return (
-    <div className="panel">
+    <div className="panel" data-testid="timeline">
       <div className="panel-header">
         <h2>📋 Memory Timeline</h2>
-        <span className="badge">{events.length} events</span>
+        <span className="badge" data-testid="memory-count">{eventCount} events</span>
 
       </div>
       <div className="panel-content timeline">
         {isLoading ? (
           <div className="loading">Loading timeline...</div>
-        ) : events.length === 0 ? (
+        ) : eventCount === 0 ? (
           <div className="empty">No events yet. Run an agent task to see activity.</div>
         ) : (
           events.map((event, idx) => (
@@ -49,6 +51,13 @@ function MemoryTimeline({ events, isLoading }) {
     </div>
   );
 }
+MemoryTimeline.propTypes = {
+  events: PropTypes.array,
+  isLoading: PropTypes.bool,
+};
+MemoryTimeline.defaultProps = {
+  events: [],
+};
 
 // 2. NODE VISUALIZER PANEL
 function NodeVisualizer({ currentTask, steps }) {
@@ -604,16 +613,17 @@ function GovernorPanel() {
   );
 }
 
-function SharedKnowledgePanel({ items }) {
+function SharedKnowledgePanel({ items = [] }) {
+  const itemCount = items?.length ?? 0;
   return (
     <div className="panel">
       <div className="panel-header">
         <h2>🧠 Shared Knowledge</h2>
-        <span className="badge">{items.length} items</span>
+        <span className="badge">{itemCount} items</span>
 
       </div>
       <div className="panel-content knowledge-feed">
-        {items.length === 0 ? (
+        {itemCount === 0 ? (
           <div className="empty">No shared learning yet.</div>
         ) : (
           items
@@ -637,6 +647,12 @@ function SharedKnowledgePanel({ items }) {
     </div>
   );
 }
+SharedKnowledgePanel.propTypes = {
+  items: PropTypes.array,
+};
+SharedKnowledgePanel.defaultProps = {
+  items: [],
+};
 
 function AgentChatPanel({
   title = "💬 Agent Console",
@@ -741,7 +757,7 @@ function Modal({ isOpen, onClose, title, children }) {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{title}</h2>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose} aria-label="Close modal">✕</button>
         </div>
         <div className="modal-body">{children}</div>
       </div>
@@ -769,12 +785,21 @@ function TaskInput({ onSubmit, isRunning, onMaximize }) {
         <button type="submit" disabled={isRunning || !task.trim()}>
           {isRunning ? "Running..." : "Run Agent"}
         </button>
-        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input">
+        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input" data-testid="input-expand">
           ⛶
         </button>
       </div>
     </form>
   );
+}
+TaskInput.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+  isRunning: PropTypes.bool,
+  onMaximize: PropTypes.func,
+};
+TaskInput.defaultProps = {
+  isRunning: false,
+  onMaximize: () => {},
 }
 
 function TaskInputMaximized({ onSubmit, isRunning, onClose }) {
