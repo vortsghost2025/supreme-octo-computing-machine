@@ -4,8 +4,8 @@ import { useEffect, useState, useCallback } from "react";
 // API Base URL - relative so it routes through nginx in production; override with VITE_API_URL in dev
 // API Base URL – derived from Vite environment variable if present.
 // In production the backend is proxied, but during local development we rely on the VITE_API_URL variable defined in `ui/.env`.
-// Falling back to the default port 9002 keeps the UI functional even if the env file is missing.
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:9002";
+// Falling back to the default port 8001 keeps the UI functional even if the env file is missing.
+const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8001";
 
 // ============== COMPONENTS ==============
 
