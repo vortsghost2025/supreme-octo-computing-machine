@@ -12,16 +12,16 @@ const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:9002";
 // 1. MEMORY TIMELINE PANEL
 function MemoryTimeline({ events, isLoading }) {
   return (
-    <div className="panel">
+    <div className="panel" data-testid="timeline">
       <div className="panel-header">
         <h2>📋 Memory Timeline</h2>
-        <span className="badge">{events.length} events</span>
+        <span className="badge" data-testid="memory-count">{events?.length ?? 0} events</span>
 
       </div>
-      <div className="panel-content timeline">
+        <div className="panel-content timeline">
         {isLoading ? (
           <div className="loading">Loading timeline...</div>
-        ) : events.length === 0 ? (
+        ) : (events?.length ?? 0) === 0 ? (
           <div className="empty">No events yet. Run an agent task to see activity.</div>
         ) : (
           events.map((event, idx) => (
@@ -50,7 +50,10 @@ function MemoryTimeline({ events, isLoading }) {
   );
 }
 
-// 2. NODE VISUALIZER PANEL
+MemoryTimeline.defaultProps = {
+  events: [],
+};
+
 function NodeVisualizer({ currentTask, steps }) {
   const nodes = [
     { id: "planner", label: "Planner", status: "idle" },
@@ -609,11 +612,11 @@ function SharedKnowledgePanel({ items }) {
     <div className="panel">
       <div className="panel-header">
         <h2>🧠 Shared Knowledge</h2>
-        <span className="badge">{items.length} items</span>
+        <span className="badge">{items?.length ?? 0} items</span>
 
       </div>
       <div className="panel-content knowledge-feed">
-        {items.length === 0 ? (
+        {(items?.length ?? 0) === 0 ? (
           <div className="empty">No shared learning yet.</div>
         ) : (
           items
@@ -637,6 +640,10 @@ function SharedKnowledgePanel({ items }) {
     </div>
   );
 }
+
+SharedKnowledgePanel.defaultProps = {
+  items: [],
+};
 
 function AgentChatPanel({
   title = "💬 Agent Console",
@@ -741,7 +748,7 @@ function Modal({ isOpen, onClose, title, children }) {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{title}</h2>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose} aria-label="Close modal">✕</button>
         </div>
         <div className="modal-body">{children}</div>
       </div>
@@ -769,7 +776,7 @@ function TaskInput({ onSubmit, isRunning, onMaximize }) {
         <button type="submit" disabled={isRunning || !task.trim()}>
           {isRunning ? "Running..." : "Run Agent"}
         </button>
-        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input">
+        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input" data-testid="input-expand">
           ⛶
         </button>
       </div>
@@ -834,7 +841,7 @@ function IngestInput({ onIngest, isLoading, onMaximize }) {
         <button type="submit" disabled={isLoading || !content.trim()}>
           {isLoading ? "Ingesting..." : "Ingest Document"}
         </button>
-        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input">
+        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input" data-testid="input-expand">
           ⛶
         </button>
       </div>
