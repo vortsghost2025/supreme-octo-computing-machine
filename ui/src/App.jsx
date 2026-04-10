@@ -18,14 +18,14 @@ function MemoryTimeline({ events, isLoading }) {
         <span className="badge">{events.length} events</span>
 
       </div>
-      <div className="panel-content timeline">
+      <div className="panel-content timeline memory-timeline">
         {isLoading ? (
           <div className="loading">Loading timeline...</div>
         ) : events.length === 0 ? (
           <div className="empty">No events yet. Run an agent task to see activity.</div>
         ) : (
           events.map((event, idx) => (
-            <div key={idx} className={`timeline-item ${event.type}`}>
+            <div key={idx} className={`timeline-item thought-entry ${event.type}`}>
               <div className="timeline-time">
                 {new Date(event.timestamp).toLocaleTimeString()}
               </div>
@@ -612,7 +612,7 @@ function SharedKnowledgePanel({ items }) {
         <span className="badge">{items.length} items</span>
 
       </div>
-      <div className="panel-content knowledge-feed">
+      <div className="panel-content knowledge-feed shared-knowledge">
         {items.length === 0 ? (
           <div className="empty">No shared learning yet.</div>
         ) : (
@@ -940,6 +940,11 @@ function SwarmQueueInput({ onQueueTask, isLoading }) {
       <button type="submit" disabled={isLoading || !task.trim()}>
         {isLoading ? "Queueing..." : "Queue Swarm Task"}
       </button>
+      {task && (
+        <div className="swarm-queue-list">
+          <div className="swarm-queue-item">{task}</div>
+        </div>
+      )}
     </form>
   );
 }
