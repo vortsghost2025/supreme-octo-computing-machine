@@ -12,7 +12,7 @@ const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:9002";
 // 1. MEMORY TIMELINE PANEL
 function MemoryTimeline({ events = [], isLoading }) {
   return (
-    <div className="panel">
+    <div className="panel" data-testid="timeline-panel">
       <div className="panel-header">
         <h2>📋 Memory Timeline</h2>
         <span className="badge" data-testid="memory-count">{events.length} events</span>
@@ -357,7 +357,7 @@ function GovernorPanel() {
         return res.json();
       })
       .then((data) => setContext(data))
-      .catch(() => setContext(null));
+      .catch((e) => { console.error("Failed to fetch Governor context:", e); setContext(null); });
   }, []);
 
   const handleRefresh = async () => {
@@ -761,7 +761,7 @@ function TaskInput({ onSubmit, isRunning, onMaximize }) {
         <button type="submit" disabled={isRunning || !task.trim()}>
           {isRunning ? "Running..." : "Run Agent"}
         </button>
-        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input">
+        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input" data-testid="input-expand">
           ⛶
         </button>
       </div>
@@ -826,7 +826,7 @@ function IngestInput({ onIngest, isLoading, onMaximize }) {
         <button type="submit" disabled={isLoading || !content.trim()}>
           {isLoading ? "Ingesting..." : "Ingest Document"}
         </button>
-        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input">
+        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input" data-testid="input-expand">
           ⛶
         </button>
       </div>
@@ -1287,7 +1287,8 @@ function App() {
   const [agentChatSessionId, setAgentChatSessionId] = useState(() => {
     try {
       return window.localStorage.getItem("snac-agent-chat-session") || "";
-    } catch {
+    } catch (e) {
+      console.error("Failed to load session from localStorage:", e);
       return "";
     }
   });
@@ -1316,7 +1317,7 @@ function App() {
     fetch(`${API_BASE}/`)
       .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); })
       .then((data) => setBackendStatus((data && data.status) || "ok"))
-      .catch(() => setBackendStatus("offline"));
+      .catch((e) => { console.error("Failed to fetch backend status:", e); setBackendStatus("offline"); });
   }, []);
 
   useEffect(() => {
@@ -1326,8 +1327,8 @@ function App() {
       } else {
         window.localStorage.removeItem("snac-agent-chat-session");
       }
-    } catch {
-      // Ignore local storage failures.
+    } catch (e) {
+      console.error("Failed to save session to localStorage:", e);
     }
   }, [agentChatSessionId]);
 
