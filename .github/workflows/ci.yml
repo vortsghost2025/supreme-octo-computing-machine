@@ -33,6 +33,22 @@ jobs:
         run: npm run build
       - name: Install UI package dependencies
         run: npm ci
-        working-directory: ../../../ui
-      - name: Run tests
-        run: npm test
+        working-directory: ./ui
+
+      - name: Start Vite dev server for UI tests
+        working-directory: ./ui
+        run: npm run dev &
+        env:
+          OLLAMA_BASE_URL: http://host.docker.internal:9001
+          VITE_API_URL: http://localhost:9002
+        background: true
+
+      - name: Wait for Vite server
+        run: sleep 10
+
+      - name: Run UI tests with Playwright
+        working-directory: ./ui
+        run: npm run test:ui
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:5173
+          OLLAMA_BASE_URL: http://host.docker.internal:9001
