@@ -1543,17 +1543,12 @@ class MemoryInjectApplyResponse(BaseModel):
 
 
 # Import Ollama client for local GPU inference
-import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 try:
+    from .llm_client import generate as ollama_generate, OLLAMA_BASE_URL
+    from .model_router import router, route_request
+except ImportError:
     from backend.llm_client import generate as ollama_generate, OLLAMA_BASE_URL
     from backend.model_router import router, route_request
-except ImportError:
-    ollama_generate = None
-    router = None
-    route_request = None
-    OLLAMA_BASE_URL = "http://127.0.0.1:11434"
 
 
 # LLM endpoint for local Ollama GPU inference with automatic routing
