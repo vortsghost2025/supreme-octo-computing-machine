@@ -19,7 +19,7 @@ function MemoryTimeline({ events = [], isLoading }) {
 <span className="badge">{eventCount} events</span>
 		<span className="count" data-testid="memory-count">{eventCount}</span>
       </div>
-      <div className="panel-content timeline memory-timeline">
+      <div className="panel-content timeline memory-timeline" data-testid="timeline">
         {isLoading ? (
           <div className="loading">Loading timeline...</div>
         ) : eventCount === 0 ? (
@@ -50,6 +50,7 @@ function MemoryTimeline({ events = [], isLoading }) {
     </div>
   );
 }
+MemoryTimeline.defaultProps = { events: [] };
 
 // 2. NODE VISUALIZER PANEL
 function NodeVisualizer({ currentTask, steps }) {
@@ -145,7 +146,7 @@ function TokenMonitor({ usage = { total: 0, bySession: {} }, currentCost = 0 }) 
           <div className="cost-total">
 			<span className="count" data-testid="token-cost-count">{total.toFixed(4)}</span>
             <span className="cost-label">Total Spent</span>
-            <span className="cost-value">${usage.total.toFixed(4)}</span>
+            <span className="cost-value">${(usage?.total ?? 0).toFixed(4)}</span>
           </div>
           <div className="cost-current">
             <span className="cost-label">Current Request</span>
@@ -180,6 +181,7 @@ function TokenMonitor({ usage = { total: 0, bySession: {} }, currentCost = 0 }) 
     </div>
   );
 }
+TokenMonitor.defaultProps = { usage: { total: 0, bySession: {} }, currentCost: 0 };
 
 function SwarmMonitor({ status = {}, onScalerTick, isTicking }) {
   const queue = status?.queue_depth || { high: 0, normal: 0, low: 0 };
@@ -640,6 +642,7 @@ function SharedKnowledgePanel({ items = [] }) {
     </div>
   );
 }
+SharedKnowledgePanel.defaultProps = { items: [] };
 
 function AgentChatPanel({
   title = "💬 Agent Console",
@@ -744,7 +747,7 @@ function Modal({ isOpen, onClose, title, children }) {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{title}</h2>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose} aria-label="Close modal">✕</button>
         </div>
         <div className="modal-body">{children}</div>
       </div>
@@ -772,7 +775,7 @@ function TaskInput({ onSubmit, isRunning, onMaximize }) {
         <button type="submit" disabled={isRunning || !task.trim()}>
           {isRunning ? "Running..." : "Run Agent"}
         </button>
-        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input">
+        <button type="button" className="maximize-btn" onClick={onMaximize} data-testid="input-expand" title="Expand input" aria-label="Expand input">
           ⛶
         </button>
       </div>
@@ -837,7 +840,7 @@ function IngestInput({ onIngest, isLoading, onMaximize }) {
         <button type="submit" disabled={isLoading || !content.trim()}>
           {isLoading ? "Ingesting..." : "Ingest Document"}
         </button>
-        <button type="button" className="maximize-btn" onClick={onMaximize} title="Expand input" aria-label="Expand input">
+        <button type="button" className="maximize-btn" onClick={onMaximize} data-testid="input-expand" title="Expand input" aria-label="Expand input">
           ⛶
         </button>
       </div>
