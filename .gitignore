@@ -26,11 +26,15 @@ __pycache__/
 
 # Local preflight/temp artifacts
 .preflight.json
-.snac_*.txt
-.azure
+.snac_*.txt/
+.azure/
 .aider*
 .consolidation-backup/
 ollama_profile/
+
+# Block Azure deployment configs (may contain secrets)
+main.bicep
+infra/main.bicep
 
 # ============================================================
 # CRITICAL: Prevent duplicate nested projects

@@ -32,7 +32,16 @@ jobs:
         working-directory: ./integrated-swarm
         run: npm run build
       - name: Install UI package dependencies
+        working-directory: ./ui
         run: npm ci
-        working-directory: ../../../ui
-      - name: Run tests
-        run: npm test
+      - name: Start Vite dev server
+        working-directory: ./ui
+        run: npm run dev &
+        env:
+          OLLAMA_BASE_URL: http://host.docker.internal:9001
+          VITE_BACKEND_URL: http://localhost:8000
+      - name: Wait for Vite server to be ready
+        run: sleep 10
+      - name: Run UI tests
+        working-directory: ./ui
+        run: npm run test:ui
