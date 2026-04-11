@@ -89,7 +89,7 @@ test.describe('SNAC Cockpit UI end‑to‑end verification', () => {
     const memCount = await page.textContent('[data-testid="memory-count"]');
     expect(parseInt(memCount || '0')).toBeGreaterThan(0);
     // Token Cost Monitor
-    const tokenCount = await page.textContent('[data-testid="token-total"]');
+    const tokenCount = await page.textContent('[data-testid="token-cost-count"]');
     expect(parseInt(tokenCount || '0')).toBeGreaterThan(0);
     // Swarm Monitor
     const swarmCount = await page.textContent('[data-testid="swarm-count"]');
