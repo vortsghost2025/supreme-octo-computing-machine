@@ -4,7 +4,7 @@ Usage:
     python ollama_cli.py "<prompt>" [--model MODEL]
 
 The script reads the OLLAMA_BASE_URL environment variable (default
-http://127.0.0.1:11434) and prints the generated response to stdout.
+http://127.0.0.1:9001) and prints the generated response to stdout.
 
 It is deliberately lightweight and does not require any UI – ideal
 for users with visual impairments who rely on screen‑readers or copy‑
