@@ -733,7 +733,7 @@ function Modal({ isOpen, onClose, title, children }) {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{title}</h2>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose} aria-label="Close modal" data-testid="modal-close">✕</button>
         </div>
         <div className="modal-body">{children}</div>
       </div>
