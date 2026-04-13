@@ -252,9 +252,8 @@ function SwarmGraphPanel({ snapshot }) {
     );
   }
 
-  const { nodes = [], edges = [], active_workers, tasks_running, queue_depth, recent_event_types = [], snapshot_at } = snapshot;
+  const { nodes = [], active_workers, tasks_running, queue_depth, recent_event_types = [], snapshot_at } = snapshot;
   const workers = nodes.filter((n) => n.type === "worker");
-  const queueNode = nodes.find((n) => n.type === "queue");
 
   return (
     <div className="panel">
@@ -367,7 +366,7 @@ function GovernorPanel() {
         return res.json();
       })
       .then((data) => setContext(data))
-      .catch(() => setContext(null));
+      .catch((e) => { console.error("Failed to fetch governor context:", e); setContext(null); });
   }, []);
 
   const handleRefresh = async () => {
@@ -1277,8 +1276,6 @@ function App() {
   const [backendStatus, setBackendStatus] = useState("checking...");
   const [timeline, setTimeline] = useState([]);
   const [tokenUsage, setTokenUsage] = useState({ total: 0, bySession: {} });
-  const [currentTask, setCurrentTask] = useState("");
-  const [currentSteps, setCurrentSteps] = useState([]);
   const [currentCost, setCurrentCost] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [isIngesting, setIsIngesting] = useState(false);
@@ -1327,7 +1324,7 @@ function App() {
     fetch(`${API_BASE}/`)
       .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); })
       .then((data) => setBackendStatus((data && data.status) || "ok"))
-      .catch(() => setBackendStatus("offline"));
+      .catch((e) => { console.error("Failed to fetch backend status:", e); setBackendStatus("offline"); });
   }, []);
 
   useEffect(() => {
@@ -1483,13 +1480,10 @@ function App() {
   const handleTaskSubmit = async (task) => {
     setMaximizedInputType(null);
     setIsRunning(true);
-    setCurrentTask(task);
-    setCurrentSteps([]);
     setCurrentCost(0);
 
     try {
       const data = await runAgentTask(task);
-      setCurrentSteps((data && data.steps) || []);
       setCurrentCost((data && data.cost) || 0);
       
       // Refresh data after task completes
@@ -1512,8 +1506,6 @@ function App() {
     const startedAt = new Date().toISOString();
     setIsRunning(true);
     setAgentChatDraft("");
-    setCurrentTask(task);
-    setCurrentSteps([]);
     setCurrentCost(0);
     setAgentChatMessages((prev) => [
       ...prev,
@@ -1523,7 +1515,6 @@ function App() {
     try {
       const data = await runAgentTask(task, agentChatSessionId);
       setAgentChatSessionId((data && data.session_id) || agentChatSessionId);
-      setCurrentSteps((data && data.steps) || []);
       setCurrentCost((data && data.cost) || 0);
       setAgentChatMessages((prev) => [
         ...prev,
@@ -1559,8 +1550,6 @@ function App() {
     setAgentChatSessionId("");
     setAgentChatMessages([]);
     setAgentChatDraft("");
-    setCurrentTask("");
-    setCurrentSteps([]);
     setCurrentCost(0);
   };
 
