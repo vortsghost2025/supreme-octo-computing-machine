@@ -18,7 +18,7 @@ import asyncio
 import httpx
 
 DEFAULT_MODEL = "llama3:8b"
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:9001")
 
 async def generate(prompt: str, model: str) -> str:
     payload = {"model": model, "prompt": prompt, "stream": False}

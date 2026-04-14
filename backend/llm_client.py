@@ -4,18 +4,25 @@ from typing import Optional
 
 import httpx
 
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:9001")
 OLLAMA_MODEL_DEFAULT = os.getenv("OLLAMA_MODEL_DEFAULT", "llama3:8b")
 
 ALLOWED_MODELS = frozenset([
     "llama3:8b",
+    "llama3:8b-instruct-q4_K_M",
+    "llama3:latest",
+    "llama3.2-vision:latest",
+    "llama3.2:3b",
     "llama3.1:8b",
     "llama3.2:8b",
     "llama3:70b",
     "llama3.1:70b",
     "mistral",
+    "mistral:7b",
+    "llama2:7b",
     "codellama:7b",
     "codellama:13b",
+    "orca-mini:latest",
     "phi3",
 ])
 

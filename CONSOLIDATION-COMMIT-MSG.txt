@@ -1,0 +1,35 @@
+feat: Consolidate duplicate project directories - CRITICAL FIX
+
+BREAKING CHANGE: Removes nested duplicate project directory
+
+This commit consolidates work from accidentally created duplicate 
+project directories and implements safeguards to prevent recurrence.
+
+## Problem Solved
+- Removed nested duplicate: supreme-octo-computing-machine/
+- Consolidated diverging changes from 2 working copies
+- Fixed vision accessibility issue causing directory confusion
+
+## Changes Included
+- All uncommitted work from root directory preserved
+- Backup created in .consolidation-backup/ before merge
+- Added .gitignore entry to prevent future nested duplicates
+- Preserved all functional changes to backend, UI, and services
+
+## Prevention Measures
+- Added PROJECT-ROOT.marker file for accessibility
+- Added .gitignore rules for nested duplicates
+- Updated AGENTS.md with directory structure rules
+- Created CONSOLIDATION-COMPLETE.md documentation
+
+## Files Modified
+- Backend: main.py, llm_client.py, model_router.py, Dockerfile
+- Services: All agent service files
+- UI: App.jsx, vite.config.js, package.json
+- Infrastructure: docker-compose.yml, azure.yaml
+
+Backup location: .consolidation-backup/20260407_115014/
+All diffs preserved in backup directory.
+
+This resolves the critical issue where agents were creating 
+projects on top of each other due to vision accessibility problems.

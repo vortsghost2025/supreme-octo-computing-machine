@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: supreme-octo-computing-machine-main
+metadata:
+  template: snac-v2-azure
+services:
+  # Frontend - Static Web App
+  frontend:
+    language: js
+    project: ./ui
+    output: dist
+    host: staticwebapp
+
+  # Backend - Azure Functions
+  backend:
+    language: python
+    project: ./backend
+    host: appservice
+
+infrastructure:
+  path: infra
+  type: bicep

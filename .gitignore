@@ -27,3 +27,35 @@ __pycache__/
 # Local preflight/temp artifacts
 .preflight.json
 .snac_*.txt
+.azure
+.aider*
+.consolidation-backup/
+ollama_profile/
+
+# ============================================================
+# CRITICAL: Prevent duplicate nested projects
+# Added after consolidation - April 7, 2026
+# ============================================================
+
+# Block nested duplicate directories
+supreme-octo-computing-machine/
+.supreme-octo-computing-machine/
+*/supreme-octo-computing-machine/
+**/supreme-octo-computing-machine/
+
+# Block temporary agent directories
+.agent-temp/
+.agent-work/
+
+# Block duplicate project markers
+.DUPLICATE-DETECTED
+
+# Keep consolidation backups for 30 days (manually delete later)
+# .consolidation-backup/
+
+# Block ollama profile data (may contain secrets)
+ollama_profile/
+
+# Block binary artifacts
+*.sqlite
+*.nsys-rep
