@@ -4,7 +4,7 @@ from typing import Optional
 
 import httpx
 
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434")
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:9001")
 OLLAMA_MODEL_DEFAULT = os.getenv("OLLAMA_MODEL_DEFAULT", "llama3:8b")
 
 ALLOWED_MODELS = frozenset([
