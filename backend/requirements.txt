@@ -10,3 +10,4 @@ redis==7.3.0
 websockets==16.0
 httpx==0.28.1
 psutil==7.0.0
+pytest==8.3.5
