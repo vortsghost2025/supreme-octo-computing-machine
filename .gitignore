@@ -9,6 +9,7 @@ ui/.env.production
 # Logs and build outputs
 logs/
 ui/dist/
+ui/dist.zip
 
 # Browser data - NEVER track
 chromium-cache/
